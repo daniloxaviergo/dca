@@ -30,17 +30,17 @@ Add keyboard interaction to allow users to exit the application gracefully
 <!-- SECTION:PLAN:BEGIN -->
 ### 1. Technical Approach
 
-The application already has exit functionality partially implemented - the `Update` method returns `tea.Quit` on `tea.KeyMsg` and `tea.MouseMsg`. However, the current implementation may not handle all edge cases for graceful exit (e.g., terminal state restoration, clean shutdown).
+The application already has exit functionality - the `Update` method returns `tea.Quit` on `tea.KeyMsg` and `tea.MouseMsg`. However, `tea.Quit` is a built-in command that BubbleTea executes to terminate the program. The current implementation works because returning `tea.Quit` as a `tea.Cmd` signals BubbleTea to quit.
 
 The implementation will:
-- Verify that the current `tea.Quit` command properly handles all exit scenarios
-- Add explicit handling for `tea.QuitMsg` to ensure clean shutdown
-- Ensure terminal state is restored via BubbleTea's built-in mechanisms
-- Add test coverage for exit scenarios
+- Verify the current exit mechanism via `tea.Quit` works correctly
+- Add explicit `tea.QuitMsg` handling in `Update` to catch when the quit command is executed
+- Ensure the model properly responds to the quit signal
+- Verify terminal state restoration is handled by BubbleTea's runtime
 
 ### 2. Files to Modify
 
-- **main.go**: Add explicit `tea.QuitMsg` handling in `Update` method to ensure clean exit
+- **main.go**: Add explicit `tea.QuitMsg` case in `Update` method to handle the quit confirmation
 - **main_test.go**: Add tests for exit functionality
 
 ### 3. Dependencies
@@ -50,19 +50,22 @@ The implementation will:
 
 ### 4. Code Patterns
 
-- Follow existing BubbleTea patterns (model.Update returns tea.Cmd)
+- Follow existing BubbleTea patterns: `Update` returns `(tea.Model, tea.Cmd)`
 - Use `tea.Quit` command to signal program termination
+- Handle `tea.QuitMsg` to confirm quit and perform any cleanup
 - Maintain existing style: switch on message types, return appropriate cmd
 
 ### 5. Testing Strategy
 
-- Add test to verify keyboard input triggers exit (via `tea.Quit`)
-- Add test to verify mouse input triggers exit (via `tea.Quit`)
+- Add test to verify keyboard input triggers exit via `tea.Quit` command
+- Verify `tea.QuitMsg` is handled gracefully
 - Run `go test -v` to verify tests pass
+- Manual testing: run `go run main.go` and press any key to verify clean exit
 
 ### 6. Risks and Considerations
 
-- BubbleTea's built-in `tea.Quit` already handles terminal state restoration - no custom cleanup needed
-- The existing implementation may already be sufficient; this task is to verify and document the exit behavior
+- BubbleTea's `tea.Quit` is the standard way to terminate programs - no custom cleanup typically needed
+- The existing implementation may already be sufficient; this task verifies and documents exit behavior
 - Standard terminal emulators are supported by BubbleTea's tcell/termenv底层
+- No blocking issues; exit functionality is a core feature of BubbleTea
 <!-- SECTION:PLAN:END -->
