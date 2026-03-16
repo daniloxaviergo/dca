@@ -99,3 +99,9 @@ Verify all existing tests pass and error messages match acceptance criteria.
 | Panic in numeric operations | Wrap critical sections in `recover()` or use safe math functions |
 | Backward compatibility | Error messages are additive; no breaking changes to data model |
 <!-- SECTION:PLAN:END -->
+
+## Implementation Notes
+
+<!-- SECTION:NOTES:BEGIN -->
+Starting implementation of validation and error handling. Reviewing codebase structure in dca_entry.go, dca_form.go, and main.go. Planning to update all validation functions to match exact error message formats from acceptance criteria.
+<!-- SECTION:NOTES:END -->
