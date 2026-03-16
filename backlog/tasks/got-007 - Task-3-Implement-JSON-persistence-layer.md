@@ -2,10 +2,9 @@
 id: GOT-007
 title: 'Task 3: Implement JSON persistence layer'
 status: To Do
-assignee:
-  - Catarina
+assignee: []
 created_date: '2026-03-16 21:24'
-updated_date: '2026-03-16 23:05'
+updated_date: '2026-03-16 23:06'
 labels: []
 dependencies: []
 references:
