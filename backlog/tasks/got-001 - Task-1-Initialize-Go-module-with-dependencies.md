@@ -2,10 +2,9 @@
 id: GOT-001
 title: 'Task 1: Initialize Go module with dependencies'
 status: To Do
-assignee:
-  - Catarina
+assignee: []
 created_date: '2026-03-16 19:35'
-updated_date: '2026-03-16 19:37'
+updated_date: '2026-03-16 19:38'
 labels: []
 dependencies: []
 priority: high
