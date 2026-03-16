@@ -7,120 +7,121 @@ import (
 	"github.com/charmbracelet/bubbletea"
 )
 
-func TestView(t *testing.T) {
-	m := model{}
+func TestViewWithForm(t *testing.T) {
+	entries := &DCAData{Entries: make(map[string][]DCAEntry)}
+	form := NewFormModel(entries, "test.json")
+	m := model{form: form, entries: entries}
 	view := m.View()
 
 	// Debug output to see what we're testing
 	t.Logf("Raw view output:\n%s", view)
 
-	// Check that "Hello World" is in the output
-	if !strings.Contains(view, "Hello World") {
-		t.Errorf("Expected 'Hello World' in view, got: %s", view)
+	// Check that "Enter DCA Entry" header is in the output
+	if !strings.Contains(view, "Enter DCA Entry") {
+		t.Errorf("Expected 'Enter DCA Entry' header in view, got: %s", view)
 	}
 
-	// Acceptance Criteria #1: Text is clearly readable with good contrast
-	// In test environment without ANSI codes, verify structure indicates contrast:
-	// - Multiple lines with content surrounded by whitespace indicates dark bg
-	// - The layout itself suggests good visual hierarchy
-	lines := strings.Split(view, "\n")
-	hasMultipleLines := len(lines) >= 10 // Container lines + content
-	if !hasMultipleLines {
-		t.Errorf("Expected good contrast via multi-line layout, got %d lines", len(lines))
+	// Check that at least one form field prompt is present
+	if !strings.Contains(view, "Amount") {
+		t.Errorf("Expected 'Amount' field prompt in view, got: %s", view)
 	}
 
-	// Acceptance Criteria #2: At least 2 Lipgloss features (border, padding, alignment, underline)
-	// Check for rounded border characters (Lipgloss uses rounded corners: ╭, ╮, ╰, ╯)
+	// Check for lipgloss border characters (rounded corners)
 	hasRoundedBorder := strings.Contains(view, "╭") && strings.Contains(view, "╮")
-	// Check for padding (whitespace lines within the border)
-	hasPadding := len(lines) > 5 // More lines indicates padding
-	// Check for center alignment (whitespace margins on left side of content)
-	hasCentering := strings.Contains(view, "│                  DCA") // Title centered
-	// Check for underline via ANSI escape sequence (when ANSI is present)
-	hasUnderline := strings.Contains(view, "\x1b[4m")
-	// Count Lipgloss features present: rounded border, padding, alignment, underline
-	featureCount := 0
-	if hasRoundedBorder {
-		featureCount++
-	}
-	if hasPadding {
-		featureCount++
-	}
-	if hasCentering {
-		featureCount++
-	}
-	if hasUnderline {
-		featureCount++
-	}
-	if featureCount < 2 {
-		t.Errorf("Expected at least 2 Lipgloss features (got %d), got: %s", featureCount, view)
-	}
-
-	// Acceptance Criteria #3: Output is centered
-	// Check for margin whitespace on the left side (center alignment in action)
-	firstLine := lines[0]
-	if len(firstLine) > 0 && !strings.HasPrefix(firstLine, " ") {
-		t.Errorf("Expected centered output with leading whitespace, first line: %q", firstLine)
-	}
-
-	// Acceptance Criteria #4: No visual artifacts (clean output)
-	// Check that the output doesn't have incomplete ANSI sequences at the end
-	// ANSI escape sequences should be complete (end with 'm' for SGR codes)
-	// The output should end with valid content followed by reset
-	view = strings.TrimSpace(view)
-	hasValidEnding := strings.HasSuffix(view, "\x1b[0m") || strings.Contains(view, "Application") || strings.Contains(view, "Hello World")
-	if !hasValidEnding {
-		t.Errorf("Expected clean ANSI output with valid ending, got: %s", view)
+	if !hasRoundedBorder {
+		t.Errorf("Expected rounded border in view (lipgloss), got: %s", view)
 	}
 }
 
-func TestUpdateExitOnKeyMsg(t *testing.T) {
-	m := model{}
-	msg := tea.KeyMsg{}
+func TestUpdateExitOnCtrlC(t *testing.T) {
+	entries := &DCAData{Entries: make(map[string][]DCAEntry)}
+	form := NewFormModel(entries, "test.json")
+	m := model{form: form, entries: entries}
+
+	// Send Ctrl+C
+	msg := tea.KeyMsg{
+		Runes: []rune{3}, // Ctrl+C
+	}
+	msg.Type = tea.KeyCtrlC
 
 	newModel, cmd := m.Update(msg)
-
-	// Verify the model is returned (unchanged)
-	if newModel != m {
-		t.Error("Expected model to be returned unchanged")
-	}
+	m = newModel.(model)
 
 	// Verify tea.Quit command is returned
 	if cmd == nil {
-		t.Error("Expected tea.Quit command to be returned on KeyMsg")
+		t.Error("Expected tea.Quit command to be returned on Ctrl+C")
 	}
 }
 
-func TestUpdateExitOnMouseMsg(t *testing.T) {
-	m := model{}
-	msg := tea.MouseMsg{}
+func TestUpdateExitOnEscape(t *testing.T) {
+	entries := &DCAData{Entries: make(map[string][]DCAEntry)}
+	form := NewFormModel(entries, "test.json")
+	m := model{form: form, entries: entries}
+
+	// Send Escape key
+	msg := tea.KeyMsg{
+		Runes: []rune{27}, // Escape
+	}
+	msg.Type = tea.KeyEsc
 
 	newModel, cmd := m.Update(msg)
-
-	// Verify the model is returned (unchanged)
-	if newModel != m {
-		t.Error("Expected model to be returned unchanged")
-	}
+	m = newModel.(model)
 
 	// Verify tea.Quit command is returned
 	if cmd == nil {
-		t.Error("Expected tea.Quit command to be returned on MouseMsg")
+		t.Error("Expected tea.Quit command to be returned on Escape")
 	}
 }
 
-func TestUpdateOnQuitMsg(t *testing.T) {
-	m := model{}
-	msg := tea.QuitMsg{}
+func TestMainForm_Init(t *testing.T) {
+	entries := &DCAData{Entries: make(map[string][]DCAEntry)}
+	form := NewFormModel(entries, "test.json")
+	m := model{form: form, entries: entries}
 
-	newModel, cmd := m.Update(msg)
+	// Verify form is initialized
+	if m.form == nil {
+		t.Error("Expected form to be initialized")
+	}
+}
 
-	// Verify the model is returned (unchanged)
-	if newModel != m {
-		t.Error("Expected model to be returned unchanged")
+func TestMainForm_KeyInput(t *testing.T) {
+	entries := &DCAData{Entries: make(map[string][]DCAEntry)}
+	form := NewFormModel(entries, "test.json")
+	m := model{form: form, entries: entries}
+
+	// Type "100" into the amount field
+	inputs := []string{"1", "0", "0"}
+	for _, input := range inputs {
+		msg := tea.KeyMsg{
+			Runes: []rune(input),
+		}
+		msg.Type = tea.KeyRunes
+		newModel, _ := m.Update(msg)
+		m = newModel.(model)
 	}
 
-	// Verify no command is returned on QuitMsg (quit already in progress)
-	if cmd != nil {
-		t.Error("Expected no command to be returned on QuitMsg")
+	// Verify the amount field contains the input
+	if m.form.Fields["amount"].Value != "100" {
+		t.Errorf("Expected amount to be '100', got: %s", m.form.Fields["amount"].Value)
+	}
+}
+
+func TestMainForm_Quit(t *testing.T) {
+	entries := &DCAData{Entries: make(map[string][]DCAEntry)}
+	form := NewFormModel(entries, "test.json")
+	m := model{form: form, entries: entries}
+
+	// Send Ctrl+C
+	msg := tea.KeyMsg{
+		Runes: []rune{3}, // Ctrl+C
+	}
+	msg.Type = tea.KeyCtrlC
+
+	newModel, cmd := m.Update(msg)
+	m = newModel.(model)
+
+	// Verify tea.Quit command is returned
+	if cmd == nil {
+		t.Error("Expected tea.Quit command to be returned on Ctrl+C")
 	}
 }
