@@ -2,10 +2,9 @@
 id: GOT-003
 title: 'Task 3: Add interactive exit functionality'
 status: Done
-assignee:
-  - Thomas
+assignee: []
 created_date: '2026-03-16 19:35'
-updated_date: '2026-03-16 20:06'
+updated_date: '2026-03-16 20:10'
 labels: []
 dependencies: []
 priority: medium
