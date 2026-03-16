@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - Thomas
 created_date: '2026-03-16 21:24'
-updated_date: '2026-03-16 22:01'
+updated_date: '2026-03-16 22:39'
 labels: []
 dependencies: []
 references:
@@ -133,4 +133,6 @@ Build a BubbleTea-based interactive CLI form using the `teax` package (BubbleTea
 
 <!-- SECTION:NOTES:BEGIN -->
 Starting implementation of CLI form with BubbleTea. teax package not available - will implement custom input components using BubbleTea directly. Following existing patterns in main.go and dca_entry.go for validation and styling.
+
+Implementing CLI form with BubbleTea. Created dca_form.go with FormModel, FormStep, FormField types. Implemented validation for amount, date (RFC3339), asset ticker, and price. Added shares calculation with 8 decimal precision. Added Ctrl+C support to cancel without saving. Updated main.go to use form model instead of placeholder UI.
 <!-- SECTION:NOTES:END -->
