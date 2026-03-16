@@ -1,7 +1,7 @@
 ---
 id: GOT-003
 title: 'Task 3: Add interactive exit functionality'
-status: To Do
+status: Done
 assignee:
   - Thomas
 created_date: '2026-03-16 19:35'
@@ -75,3 +75,32 @@ The implementation will:
 <!-- SECTION:NOTES:BEGIN -->
 Verified current exit mechanism works via tea.Quit on KeyMsg/MouseMsg. Added explicit tea.QuitMsg handling in Update method. Added 3 new tests for exit functionality: TestUpdateExitOnKeyMsg, TestUpdateExitOnMouseMsg, TestUpdateOnQuitMsg. All tests pass and build succeeds.
 <!-- SECTION:NOTES:END -->
+
+## Final Summary
+
+<!-- SECTION:FINAL_SUMMARY:BEGIN -->
+## Summary
+
+Added explicit `tea.QuitMsg` handling to the Update method and implemented comprehensive tests for exit functionality.
+
+## Changes
+
+**main.go**: Added explicit `tea.QuitMsg` case in `Update` method to gracefully handle quit confirmation. The switch statement now properly handles KeyMsg, MouseMsg (triggering tea.Quit) and QuitMsg (confirming quit).
+
+**main_test.go**: Added 3 new tests:
+- `TestUpdateExitOnKeyMsg`: Verifies KeyMsg triggers tea.Quit command
+- `TestUpdateExitOnMouseMsg`: Verifies MouseMsg triggers tea.Quit command
+- `TestUpdateOnQuitMsg`: Verifies QuitMsg is handled gracefully without returning a command
+
+## Verification
+
+- All 4 tests pass: `go test -v ./...` ✅
+- Build succeeds: `go build -o dca .` ✅
+- No new warnings or regressions ✅
+- Terminal state restoration handled by BubbleTea runtime ✅
+
+## Risks/Follow-ups
+
+- Standard BubbleTea exit mechanism - no custom cleanup needed
+- No blocking issues - exit is a core BubbleTea feature
+<!-- SECTION:FINAL_SUMMARY:END -->
