@@ -2,7 +2,8 @@
 id: GOT-002
 title: 'Task 2: Create main Bubbletea application entry point'
 status: To Do
-assignee: []
+assignee:
+  - Thomas
 created_date: '2026-03-16 19:35'
 updated_date: '2026-03-16 19:53'
 labels: []
