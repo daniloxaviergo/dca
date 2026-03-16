@@ -5,7 +5,7 @@ status: To Do
 assignee:
   - Thomas
 created_date: '2026-03-16 21:24'
-updated_date: '2026-03-16 21:33'
+updated_date: '2026-03-16 21:37'
 labels:
   - data-model
   - core
@@ -25,12 +25,12 @@ Define Go structs for DCA entries and implement JSON serialization/deserializati
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 Define DCAEntry struct with fields: Amount (float64), Date (time.Time), Asset (string), PricePerShare (float64), Shares (float64)
-- [ ] #2 Define DCAData struct with map[string][]DCAEntry keyed by asset ticker
-- [ ] #3 Implement LoadEntries() function to read from dca_entries.json
-- [ ] #4 Implement SaveEntries() function to write to dca_entries.json with 2-space indentation
-- [ ] #5 Add Validate() method on DCAEntry to check Amount > 0, PricePerShare > 0
-- [ ] #6 Add CalculateShares() method to compute Shares = Amount / PricePerShare with 8 decimal precision
+- [x] #1 Define DCAEntry struct with fields: Amount (float64), Date (time.Time), Asset (string), PricePerShare (float64), Shares (float64)
+- [x] #2 Define DCAData struct with map[string][]DCAEntry keyed by asset ticker
+- [x] #3 Implement LoadEntries() function to read from dca_entries.json
+- [x] #4 Implement SaveEntries() function to write to dca_entries.json with 2-space indentation
+- [x] #5 Add Validate() method on DCAEntry to check Amount > 0, PricePerShare > 0
+- [x] #6 Add CalculateShares() method to compute Shares = Amount / PricePerShare with 8 decimal precision
 <!-- AC:END -->
 
 ## Implementation Plan
@@ -133,3 +133,9 @@ This task establishes the foundation for data persistence by defining the core d
 - `Validate()` returns error for flexibility; could be extended to return validation results list
 - `CalculateShares()` returns `float64` with 8 decimals rounded; consider if caller needs exact precision or if displayed value suffices
 <!-- SECTION:PLAN:END -->
+
+## Implementation Notes
+
+<!-- SECTION:NOTES:BEGIN -->
+Implementation complete. Created dca_entry.go with DCAEntry struct (Amount, Date, Asset, PricePerShare, Shares), DCAData struct with map[string][]DCAEntry, LoadEntries(), SaveEntries(), Validate(), and CalculateShares(). All 14 unit tests pass. Build successful with no errors or warnings.
+<!-- SECTION:NOTES:END -->
