@@ -5,7 +5,7 @@ status: To Do
 assignee:
   - Thomas
 created_date: '2026-03-16 19:35'
-updated_date: '2026-03-16 20:02'
+updated_date: '2026-03-16 20:06'
 labels: []
 dependencies: []
 priority: medium
@@ -69,3 +69,9 @@ The implementation will:
 - Standard terminal emulators are supported by BubbleTea's tcell/termenv底层
 - No blocking issues; exit functionality is a core feature of BubbleTea
 <!-- SECTION:PLAN:END -->
+
+## Implementation Notes
+
+<!-- SECTION:NOTES:BEGIN -->
+Verified current exit mechanism works via tea.Quit on KeyMsg/MouseMsg. Added explicit tea.QuitMsg handling in Update method. Added 3 new tests for exit functionality: TestUpdateExitOnKeyMsg, TestUpdateExitOnMouseMsg, TestUpdateOnQuitMsg. All tests pass and build succeeds.
+<!-- SECTION:NOTES:END -->
