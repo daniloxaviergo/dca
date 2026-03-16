@@ -2,7 +2,8 @@
 id: GOT-005
 title: 'Task 1: Define DCA data model (structs, JSON serialization)'
 status: To Do
-assignee: []
+assignee:
+  - Thomas
 created_date: '2026-03-16 21:24'
 updated_date: '2026-03-16 21:33'
 labels:
