@@ -2,8 +2,10 @@
 id: GOT-004
 title: 'Task 4: Improve visual presentation'
 status: To Do
-assignee: []
+assignee:
+  - Catarina
 created_date: '2026-03-16 19:35'
+updated_date: '2026-03-16 20:11'
 labels: []
 dependencies: []
 priority: low
