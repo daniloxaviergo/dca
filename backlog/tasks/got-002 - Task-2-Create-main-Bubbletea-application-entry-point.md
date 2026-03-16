@@ -20,8 +20,8 @@ Build a basic Bubbletea application that displays a styled "Hello World" message
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
 - [x] #1 Application compiles successfully
-- [ ] #2 "Hello World" message displays when run
-- [ ] #3 Message uses Lipgloss styling (colors, positioning, borders)
+- [x] #2 "Hello World" message displays when run
+- [x] #3 Message uses Lipgloss styling (colors, positioning, borders)
 - [ ] #4 Application runs without panics or errors
 <!-- AC:END -->
 
@@ -117,4 +117,6 @@ Follow existing Go and Bubbletea conventions:
 
 <!-- SECTION:NOTES:BEGIN -->
 Implementation started. Initial build failed due to incorrect lipgloss API usage (VerticalAlign does not exist). Fixed by using PaddingTop/PaddingBottom instead. Application now compiles successfully.
+
+Application renders styled 'Hello World' with rounded border, foreground/background colors (205/236), and center alignment. Lipgloss styling is verified via unit test checking for 'Hello World' text and border characters.
 <!-- SECTION:NOTES:END -->
