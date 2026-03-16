@@ -1,7 +1,7 @@
 ---
 id: GOT-004
 title: 'Task 4: Improve visual presentation'
-status: To Do
+status: In Progress
 assignee:
   - Catarina
 created_date: '2026-03-16 19:35'
@@ -92,3 +92,9 @@ Update and extend existing tests:
 - **No functional changes**: This task is purely cosmetic - the application logic remains unchanged.
 - **Backward compatibility**: All existing tests should pass with the new styling.
 <!-- SECTION:PLAN:END -->
+
+## Implementation Notes
+
+<!-- SECTION:NOTES:BEGIN -->
+Implementation plan written and waiting for user approval before coding begins.
+<!-- SECTION:NOTES:END -->
