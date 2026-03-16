@@ -19,10 +19,10 @@ Add keyboard interaction to allow users to exit the application gracefully
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 Application responds to keyboard input
-- [ ] #2 Any keypress causes application to exit
-- [ ] #3 Exit is clean (no error messages, terminal state restored)
-- [ ] #4 Exit works on standard terminal emulators
+- [x] #1 Application responds to keyboard input
+- [x] #2 Any keypress causes application to exit
+- [x] #3 Exit is clean (no error messages, terminal state restored)
+- [x] #4 Exit works on standard terminal emulators
 <!-- AC:END -->
 
 ## Implementation Plan
