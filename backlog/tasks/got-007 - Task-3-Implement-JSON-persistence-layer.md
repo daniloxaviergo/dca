@@ -2,10 +2,9 @@
 id: GOT-007
 title: 'Task 3: Implement JSON persistence layer'
 status: Done
-assignee:
-  - Thomas
+assignee: []
 created_date: '2026-03-16 21:24'
-updated_date: '2026-03-16 23:17'
+updated_date: '2026-03-16 23:25'
 labels: []
 dependencies: []
 references:
