@@ -128,3 +128,9 @@ Build a BubbleTea-based interactive CLI form using the `teax` package (BubbleTea
 **Blocking issues:**
 - None identified; implementation is straightforward given existing patterns
 <!-- SECTION:PLAN:END -->
+
+## Implementation Notes
+
+<!-- SECTION:NOTES:BEGIN -->
+Starting implementation of CLI form with BubbleTea. teax package not available - will implement custom input components using BubbleTea directly. Following existing patterns in main.go and dca_entry.go for validation and styling.
+<!-- SECTION:NOTES:END -->
