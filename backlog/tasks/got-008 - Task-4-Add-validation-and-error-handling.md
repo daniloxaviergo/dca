@@ -2,8 +2,7 @@
 id: GOT-008
 title: 'Task 4: Add validation and error handling'
 status: To Do
-assignee:
-  - Catarina
+assignee: []
 created_date: '2026-03-16 21:25'
 updated_date: '2026-03-16 23:26'
 labels: []
