@@ -2,10 +2,9 @@
 id: GOT-004
 title: 'Task 4: Improve visual presentation'
 status: In Progress
-assignee:
-  - Catarina
+assignee: []
 created_date: '2026-03-16 19:35'
-updated_date: '2026-03-16 20:12'
+updated_date: '2026-03-16 20:13'
 labels: []
 dependencies: []
 priority: low
