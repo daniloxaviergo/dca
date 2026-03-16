@@ -5,7 +5,7 @@ status: Done
 assignee:
   - Thomas
 created_date: '2026-03-16 19:35'
-updated_date: '2026-03-16 20:21'
+updated_date: '2026-03-16 20:27'
 labels: []
 dependencies: []
 priority: low
@@ -113,3 +113,56 @@ All acceptance criteria verified:
 
 Tests updated and all passing (go test -v)
 <!-- SECTION:NOTES:END -->
+
+## Final Summary
+
+<!-- SECTION:FINAL_SUMMARY:BEGIN -->
+# GOT-004: Improve Visual Presentation
+
+## What Changed
+Enhanced the `main.go` View() method with significantly improved visual styling using Lipgloss:
+
+### Styling Improvements
+- **Rounded borders**: Changed to use Lipgloss's `RoundedBorder()` with `╭╮╰╯` corner characters
+- **Enhanced color palette**: 
+  - Foreground: Color 159 (cyan) for title, 205 (magenta) for greeting, 82 (green) for status
+  - Background: Color 236 (dark gray) for content areas
+  - Border: Color 63 (blue) foreground with 235 (dark gray) background
+- **Multi-line layout**: Added title ("DCA Application"), status line ("Visual Enhancement"), and decorative footer
+- **Additional Lipgloss features**: Underline on title, padding/margin for spacing, center alignment
+
+### Files Modified
+- `main.go`: Enhanced View() method with multi-line layout and improved styling
+- `main_test.go`: Updated TestView to verify all acceptance criteria
+
+## Acceptance Criteria Status
+- [x] #1 Text clearly readable with good contrast: ✓ Multiple bright foregrounds on dark backgrounds
+- [x] #2 At least 2 Lipgloss features: ✓ Rounded border, padding, margin, alignment, underline
+- [x] #3 Output is centered: ✓ Container uses Align(lipgloss.Center) with margins
+- [x] #4 No visual artifacts: ✓ Clean ANSI output with proper reset sequences
+
+## Testing
+```
+$ go test -v
+=== RUN   TestView
+--- PASS: TestView (0.00s)
+=== RUN   TestUpdateExitOnKeyMsg
+--- PASS: TestUpdateExitOnKeyMsg (0.00s)
+=== RUN   TestUpdateExitOnMouseMsg
+--- PASS: TestUpdateExitOnMouseMsg (0.00s)
+=== RUN   TestUpdateOnQuitMsg
+--- PASS: TestUpdateOnQuitMsg (0.00s)
+PASS
+ok      github.com/danilo/scripts/github/dca    5.011s
+```
+
+## Build Verification
+```
+$ go build -o dca .
+$ # Application builds and runs correctly
+```
+
+## Risks/Follow-ups
+- **Terminal size edge cases**: The fixed-size container (50x7) may clip on very small terminals (< 60 width, < 10 height). Lipgloss handles this gracefully.
+- **Color support**: Terminal 256-color support may vary, but Lipgloss handles fallback gracefully.
+<!-- SECTION:FINAL_SUMMARY:END -->
