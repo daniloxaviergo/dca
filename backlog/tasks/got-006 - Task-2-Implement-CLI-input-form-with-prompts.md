@@ -1,11 +1,11 @@
 ---
 id: GOT-006
 title: 'Task 2: Implement CLI input form with prompts'
-status: In Progress
+status: Done
 assignee:
   - Thomas
 created_date: '2026-03-16 21:24'
-updated_date: '2026-03-16 22:46'
+updated_date: '2026-03-16 22:48'
 labels: []
 dependencies: []
 references:
