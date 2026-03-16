@@ -2,10 +2,9 @@
 id: GOT-006
 title: 'Task 2: Implement CLI input form with prompts'
 status: In Progress
-assignee:
-  - Catarina
+assignee: []
 created_date: '2026-03-16 21:24'
-updated_date: '2026-03-16 21:59'
+updated_date: '2026-03-16 22:01'
 labels: []
 dependencies: []
 references:
