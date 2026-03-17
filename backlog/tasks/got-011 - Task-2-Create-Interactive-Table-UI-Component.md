@@ -2,8 +2,10 @@
 id: GOT-011
 title: 'Task 2: Create Interactive Table UI Component'
 status: To Do
-assignee: []
+assignee:
+  - Catarina
 created_date: '2026-03-17 00:42'
+updated_date: '2026-03-17 01:01'
 labels: []
 dependencies: []
 references:
