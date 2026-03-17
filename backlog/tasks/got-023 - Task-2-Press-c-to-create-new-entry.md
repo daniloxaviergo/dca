@@ -4,8 +4,10 @@ title: 'Task 2: Press ''c'' to create new entry'
 status: To Do
 assignee: []
 created_date: '2026-03-17 17:38'
+updated_date: '2026-03-17 17:38'
 labels: []
-dependencies: []
+dependencies:
+  - GOT-022
 references:
   - internal/assets/view.go
   - cmd/dca/main.go
