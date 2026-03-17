@@ -5,7 +5,7 @@ status: To Do
 assignee:
   - Thomas
 created_date: '2026-03-17 11:20'
-updated_date: '2026-03-17 12:50'
+updated_date: '2026-03-17 12:51'
 labels: []
 dependencies:
   - GOT-013
@@ -30,6 +30,7 @@ Move dca_form.go content to new package
 - [ ] #5 All tests pass
 - [ ] #6 #1 internal/form/model.go created with FormModel and related types
 - [ ] #7 #2 internal/form/validation.go created with validation functions
+- [ ] #8 #3 internal/form/validation_test.go created with all tests
 <!-- AC:END -->
 
 ## Implementation Plan
