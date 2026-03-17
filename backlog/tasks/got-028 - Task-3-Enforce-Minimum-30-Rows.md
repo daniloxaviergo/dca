@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - Thomas
 created_date: '2026-03-17 20:22'
-updated_date: '2026-03-17 23:19'
+updated_date: '2026-03-17 23:21'
 labels: []
 dependencies: []
 references:
@@ -87,6 +87,12 @@ Edge cases:
 - **Performance**: Minimal impact - only affects rendering, not data processing
 - **Testing complexity**: Counting rows in rendered output requires parsing lipgloss-styled strings; may need to extract row count from unstyled content
 <!-- SECTION:PLAN:END -->
+
+## Implementation Notes
+
+<!-- SECTION:NOTES:BEGIN -->
+Analysis: The implementation plan was mostly correct, but there are bugs in navigation handling. The handleUp/handleDown functions use 29 as the row limit but renderTable uses 30 total rows. Also, the empty row index calculation needs to match the actual row positions (0-29) for proper selection highlighting.
+<!-- SECTION:NOTES:END -->
 
 ## Definition of Done
 <!-- DOD:BEGIN -->
