@@ -7,6 +7,13 @@
         "asset": "BTC",
         "pricePerShare": 65000,
         "shares": 0.00153846
+      },
+      {
+        "amount": 150,
+        "date": "2026-03-17T16:58:27-03:00",
+        "asset": "BTC",
+        "pricePerShare": 67000,
+        "shares": 0.00223881
       }
     ]
   }

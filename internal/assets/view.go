@@ -35,8 +35,12 @@ func (a *AssetsView) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg:
 		switch msg.Type {
 		case tea.KeyCtrlC, tea.KeyEsc:
-			return a, func() tea.Msg {
-				return ViewTransitionMsg{View: "form"}
+			return a, tea.Quit
+		case tea.KeyRunes:
+			if string(msg.Runes) == "c" {
+				return a, func() tea.Msg {
+					return ViewTransitionMsg{View: "form"}
+				}
 			}
 		case tea.KeyUp:
 			return a.handleUp()
@@ -44,9 +48,7 @@ func (a *AssetsView) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return a.handleDown()
 		}
 	case tea.QuitMsg:
-		return a, func() tea.Msg {
-			return ViewTransitionMsg{View: "form"}
-		}
+		return a, tea.Quit
 	case ViewTransitionMsg:
 		if msg.View == "form" {
 			return a, func() tea.Msg {

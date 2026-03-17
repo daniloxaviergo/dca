@@ -147,7 +147,7 @@ func TestAssetsView_NavigateEmptyList(t *testing.T) {
 	}
 }
 
-// TestAssetsView_UpdateEscape returns view transition message
+// TestAssetsView_UpdateEscape returns tea.Quit
 func TestAssetsView_UpdateEscape(t *testing.T) {
 	av := NewAssetsView()
 	av.Loaded = true
@@ -156,15 +156,15 @@ func TestAssetsView_UpdateEscape(t *testing.T) {
 	_, cmd := av.Update(tea.KeyMsg{Type: tea.KeyEsc})
 
 	if cmd == nil {
-		t.Error("Expected non-nil cmd for Esc key (ViewTransitionMsg)")
+		t.Error("Expected non-nil cmd for Esc key (tea.Quit)")
 	}
 	msg := cmd()
-	if _, ok := msg.(ViewTransitionMsg); !ok {
-		t.Errorf("Expected ViewTransitionMsg, got %T", msg)
+	if _, ok := msg.(tea.QuitMsg); !ok {
+		t.Errorf("Expected tea.QuitMsg, got %T", msg)
 	}
 }
 
-// TestAssetsView_UpdateCtrlC returns view transition message
+// TestAssetsView_UpdateCtrlC returns tea.Quit
 func TestAssetsView_UpdateCtrlC(t *testing.T) {
 	av := NewAssetsView()
 	av.Loaded = true
@@ -173,11 +173,11 @@ func TestAssetsView_UpdateCtrlC(t *testing.T) {
 	_, cmd := av.Update(tea.KeyMsg{Type: tea.KeyCtrlC})
 
 	if cmd == nil {
-		t.Error("Expected non-nil cmd for Ctrl+C key (ViewTransitionMsg)")
+		t.Error("Expected non-nil cmd for Ctrl+C key (tea.Quit)")
 	}
 	msg := cmd()
-	if _, ok := msg.(ViewTransitionMsg); !ok {
-		t.Errorf("Expected ViewTransitionMsg, got %T", msg)
+	if _, ok := msg.(tea.QuitMsg); !ok {
+		t.Errorf("Expected tea.QuitMsg, got %T", msg)
 	}
 }
 
@@ -237,7 +237,7 @@ func TestAssetsView_UpdateOtherKey(t *testing.T) {
 	}
 }
 
-// TestAssetsView_UpdateQuitMsg returns view transition message
+// TestAssetsView_UpdateQuitMsg returns tea.Quit
 func TestAssetsView_UpdateQuitMsg(t *testing.T) {
 	av := NewAssetsView()
 	av.Loaded = true
@@ -246,7 +246,72 @@ func TestAssetsView_UpdateQuitMsg(t *testing.T) {
 	_, cmd := av.Update(tea.QuitMsg{})
 
 	if cmd == nil {
-		t.Error("Expected non-nil cmd for QuitMsg (ViewTransitionMsg)")
+		t.Error("Expected non-nil cmd for QuitMsg (tea.Quit)")
+	}
+	msg := cmd()
+	if _, ok := msg.(tea.QuitMsg); !ok {
+		t.Errorf("Expected tea.QuitMsg, got %T", msg)
+	}
+}
+
+// TestAssetsView_UpdateKeyC returns view transition message
+func TestAssetsView_UpdateKeyC(t *testing.T) {
+	av := NewAssetsView()
+	av.Loaded = true
+	av.Entries = []AssetSummary{{Ticker: "BTC"}}
+
+	_, cmd := av.Update(tea.KeyMsg{Type: tea.KeyRunes, Runes: []rune{'c'}})
+
+	if cmd == nil {
+		t.Error("Expected non-nil cmd for 'c' key (ViewTransitionMsg)")
+	}
+	msg := cmd()
+	if _, ok := msg.(ViewTransitionMsg); !ok {
+		t.Errorf("Expected ViewTransitionMsg, got %T", msg)
+	}
+}
+
+// TestAssetsView_UpdateKeyC_NavigatesToForm
+func TestAssetsView_UpdateKeyC_NavigatesToForm(t *testing.T) {
+	av := NewAssetsView()
+	av.Loaded = true
+	av.Entries = []AssetSummary{{Ticker: "BTC"}}
+
+	_, cmd := av.Update(tea.KeyMsg{Type: tea.KeyRunes, Runes: []rune{'c'}})
+
+	msg := cmd()
+	transitionMsg, ok := msg.(ViewTransitionMsg)
+	if !ok {
+		t.Fatalf("Expected ViewTransitionMsg, got %T", msg)
+	}
+	if transitionMsg.View != "form" {
+		t.Errorf("Expected View='form', got '%s'", transitionMsg.View)
+	}
+}
+
+// TestAssetsView_UpdateKeyC_IgnoresCapitalC
+func TestAssetsView_UpdateKeyC_IgnoresCapitalC(t *testing.T) {
+	av := NewAssetsView()
+	av.Loaded = true
+	av.Entries = []AssetSummary{{Ticker: "BTC"}}
+
+	_, cmd := av.Update(tea.KeyMsg{Type: tea.KeyRunes, Runes: []rune{'C'}})
+
+	if cmd != nil {
+		t.Errorf("Expected nil cmd for 'C' (capital C), got %v", cmd)
+	}
+}
+
+// TestAssetsView_UpdateKeyC_EmptyList
+func TestAssetsView_UpdateKeyC_EmptyList(t *testing.T) {
+	av := NewAssetsView()
+	av.Loaded = true
+	av.Entries = []AssetSummary{}
+
+	_, cmd := av.Update(tea.KeyMsg{Type: tea.KeyRunes, Runes: []rune{'c'}})
+
+	if cmd == nil {
+		t.Error("Expected non-nil cmd for 'c' key on empty list (ViewTransitionMsg)")
 	}
 	msg := cmd()
 	if _, ok := msg.(ViewTransitionMsg); !ok {

@@ -128,7 +128,7 @@ func (m *FormModel) handleEnter() (tea.Model, tea.Cmd) {
 		m.Submitted = true
 		m.Step = StepDone
 		return m, func() tea.Msg {
-			return formSubmittedMsg{}
+			return FormSubmittedMsg{}
 		}
 	}
 
@@ -429,5 +429,5 @@ func NewFormModel(entries *dca.DCAData, filePath string) *FormModel {
 	}
 }
 
-// formSubmittedMsg is sent when the form is successfully submitted
-type formSubmittedMsg struct{}
+// FormSubmittedMsg is sent when the form is successfully submitted
+type FormSubmittedMsg struct{}

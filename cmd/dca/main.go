@@ -23,9 +23,6 @@ const (
 	StateAssetsView
 )
 
-// formSubmittedMsg is sent when the form is successfully submitted
-type formSubmittedMsg struct{}
-
 type model struct {
 	form         *form.FormModel
 	assetsView   *assets.AssetsView
@@ -52,7 +49,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			newForm, cmd := m.form.Update(msg)
 			m.form = newForm.(*form.FormModel)
 			// Check for form submission or view transition from form
-			if _, ok := msg.(formSubmittedMsg); ok {
+			if _, ok := msg.(form.FormSubmittedMsg); ok {
 				// After form submission, switch to assets view
 				m.currentState = StateAssetsView
 				m.assetsView = assets.NewAssetsView()
@@ -66,10 +63,6 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				}
 				return m, nil
 			}
-			if _, ok := msg.(assets.ViewTransitionMsg); ok {
-				// Handle view transition from form (e.g., Ctrl+C during form)
-				return m, tea.Quit
-			}
 			return m, cmd
 		}
 
@@ -77,8 +70,8 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		if m.assetsView != nil {
 			newAssetsView, cmd := m.assetsView.Update(msg)
 			m.assetsView = newAssetsView.(*assets.AssetsView)
-			// On exit (Esc/Ctrl+C), switch back to form
-			if _, ok := msg.(assets.ViewTransitionMsg); ok {
+			// On view transition ('c' key), switch to form view
+			if transitionMsg, ok := msg.(assets.ViewTransitionMsg); ok && transitionMsg.View == "form" {
 				m.currentState = StateForm
 				m.form = form.NewFormModel(m.entries, defaultEntriesPath)
 				return m, nil
@@ -122,14 +115,21 @@ func main() {
 		os.Exit(1)
 	}
 
-	// Create form model and initialize with entries
-	form := form.NewFormModel(entries, defaultEntriesPath)
+	// Create assets view and load aggregated data
+	assetsView := assets.NewAssetsView()
+	vm, err := assets.LoadAndAggregateEntries(defaultEntriesPath)
+	if err != nil {
+		assetsView.Error = err
+	} else {
+		assetsView.Entries = vm.Entries
+		assetsView.Loaded = true
+	}
 
-	// Create initial model with form state
+	// Create initial model with assets view state (app starts in asset list view)
 	m := model{
-		form:         form,
+		assetsView:   assetsView,
 		entries:      entries,
-		currentState: StateForm,
+		currentState: StateAssetsView,
 	}
 
 	// Run the program
@@ -137,13 +137,5 @@ func main() {
 	if _, err := p.Run(); err != nil {
 		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 		os.Exit(1)
-	}
-
-	// Save entries after form submission
-	if form.Submitted {
-		if err := dca.SaveEntries(defaultEntriesPath, entries); err != nil {
-			fmt.Fprintf(os.Stderr, "Error saving entries: %v\n", err)
-			os.Exit(1)
-		}
 	}
 }
