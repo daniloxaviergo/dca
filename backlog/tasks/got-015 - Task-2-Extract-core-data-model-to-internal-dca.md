@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - Thomas
 created_date: '2026-03-17 11:20'
-updated_date: '2026-03-17 11:35'
+updated_date: '2026-03-17 11:38'
 labels: []
 dependencies:
   - GOT-013
@@ -24,8 +24,8 @@ Move dca_entry.go content to new package
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
 - [x] #1 internal/dca/entry.go created with DCAEntry, DCAData, LoadEntries, SaveEntries
-- [ ] #2 internal/dca/entry_test.go created with all tests
-- [ ] #3 Package declaration changed to 'dca'
+- [x] #2 internal/dca/entry_test.go created with all tests
+- [x] #3 Package declaration changed to 'dca'
 - [ ] #4 All tests pass
 <!-- AC:END -->
 
@@ -160,6 +160,8 @@ go fmt ./...
 Started implementation. Creating internal/dca/entry.go with core data model functions and types.
 
 Created internal/dca/entry.go with DCAEntry, DCAData, LoadEntries, SaveEntries, Validate, and CalculateShares methods.
+
+Created internal/dca/entry_test.go with all 21 tests from original file. Package declaration changed to 'dca' in both files.
 <!-- SECTION:NOTES:END -->
 
 ## Definition of Done
