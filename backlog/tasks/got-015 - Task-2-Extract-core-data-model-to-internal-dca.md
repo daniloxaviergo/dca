@@ -5,7 +5,7 @@ status: To Do
 assignee:
   - Thomas
 created_date: '2026-03-17 11:20'
-updated_date: '2026-03-17 12:31'
+updated_date: '2026-03-17 12:32'
 labels: []
 dependencies:
   - GOT-013
@@ -86,6 +86,37 @@ These files are no longer referenced and are dead code.
 
 The extraction is complete. Root-level dca_entry.go and dca_entry_test.go files remain as duplicates but are no longer referenced by the application.
 <!-- SECTION:NOTES:END -->
+
+## Final Summary
+
+<!-- SECTION:FINAL_SUMMARY:BEGIN -->
+## Summary
+
+Extracted the core DCA data model from the flat `main` package into a dedicated `internal/dca` package.
+
+## Changes
+
+**Created:**
+- `internal/dca/entry.go` - Core data model (`DCAEntry`, `DCAData`, `LoadEntries`, `SaveEntries`) with package `dca`
+- `internal/dca/entry_test.go` - 21 unit tests for the data model with package `dca`
+
+**Modified:**
+- `main.go` - Updated imports to use `dca` package
+- `dca_form.go` - Updated imports to use `dca` package
+- `assets_view.go` - Updated imports to use `dca` package
+
+**Dead Code (not removed):**
+- `dca_entry.go` - Duplicate package `main` file (no longer referenced)
+- `dca_entry_test.go` - Duplicate package `main` test file (no longer referenced)
+
+**Verification:**
+- All 77 tests pass (56 in main + 21 in internal/dca)
+- Build succeeds with no warnings
+- Code properly formatted with `go fmt`
+
+**Rationale:**
+Enables separation of concerns for future development (form and assets views can be separate packages).
+<!-- SECTION:FINAL_SUMMARY:END -->
 
 ## Definition of Done
 <!-- DOD:BEGIN -->
