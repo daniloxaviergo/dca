@@ -1,11 +1,11 @@
 ---
 id: GOT-024
 title: 'Task 3: Return to asset list after entry'
-status: To Do
+status: Done
 assignee:
   - Thomas
 created_date: '2026-03-17 17:38'
-updated_date: '2026-03-17 19:13'
+updated_date: '2026-03-17 19:45'
 labels: []
 dependencies:
   - GOT-023
@@ -25,10 +25,10 @@ After form submission, return to asset list view with updated data. Modify cmd/d
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 After form submission, app switches to asset list view
-- [ ] #2 Asset data refreshes to include new entry
-- [ ] #3 Aggregation calculations update correctly
-- [ ] #4 User can navigate asset list or create another entry
+- [x] #1 After form submission, app switches to asset list view
+- [x] #2 Asset data refreshes to include new entry
+- [x] #3 Aggregation calculations update correctly
+- [x] #4 User can navigate asset list or create another entry
 <!-- AC:END -->
 
 ## Implementation Plan
@@ -62,9 +62,18 @@ However, the current `main.go` has issues that prevent proper state transitions:
 | File | Change Type | Description |
 |------|-------------|-------------|
 | `cmd/dca/main.go` | Modified | Update `Update()` to reload asset data when receiving `formSubmittedMsg` |
-| `internal/form/model.go` | No change | Already saves to `m.Entries` in-place; `saveEntry()` works correctly |
+| `internal/form/model.go` | Modified | Exported `FormSubmittedMsg` type (was private `formSubmittedMsg`) |
 | `internal/assets/view.go` | No change | `AssetsView` already has `Entries` field that can be updated |
 | `internal/assets/aggregate.go` | No change | `LoadAndAggregateEntries()` already exists and works correctly |
+
+### 2.5 Code Cleanup
+
+The following duplicate code was identified and removed:
+- `cmd/dca/dca_form.go` - Redundant form model implementation
+- `cmd/dca/dca_form_test.go` - Redundant tests
+- Duplicate `formSubmittedMsg` declaration in `cmd/dca/main.go`
+
+The proper implementation exists in `internal/form/model.go`.
 
 ### 3. Dependencies
 
@@ -155,12 +164,39 @@ Add tests in `cmd/dca/main_test.go` (to be created):
 - **Handled**: The form sends `tea.Quit`, which exits without triggering state transition
 <!-- SECTION:PLAN:END -->
 
+## Implementation Notes
+
+<!-- SECTION:NOTES:BEGIN -->
+<!-- SECTION:IMPLEMENTATION:BEGIN -->
+2026-03-17: Implementation completed with fixes to duplicate type declarations.
+
+**Changes Made:**
+1. Renamed `formSubmittedMsg` to `FormSubmittedMsg` (exported) in `internal/form/model.go` (line 431) to enable cross-package usage
+2. Removed duplicate files `cmd/dca/dca_form.go` and `cmd/dca/dca_form_test.go` which contained redundant form implementations
+3. Updated all references to use `form.FormSubmittedMsg` in `cmd/dca/main.go` and `cmd/dca/main_test.go`
+4. Modified `internal/form/model.go` to send `FormSubmittedMsg{}` instead of `formSubmittedMsg{}`
+
+**Verification:**
+- All tests pass: `go test ./...` ✓
+- Build succeeds with no warnings ✓
+- Code formatted: `go fmt ./...` ✓
+- Binary created: `./dca` (5MB) ✓
+
+**State Transition Flow:**
+When `form.FormSubmittedMsg` is received in `Update()`:
+1. State switches to `StateAssetsView`
+2. New `AssetsView` created with `assets.NewAssetsView()`
+3. Entries reloaded from file via `assets.LoadAndAggregateEntries()`
+4. View populated with aggregated data including new entry
+<!-- SECTION:IMPLEMENTATION:END -->
+<!-- SECTION:NOTES:END -->
+
 ## Definition of Done
 <!-- DOD:BEGIN -->
-- [ ] #1 All acceptance criteria met
-- [ ] #2 Unit tests pass (go test)
-- [ ] #3 No new compiler warnings
-- [ ] #4 Code follows project style (go fmt)
+- [x] #1 All acceptance criteria met
+- [x] #2 Unit tests pass (go test)
+- [x] #3 No new compiler warnings
+- [x] #4 Code follows project style (go fmt)
 - [ ] #5 PRD referenced in task
-- [ ] #6 Documentation updated (comments)
+- [x] #6 Documentation updated (comments)
 <!-- DOD:END -->
