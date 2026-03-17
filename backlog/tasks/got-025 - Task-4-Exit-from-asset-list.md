@@ -5,7 +5,7 @@ status: To Do
 assignee:
   - Catarina
 created_date: '2026-03-17 17:38'
-updated_date: '2026-03-17 19:58'
+updated_date: '2026-03-17 19:59'
 labels: []
 dependencies: []
 references:
@@ -33,69 +33,78 @@ Users can exit the application from the asset list view. Verify existing Esc/Ctr
 <!-- SECTION:PLAN:BEGIN -->
 ### 1. Technical Approach
 
-**Problem Identified**: The current implementation has a bug where Esc/Ctrl+C from the asset list view transitions to the form view instead of exiting the application.
+**Problem Identified**: The `ViewTransitionMsg` is used ambiguously:
+- 'c' key in asset list should switch to form view ✓ (correct)
+- Esc/Ctrl+C in asset list should exit app ✗ (currently switches to form - **bug**)
 
-**Solution**: Modify the main model's state transition logic to properly handle exit messages from the asset list view.
+**Root Cause**: In `cmd/dca/main.go:80-85`, the `StateAssetsView` case treats ALL `ViewTransitionMsg` as "switch to form", but the asset view sends this same message for both 'c' key AND exit commands.
+
+**Solution**: Have the assets view return `tea.Quit` directly for exit commands (Esc/Ctrl+C/QuitMsg), while still using `ViewTransitionMsg` only for the 'c' key form-switch action.
 
 **How it will be built**:
-1. Update the `StateAssetsView` case in `main.go` model's `Update()` method to detect when an exit command originates from the asset list
-2. Return `tea.Quit` directly instead of transitioning to form view
-3. The `ViewTransitionMsg` type is currently ambiguous - it's used both for "switch to form" and "exit app"
+1. Modify `internal/assets/view.go:Update()` to return `tea.Quit` for `tea.KeyCtrlC`, `tea.KeyEsc`, and `tea.QuitMsg`
+2. Modify `internal/assets/view.go:Update()` to return `ViewTransitionMsg{View: "form"}` ONLY for 'c' key
+3. The main model's `StateAssetsView` case can then be simplified or removed since exit is handled at component level
 
-**Architecture Decision**: Add a separate message type for exit commands or modify the existing logic to check the current state when handling `ViewTransitionMsg`.
-
-**Why this approach**: Minimal changes to existing code, maintains consistency with current message-passing pattern, preserves existing behavior for 'c' key which correctly switches to form.
+**Why this approach**: 
+- Clean separation of concerns - assets view knows when to exit vs switch views
+- Minimal changes - only modify the assets view component
+- Consistent with how form handles exit (returns `tea.Quit` directly)
 
 ### 2. Files to Modify
 
-- **cmd/dca/main.go** - Modify the `Update()` method's `StateAssetsView` case to properly handle exit commands
-  - Change the `ViewTransitionMsg` handling to check if it's an exit command vs form-switch command
-  - Return `tea.Quit` for exit commands from asset list
+- **internal/assets/view.go** - Modify `Update()` method to differentiate exit vs form-switch actions
+  - Lines 27-43: Update message handling to return appropriate commands
+
+- **cmd/dca/main.go** - Simplify `StateAssetsView` case
+  - Lines 74-85: Remove the `ViewTransitionMsg` handling or keep for 'c' key support
 
 ### 3. Dependencies
 
 - No external dependencies required
-- Depends on existing `ViewTransitionMsg` type in `internal/assets/view.go`
-- Requires understanding of current state transition logic in `main.go`
+- Depends on understanding of current `ViewTransitionMsg` usage
+- Requires understanding of Bubble Tea message passing patterns
 
 ### 4. Code Patterns
 
 - Follow existing Bubble Tea message passing pattern
-- Use existing `ViewTransitionMsg` type but make the view field more explicit or add exit-specific logic
-- Maintain consistency with how form handles `tea.KeyCtrlC` and `tea.KeyEsc` (returns `tea.Quit`)
-- Keep error handling minimal for exit paths
+- Exit commands should return `tea.Quit` directly (as form does in `internal/form/model.go:37-39`)
+- View transition messages use `ViewTransitionMsg` for navigation between views
+- Keep test patterns consistent with existing tests in `internal/assets/view_test.go`
 
 ### 5. Testing Strategy
 
-- **Unit Tests**: Add/modify tests in `cmd/dca/main_test.go` to verify:
-  - Esc key from asset list returns `tea.Quit`
-  - Ctrl+C from asset list returns `tea.Quit`
-  - 'c' key from asset list still transitions to form view
-  - No data loss occurs (entries file unchanged on exit)
+- **Unit Tests**: Verify in `internal/assets/view_test.go`:
+  - `TestAssetsView_UpdateEscape` - should return `tea.Quit`
+  - `TestAssetsView_UpdateCtrlC` - should return `tea.Quit`
+  - `TestAssetsView_UpdateQuitMsg` - should return `tea.Quit`
+  - `TestAssetsView_UpdateKeyC` - should return `ViewTransitionMsg{View: "form"}`
 
-- **Existing Tests to Verify**:
-  - `internal/assets/view_test.go` already has tests for `UpdateEscape`, `UpdateCtrlC`, `UpdateQuitMsg`
-  - These tests verify `ViewTransitionMsg` is returned, which is correct at the component level
-  - Need integration tests at the main model level to verify actual quit behavior
+- **Integration Tests**: Verify in `cmd/dca/main_test.go`:
+  - Esc from asset list state returns `tea.Quit`
+  - Ctrl+C from asset list state returns `tea.Quit`
+  - 'c' from asset list state transitions to form state
 
-- **Test Approach**: Use the same pattern as `main_test.go` - create model, send key messages, verify `tea.Quit` cmd is returned
+- **Test Approach**: 
+  - Use existing test patterns from both test files
+  - Verify actual cmd return values match expected types
 
 ### 6. Risks and Considerations
 
-**Blocking Issue Identified**: The current code has a bug where Esc/Ctrl+C from asset list doesn't exit the app. This must be fixed.
+**Blocking Issue**: The current bug means users cannot exit from the asset list view without losing state.
 
 **Potential Pitfalls**:
-- The `ViewTransitionMsg{View: "form"}` is used by both 'c' key (correct) and exit handlers (incorrect)
-- Need to distinguish between "user pressed 'c' to open form" vs "user pressed Esc to exit"
+- Need to ensure 'c' key still works correctly after the fix
+- Existing tests in `view_test.go` verify `ViewTransitionMsg` but may need updates to verify `tea.Quit` instead
 
-**Trade-offs**:
-1. **Option A**: Add a new message type like `ExitRequestMsg` from assets view
-2. **Option B**: Modify `ViewTransitionMsg` to have an `Action` field (e.g., "form" vs "exit")
-3. **Option C**: Handle exit at the assets view level by returning `tea.Quit` directly
+**Trade-offs Considered**:
+1. **Option A**: Add new message type for exit - more verbose, requires more code changes
+2. **Option B**: Add action field to `ViewTransitionMsg` - adds complexity to existing pattern
+3. **Option C**: Return `tea.Quit` directly in assets view for exit - cleanest, minimal changes
 
-**Recommended Approach**: Option C - Have assets view return `tea.Quit` directly for exit commands, since that's the actual desired behavior. The 'c' key can still use `ViewTransitionMsg` for form transition.
+**Recommended**: Option C - simplest and most consistent with form component behavior
 
-**Deployment Considerations**: This is a bug fix, not a new feature. No special deployment steps required. Should be tested with actual app execution (`go run main.go`).
+**Deployment**: Bug fix only, no special deployment steps. Verify with `go run main.go` and manual testing of all exit paths.
 <!-- SECTION:PLAN:END -->
 
 ## Implementation Notes
