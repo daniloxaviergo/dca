@@ -5,7 +5,7 @@ status: To Do
 assignee:
   - Thomas
 created_date: '2026-03-17 20:22'
-updated_date: '2026-03-17 21:39'
+updated_date: '2026-03-17 21:59'
 labels: []
 dependencies: []
 references:
@@ -21,14 +21,14 @@ Fix row value formatting to ensure all values align with their column headers us
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 Header row values are left-aligned for text columns (Asset)
-- [ ] #2 Numeric columns are right-aligned
-- [ ] #3 All column values use fixed-width formatting with fmt.Sprintf
-- [ ] #4 Row values match header column width exactly
-- [ ] #5 Visual inspection confirms column alignment
-- [ ] #6 Unit tests verify alignment
-- [ ] #7 go fmt applied
-- [ ] #8 go build succeeds
+- [x] #1 Header row values are left-aligned for text columns (Asset)
+- [x] #2 Numeric columns are right-aligned
+- [x] #3 All column values use fixed-width formatting with fmt.Sprintf
+- [x] #4 Row values match header column width exactly
+- [x] #5 Visual inspection confirms column alignment
+- [x] #6 Unit tests verify alignment
+- [x] #7 go fmt applied
+- [x] #8 go build succeeds
 <!-- AC:END -->
 
 ## Implementation Plan
@@ -140,12 +140,49 @@ Run tests: `go test ./internal/assets/... -v`
 - Ensure columns are vertically aligned across all rows
 <!-- SECTION:PLAN:END -->
 
+## Final Summary
+
+<!-- SECTION:FINAL_SUMMARY:BEGIN -->
+Fix row value formatting to ensure all values align with column headers using fmt.Sprintf with width specifiers.
+
+## Changes Made
+
+### internal/assets/view.go
+- Updated `ColumnSharesWidth` from 12 to 14 (to accommodate "Total Shares" header + separator)
+- Updated `ColumnAvgPriceWidth` from 12 to 13 (to properly align "Avg Price" header)
+- Updated `ColumnTotalValueWidth` from 14 to 13 (corrected to match header + separator)
+- Updated comment for total table width calculation
+
+### internal/assets/view_test.go
+- Updated `TestColumnWidths_ConstantsDefined` to expect new column widths
+- Added `TestRenderHeaderRow_Alignment` to verify header alignment
+- Added `TestRenderDataRow_AlignmentWithHeader` to verify data row alignment
+- Added `TestRenderTable_ColumnAlignment` to verify headers and data rows align
+- Added `TestRenderDataRow_FieldWidths` to test various value lengths
+- Added helper function `renderHeaderRowForTest()` for testing header rendering
+- Added `fmt` import
+
+### Verification
+- All tests pass: `go test ./...` (5 packages)
+- Build succeeds: `go build -o dca cmd/dca`
+- No compiler warnings
+- go fmt applied (no formatting changes needed)
+
+## Alignment Details
+- Asset: 10 chars (left-aligned)
+- Count: 8 chars (right-aligned)
+- Total Shares: 14 chars (right-aligned with 8 decimals)
+- Avg Price: 13 chars (right-aligned with 2 decimals)
+- Total Value: 13 chars (right-aligned with 2 decimals)
+- Column separator: 2 spaces between columns
+<!-- SECTION:FINAL_SUMMARY:END -->
+
 ## Definition of Done
 <!-- DOD:BEGIN -->
-- [ ] #1 All acceptance criteria met
-- [ ] #2 Unit tests pass (go test)
-- [ ] #3 No new compiler warnings
-- [ ] #4 Code follows project style (go fmt)
+- [x] #1 All acceptance criteria met
+- [x] #2 Unit tests pass (go test)
+- [x] #3 No new compiler warnings
+- [x] #4 Code follows project style (go fmt)
 - [ ] #5 PRD referenced in task
 - [ ] #6 Documentation updated (comments)
 <!-- DOD:END -->
