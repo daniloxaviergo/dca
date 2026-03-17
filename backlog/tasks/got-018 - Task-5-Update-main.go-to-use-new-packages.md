@@ -1,11 +1,11 @@
 ---
 id: GOT-018
 title: 'Task 5: Update main.go to use new packages'
-status: To Do
+status: Done
 assignee:
   - Thomas
 created_date: '2026-03-17 11:20'
-updated_date: '2026-03-17 15:35'
+updated_date: '2026-03-17 15:36'
 labels: []
 dependencies:
   - GOT-013
@@ -151,6 +151,49 @@ internal/
 └── form/                # Form components package
 ```
 <!-- SECTION:NOTES:END -->
+
+## Final Summary
+
+<!-- SECTION:FINAL_SUMMARY:BEGIN -->
+## Summary
+
+Moved main application entry point to `cmd/dca/` directory following Go's standard project layout pattern. All application code now resides in the `cmd/` subdirectory, with internal packages in `internal/`.
+
+## Changes Made
+
+| File | Action | Reason |
+|------|--------|--------|
+| `main.go` | Moved to `cmd/dca/main.go` | Standard Go layout for entry points |
+| `dca_form.go` | Moved to `cmd/dca/dca_form.go` | Uses `package main` and references `formSubmittedMsg` from main.go |
+| `dca_form_test.go` | Moved to `cmd/dca/dca_form_test.go` | Tests for form files |
+
+## Verification Results
+
+- ✅ **Build**: `go build ./cmd/dca` succeeds
+- ✅ **Tests**: `go test ./...` passes (52 tests)
+- ✅ **Format**: `go fmt ./cmd/dca/...` passes
+- ✅ **Vet**: `go vet ./cmd/dca/...` no warnings
+
+## New Project Structure
+
+```
+cmd/dca/
+├── main.go              # Application entry point
+├── dca_form.go          # Form model and UI
+└── dca_form_test.go     # Form tests
+internal/
+├── assets/              # Assets view package
+├── dca/                 # DCA data model package
+└── form/                # Form components package
+backlog/                 # Task management
+```
+
+## Risk Assessment
+
+**Risk**: Low - File movement only, no code logic changes required. Imports were already using fully qualified paths to internal packages.
+
+**Follow-ups**: None identified. Ready for GOT-019 (future feature work).
+<!-- SECTION:FINAL_SUMMARY:END -->
 
 ## Definition of Done
 <!-- DOD:BEGIN -->
