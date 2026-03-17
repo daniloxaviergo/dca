@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - Thomas
 created_date: '2026-03-17 17:38'
-updated_date: '2026-03-17 20:03'
+updated_date: '2026-03-17 20:04'
 labels: []
 dependencies: []
 references:
@@ -26,9 +26,6 @@ Users can exit the application from the asset list view. Verify existing Esc/Ctr
 - [ ] #1 Esc key exits application
 - [ ] #2 Ctrl+C exits application
 - [ ] #3 No unsaved data loss (entries saved on form submit only)
-- [ ] #4 #1 Esc key exits application
-- [ ] #5 #2 Ctrl+C exits application
-- [ ] #6 #3 No unsaved data loss (entries saved on form submit only)
 <!-- AC:END -->
 
 ## Implementation Plan
@@ -179,10 +176,4 @@ The fix ensures that:
 - [ ] #4 Code follows project style (go fmt)
 - [ ] #5 PRD referenced in task
 - [ ] #6 Documentation updated (comments)
-- [ ] #7 #1 All acceptance criteria met
-- [ ] #8 #2 Unit tests pass (go test)
-- [ ] #9 #3 No new compiler warnings
-- [ ] #10 #4 Code follows project style (go fmt)
-- [ ] #11 #5 PRD referenced in task
-- [ ] #12 #6 Documentation updated (comments)
 <!-- DOD:END -->
