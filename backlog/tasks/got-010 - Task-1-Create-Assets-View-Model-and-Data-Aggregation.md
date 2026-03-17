@@ -5,7 +5,7 @@ status: To Do
 assignee:
   - Catarina
 created_date: '2026-03-17 00:42'
-updated_date: '2026-03-17 00:43'
+updated_date: '2026-03-17 00:45'
 labels: []
 dependencies: []
 references:
@@ -27,6 +27,127 @@ Create assets_view.go with AssetSummary struct, AssetsViewModel, and data aggreg
 - [ ] #4 Weighted average entry price calculated correctly
 - [ ] #5 Empty file handled gracefully
 <!-- AC:END -->
+
+## Implementation Plan
+
+<!-- SECTION:PLAN:BEGIN -->
+### 1. Technical Approach
+
+Create a new `assets_view.go` file implementing the data aggregation layer for asset summaries. The implementation will follow the existing patterns from `dca_form.go` and `dca_entry.go`:
+
+1. **AssetSummary struct**: Aggregate per-asset data (ticker, count, total shares, average price, total value)
+2. **AssetsViewModel**: Manages loaded and aggregated data with state for UI binding
+3. **Data aggregation logic**: Read from `dca_entries.json`, group by ticker, calculate metrics using existing helper functions
+
+Key design decisions:
+- Use existing `DCAData` and `DCAEntry` types (no structural changes)
+- Weighted average price = sum(amount) / sum(shares) per asset
+- 8-decimal precision for shares and price calculations
+- Empty entries map handled gracefully (returns empty slice, not error)
+
+### 2. Files to Modify
+
+**New file to create:**
+- `assets_view.go` - AssetSummary struct, AssetsViewModel, LoadAndAggregateEntries()
+
+**No existing files to modify for this task** (Task 1 only - data aggregation layer)
+
+**Dependencies:**
+- Existing `dca_entry.go` - DCAEntry, DCAData, LoadEntries() functions
+- Existing `dca_form.go` - CalculateSharesFromValues(), RoundTo8Decimals() patterns
+
+### 3. Dependencies
+
+**Prerequisites for implementation:**
+- [x] `dca_entry.go` with DCAData structure and LoadEntries() function (already exists)
+- [x] CalculateSharesFromValues() and RoundTo8Decimals() utility functions (already in dca_form.go)
+- [x] Existing test patterns from `dca_entry_test.go` and `dca_form_test.go`
+
+**No blocking issues** - all required data structures and I/O functions already exist.
+
+**Setup steps:**
+- None required - uses existing file I/O and data structures
+
+### 4. Code Patterns
+
+Follow existing project conventions from `dca_form.go` and `dca_entry.go`:
+
+**Struct patterns:**
+```go
+type AssetSummary struct {
+    Ticker      string
+    EntryCount  int
+    TotalShares float64
+    AvgPrice    float64
+    TotalValue  float64
+}
+
+type AssetsViewModel struct {
+    Entries     []AssetSummary
+    Error       error
+    SelectedIdx int
+}
+```
+
+**Validation patterns:**
+- Return descriptive error messages matching existing format
+- Handle nil/empty maps gracefully
+- Use existing `LoadEntries()` for file reading
+
+**Calculation patterns:**
+- Weighted average price: `sum(amounts) / sum(shares)`
+- Round to 8 decimals using existing `RoundTo8Decimals()`
+- Handle division by zero for empty asset groups
+
+**Naming conventions:**
+- Functions: `LoadAndAggregateEntries()`, `CalculateWeightedAverage()`
+- Structs: `AssetSummary`, `AssetsViewModel`
+- Methods: receiver names match type (e.g., `func (vm *AssetsViewModel) ...`)
+
+### 5. Testing Strategy
+
+Create `assets_view_test.go` with table-driven tests following existing patterns:
+
+**Test categories:**
+1. **LoadAndAggregateEntries_Populated**: Verify correct aggregation with known data
+2. **LoadAndAggregateEntries_EmptyFile**: Handle empty/missing file gracefully
+3. **LoadAndAggregateEntries_MultipleAssets**: Group multiple assets correctly
+4. **LoadAndAggregateEntries_MultipleEntries**: Sum shares and calculate weighted average
+5. **AssetSummary_CalculateWeightedAverage**: Edge cases (zero shares, single entry)
+6. **AssetsViewModel_Selection**: Selected index management (if applicable)
+
+**Test coverage:**
+- Zero entries → empty slice returned
+- Single asset with multiple entries → correct aggregation
+- Multiple assets → correct grouping
+- Weighted average calculation accuracy
+- 8-decimal precision maintained
+
+**Edge cases:**
+- Empty entries map in DCAData
+- Asset with zero shares (should not occur but handle gracefully)
+- Very large numbers (no overflow issues)
+- Division by zero in weighted average (return 0 or skip)
+
+### 6. Risks and Considerations
+
+**No significant risks identified** for Task 1:
+
+- Data structures already exist (DCAEntry, DCAData)
+- File I/O already implemented (LoadEntries in dca_entry.go)
+- Calculation logic is straightforward (sum, count, division)
+- No new external dependencies required
+
+**Design considerations:**
+- Weighted average formula: `sum(amounts) / sum(shares)` not `avg(prices)`
+- Shares from entries may have rounding; use stored values directly
+- PRD defines "Total Value" as sum of entry amounts (USD invested), not market value
+
+**Trade-offs:**
+- No sorting in Task 1 (deferred to Task 2 table UI)
+- No error UI in Task 1 (only set Error field for UI to handle)
+- No pagination (simple slice, acceptable for <1000 assets per PRD)
+<!-- SECTION:PLAN:END -->
 
 ## Definition of Done
 <!-- DOD:BEGIN -->
