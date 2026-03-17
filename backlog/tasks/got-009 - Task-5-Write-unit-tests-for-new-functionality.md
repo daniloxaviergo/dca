@@ -2,8 +2,10 @@
 id: GOT-009
 title: 'Task 5: Write unit tests for new functionality'
 status: To Do
-assignee: []
+assignee:
+  - Catarina
 created_date: '2026-03-16 21:26'
+updated_date: '2026-03-17 00:18'
 labels: []
 dependencies: []
 references:
