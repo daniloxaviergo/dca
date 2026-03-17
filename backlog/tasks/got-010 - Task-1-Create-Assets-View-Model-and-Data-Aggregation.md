@@ -5,7 +5,7 @@ status: To Do
 assignee:
   - Thomas
 created_date: '2026-03-17 00:42'
-updated_date: '2026-03-17 00:46'
+updated_date: '2026-03-17 00:57'
 labels: []
 dependencies: []
 references:
@@ -21,11 +21,11 @@ Create assets_view.go with AssetSummary struct, AssetsViewModel, and data aggreg
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 Entries loaded from dca_entries.json correctly
-- [ ] #2 Grouping by asset ticker works
-- [ ] #3 Sum of shares calculated per asset
-- [ ] #4 Weighted average entry price calculated correctly
-- [ ] #5 Empty file handled gracefully
+- [x] #1 Entries loaded from dca_entries.json correctly
+- [x] #2 Grouping by asset ticker works
+- [x] #3 Sum of shares calculated per asset
+- [x] #4 Weighted average entry price calculated correctly
+- [x] #5 Empty file handled gracefully
 <!-- AC:END -->
 
 ## Implementation Plan
@@ -151,10 +151,10 @@ Create `assets_view_test.go` with table-driven tests following existing patterns
 
 ## Definition of Done
 <!-- DOD:BEGIN -->
-- [ ] #1 All acceptance criteria met
-- [ ] #2 Unit tests pass (go test)
-- [ ] #3 No new compiler warnings
-- [ ] #4 Code follows project style (go fmt)
+- [x] #1 All acceptance criteria met
+- [x] #2 Unit tests pass (go test)
+- [x] #3 No new compiler warnings
+- [x] #4 Code follows project style (go fmt)
 - [ ] #5 PRD referenced in task
-- [ ] #6 Documentation updated (comments)
+- [x] #6 Documentation updated (comments)
 <!-- DOD:END -->
