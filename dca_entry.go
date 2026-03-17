@@ -12,11 +12,11 @@ import (
 
 // DCAEntry represents a single DCA investment entry
 type DCAEntry struct {
-	Amount         float64   `json:"amount"`
-	Date           time.Time `json:"date"`
-	Asset          string    `json:"asset"`
-	PricePerShare  float64   `json:"pricePerShare"`
-	Shares         float64   `json:"shares"`
+	Amount        float64   `json:"amount"`
+	Date          time.Time `json:"date"`
+	Asset         string    `json:"asset"`
+	PricePerShare float64   `json:"pricePerShare"`
+	Shares        float64   `json:"shares"`
 }
 
 // DCAData represents a collection of DCA entries keyed by asset ticker

@@ -2,104 +2,177 @@
 
 ## Project Overview
 
-This is a **task management and project planning workspace** using the [Backlog.md](https://backlog.com) MCP system. The project is named `dca` and is configured for agile software development workflow with structured task management, PRD creation, implementation planning, and task execution.
+This is a **Go command-line application** for tracking Dollar-Cost Averaging (DCA) investment entries. The application provides an interactive terminal UI built with Bubble Tea for entering investment data (amount, date, asset ticker, price per share) and automatically calculates the number of shares acquired.
 
 **Key Technologies:**
-- Backlog.md MCP (Model Context Protocol) server for task management
-- Local YAML-based configuration
-- Markdown-based task and documentation storage
-- Git-integrated workflow (auto-commit enabled)
+- **Language:** Go 1.25.7
+- **UI Framework:** Bubble Tea v1.3.10 (TUI framework)
+- **Styling:** Lipgloss v1.1.0 (terminal styling)
+- **Module:** `github.com/danilo/scripts/github/dca`
+
+**Project Type:** Personal investment tracking tool with atomic, file-based data persistence.
 
 ## Directory Structure
 
 ```
 /home/danilo/scripts/github/dca/
-├── .env                      # Environment variables (API keys)
-├── .qwen/                    # Qwen Code configuration
-│   ├── settings.json         # MCP server configuration
-│   ├── agents_current/       # Active agent profiles
-│   │   └── backlog-epic-manager.md
-│   └── commands/             # Agent command definitions
-│       ├── task.md           # Task creation/management
-│       ├── plan.md           # Implementation planning
-│       ├── prd.md            # Product requirements docs
-│       └── exec.md           # Task execution
+├── main.go              # Main application entry point with Bubble Tea program setup
+├── dca_entry.go         # Core data structures (DCAEntry, DCAData) and file I/O
+├── dca_form.go          # FormModel for interactive TUI with validation
+├── dca                  # Compiled binary (if built)
+├── *.go                 # Test files for all modules
+├── go.mod / go.sum      # Go module dependencies
+├── .env                 # Environment variables (API keys - not used by app)
 ```
 
-## MCP Commands Available
+## Data Model
 
-### Task Management (`/task`)
-- Search existing tasks using `task_search` or `task_list`
-- Create new tasks with full metadata (description, acceptance criteria, Definition of Done)
-- Edit task details (status, plan, notes, acceptance criteria)
-- View task details and progress
-- Break down large features into atomic tasks
-- **DO NOT implement tasks** - only create and structure them
+### DCAEntry Structure
+Represents a single investment entry:
 
-### Implementation Planning (`/plan`)
-- Research codebase for task requirements
-- Draft implementation plans covering:
-  - Technical approach and architecture
-  - Files to modify/create
-  - Dependencies and integration points
-  - Code patterns and conventions
-  - Testing strategy
-  - Risks and considerations
-- **DO NOT implement** - only plan and get approval first
+```json
+{
+  "amount": 500.0,
+  "date": "2025-01-01T00:00:00Z",
+  "asset": "BTC",
+  "pricePerShare": 65000.0,
+  "shares": 0.00769231
+}
+```
 
-### Product Requirements (`/prd`)
-- Create Product Requirements Documents (PRDs)
-- Structure PRDs with: Overview, Background, Requirements, Scope, Technical Considerations, Success Metrics, Timeline, Stakeholders
-- Use `document_create`, `document_update`, `document_view`, `document_search`
-- **DO NOT implement** - only define requirements
+**Fields:**
+- `amount` (float64): USD investment amount (must be positive)
+- `date` (time.Time): Investment date in RFC3339 format
+- `asset` (string): Asset ticker symbol (e.g., "BTC", "ETH")
+- `pricePerShare` (float64): Price per share at time of purchase (must be positive)
+- `shares` (float64): Calculated number of shares (8 decimal precision)
 
-### Task Execution (`/exec`)
-- Review task details and implementation plan
-- Implement approved plans in short loops (code → test → verify)
-- Log progress with `task_edit` (notesAppend)
-- Check off acceptance criteria as met
-- Finalize tasks with PR-style summary and Definition of Done verification
-- Update task status to "Done" when complete
+### DCAData Structure
+Map of asset tickers to arrays of entries:
+```json
+{
+  "entries": {
+    "BTC": [DCAEntry1, DCAEntry2, ...],
+    "ETH": [DCAEntry1, ...]
+  }
+}
+```
+
+## Building and Running
+
+### Build
+```bash
+go build -o dca
+```
+
+### Run (Development)
+```bash
+go run main.go
+```
+
+### Run (Compiled Binary)
+```bash
+./dca
+```
+
+### Test
+```bash
+go test ./...
+```
 
 ## Development Conventions
 
-### Quality Standards
-- **Atomic tasks:** Single PR scope
-- **Testable AC:** Outcome-focused, not implementation steps
-- **Independent tasks:** No future task dependencies
-- **Complete:** Sufficient detail for AI agents to implement
-- **Verified:** All tests pass before marking complete
+### Code Style
+- **Formatting:** Standard Go formatting (`go fmt`)
+- **Error Handling:** Explicit error returns with descriptive messages
+- **Validation:** Input validation at form level and data model level
+- **Testing:** Comprehensive test coverage with TDD approach
 
-### Testing
-- Run relevant test suites before finalizing tasks
-- Check for regressions
-- Verify build success
-- No new warnings introduced
+### Key Functions
 
-## Key Principles
+#### dca_entry.go
+- `LoadEntries(filename string) (*DCAData, error)`: Load entries from JSON file with graceful error handling
+- `SaveEntries(filename string, data *DCAData) error`: Atomic write with temp file + rename pattern
+- `DCAEntry.Validate() error`: Validates amount/price are positive, shares are finite
+- `DCAEntry.CalculateShares() float64`: Computes shares with 8-decimal rounding
 
-1. **Search first:** Always check for existing work before creating new tasks
-2. **Plan before code:** Implementation plans must be approved before coding
-3. **Track everything:** All work documented in backlog tasks
-4. **Test-driven:** Acceptance criteria verified before completion
-5. **Atomic changes:** Each task delivers value independently
+#### dca_form.go
+- `FormModel`: Bubble Tea model managing form state and navigation
+- `StepAmount → StepDone`: 6-step form with validation
+- `validateAmount/Date/Asset/Price`: Field-level validation with exact error messages
+- `CalculateSharesFromValues(amount, price float64) float64`: Helper for share calculation
+- `RoundTo8Decimals(val float64) float64`: Precision helper
 
-## Useful Commands
+### Testing Practices
+- **Table-driven tests** for validation functions
+- **Temp file tests** with cleanup for file I/O
+- **Exact error message** assertions for user-facing messages
+- **Edge case coverage:** empty values, negative numbers, zero, invalid formats
 
-```bash
-# Backlog MCP commands (via Qwen tools)
-backlog mcp start
-backlog config
-backlog task list
-backlog task create --title "..." --description "..." --acceptance-criteria "..."
+### UI Conventions (Bubble Tea)
+- **Rounded borders** using lipgloss
+- **Color-coded fields:** Active field highlighted in blue (color 63)
+- **Error display:** ❌ prefix with error message
+- **Navigation:** Arrow keys (←/→) for field selection, Enter to proceed
+- **Exit:** Ctrl+C or Esc to quit without saving
 
-# Standard project commands
-git status
-git log -n 3
-```
+## Backlog.md MCP Integration
+
+This project uses **Backlog.md** for task management via MCP:
+
+**Available MCP Commands:**
+- Task management: create, list, search, edit, view, complete, archive
+- Documents: create, update, view, search
+- Milestones: list, add, rename, remove, archive
+- Definition of Done: get, upsert
+
+**Definition of Done:**
+1. All acceptance criteria met
+2. Unit tests pass (`go test`)
+3. No new compiler warnings
+4. Code follows project style (`go fmt`)
+5. PRD referenced in task
+6. Documentation updated (comments)
+
+## User Workflow
+
+1. **Start Application:** `./dca`
+2. **Enter Investment Data:**
+   - Amount (USD)
+   - Date (YYYY-MM-DDTHH:MM:SSZ)
+   - Asset Ticker
+   - Price per Share
+   - Shares (auto-calculated)
+   - Confirm (y/n)
+3. **Data Saved:** Entry saved to `dca_entries.json` atomically
+4. **Exit:** Ctrl+C to quit (after submission)
+
+## File I/O
+
+- **Default File:** `dca_entries.json` (current directory)
+- **Format:** JSON with 2-space indentation
+- **Safety:** Atomic writes using temp file + rename pattern
+- **Error Handling:** Permission errors, missing files, invalid JSON all handled gracefully
+
+## Common Tasks
+
+### Adding a New Test
+1. Create test file (e.g., `dca_entry_test.go`)
+2. Test functions: `Test{FunctionName}_{Condition}`
+3. Test exact error messages for validation functions
+4. Use temp files with cleanup for file I/O tests
+
+### Modifying Form Fields
+1. Update `FormStep` enum
+2. Update `FormField` in `NewFormModel`
+3. Add validation in corresponding `handleEnter` case
+4. Update `renderForm` field configuration
 
 ## Notes for AI Agents
 
-- The `/task`, `/plan`, `/prd`, and `/exec` commands are MCP tools that map to Backlog.md
-- **Always read task details before working** on a task
-- **Update task status and progress** in real-time during implementation
+- **This is a CLI app** - no web server, no network calls
+- **Test rigorously** - validation functions need exact error message tests
+- **Follow existing patterns** - match function naming and test structure
+- **UI changes** require Bubble Tea model updates and lipgloss styling
+- **Data persistence** uses atomic write pattern for safety
+- **8-decimal precision** is critical for financial calculations

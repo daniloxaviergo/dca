@@ -11,30 +11,97 @@ import (
 // Default path for DCA entries JSON file
 const defaultEntriesPath = "dca_entries.json"
 
-type model struct {
-	form   *FormModel
-	entries *DCAData
+// AppState represents the current view state of the application
+type AppState int
+
+const (
+	StateForm AppState = iota
+	StateAssetsView
+)
+
+// viewTransitionMsg is a custom message for switching between views
+type viewTransitionMsg struct {
+	view string
 }
 
+// formSubmittedMsg is sent when the form is successfully submitted
+type formSubmittedMsg struct{}
+
+type model struct {
+	form         *FormModel
+	assetsView   *AssetsView
+	entries      *DCAData
+	currentState AppState
+}
+
+// Init initializes the model
 func (m model) Init() tea.Cmd {
-	if m.form != nil {
+	if m.currentState == StateForm && m.form != nil {
 		return m.form.Init()
+	}
+	if m.currentState == StateAssetsView && m.assetsView != nil {
+		return m.assetsView.Init()
 	}
 	return nil
 }
 
+// Update handles state transitions and delegates to current view
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
-	if m.form != nil {
-		newForm, cmd := m.form.Update(msg)
-		m.form = newForm.(*FormModel)
-		return m, cmd
+	switch m.currentState {
+	case StateForm:
+		if m.form != nil {
+			newForm, cmd := m.form.Update(msg)
+			m.form = newForm.(*FormModel)
+			// Check for form submission or view transition from form
+			if _, ok := msg.(formSubmittedMsg); ok {
+				// After form submission, switch to assets view
+				m.currentState = StateAssetsView
+				m.assetsView = NewAssetsView()
+				// Load data into assets view
+				vm, err := LoadAndAggregateEntries(defaultEntriesPath)
+				if err != nil {
+					m.assetsView.Error = err
+				} else {
+					m.assetsView.Entries = vm.Entries
+					m.assetsView.Loaded = true
+				}
+				return m, nil
+			}
+			if _, ok := msg.(viewTransitionMsg); ok {
+				// Handle view transition from form (e.g., Ctrl+C during form)
+				return m, tea.Quit
+			}
+			return m, cmd
+		}
+
+	case StateAssetsView:
+		if m.assetsView != nil {
+			newAssetsView, cmd := m.assetsView.Update(msg)
+			m.assetsView = newAssetsView.(*AssetsView)
+			// On exit (Esc/Ctrl+C), switch back to form
+			if _, ok := msg.(viewTransitionMsg); ok {
+				m.currentState = StateForm
+				m.form = NewFormModel(m.entries, defaultEntriesPath)
+				return m, nil
+			}
+			return m, cmd
+		}
 	}
+
 	return m, nil
 }
 
+// View renders the current state
 func (m model) View() string {
-	if m.form != nil {
-		return m.form.View()
+	switch m.currentState {
+	case StateForm:
+		if m.form != nil {
+			return m.form.View()
+		}
+	case StateAssetsView:
+		if m.assetsView != nil {
+			return m.assetsView.View()
+		}
 	}
 	return "Loading..."
 }
@@ -56,11 +123,18 @@ func main() {
 		os.Exit(1)
 	}
 
-	// Create form model
+	// Create form model and initialize with entries
 	form := NewFormModel(entries, defaultEntriesPath)
 
+	// Create initial model with form state
+	m := model{
+		form:         form,
+		entries:      entries,
+		currentState: StateForm,
+	}
+
 	// Run the program
-	p := tea.NewProgram(model{form: form, entries: entries})
+	p := tea.NewProgram(m)
 	if _, err := p.Run(); err != nil {
 		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 		os.Exit(1)

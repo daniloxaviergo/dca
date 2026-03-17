@@ -160,7 +160,7 @@ func TestCalculateSharesFromValues(t *testing.T) {
 	}{
 		{amount: 100, price: 50, want: 2.0},
 		{amount: 100, price: 33.33333333, want: 3.0}, // 8 decimal precision
-		{amount: 100, price: 0, want: 0},              // division by zero
+		{amount: 100, price: 0, want: 0},             // division by zero
 	}
 
 	for _, tt := range tests {

@@ -13,11 +13,11 @@ import (
 // TestDCAEntryValidate_Pass validates a correct DCAEntry
 func TestDCAEntryValidate_Pass(t *testing.T) {
 	entry := DCAEntry{
-		Amount:         500.0,
-		PricePerShare:  65000.0,
-		Asset:          "BTC",
-		Date:           time.Now(),
-		Shares:         0,
+		Amount:        500.0,
+		PricePerShare: 65000.0,
+		Asset:         "BTC",
+		Date:          time.Now(),
+		Shares:        0,
 	}
 
 	if err := entry.Validate(); err != nil {
@@ -28,11 +28,11 @@ func TestDCAEntryValidate_Pass(t *testing.T) {
 // TestDCAEntryValidate_ZeroAmount rejects Amount = 0
 func TestDCAEntryValidate_ZeroAmount(t *testing.T) {
 	entry := DCAEntry{
-		Amount:         0,
-		PricePerShare:  65000.0,
-		Asset:          "BTC",
-		Date:           time.Now(),
-		Shares:         0,
+		Amount:        0,
+		PricePerShare: 65000.0,
+		Asset:         "BTC",
+		Date:          time.Now(),
+		Shares:        0,
 	}
 
 	err := entry.Validate()
@@ -47,11 +47,11 @@ func TestDCAEntryValidate_ZeroAmount(t *testing.T) {
 // TestDCAEntryValidate_NegativeAmount rejects Amount < 0
 func TestDCAEntryValidate_NegativeAmount(t *testing.T) {
 	entry := DCAEntry{
-		Amount:         -100.0,
-		PricePerShare:  65000.0,
-		Asset:          "BTC",
-		Date:           time.Now(),
-		Shares:         0,
+		Amount:        -100.0,
+		PricePerShare: 65000.0,
+		Asset:         "BTC",
+		Date:          time.Now(),
+		Shares:        0,
 	}
 
 	err := entry.Validate()
@@ -66,11 +66,11 @@ func TestDCAEntryValidate_NegativeAmount(t *testing.T) {
 // TestDCAEntryValidate_ZeroPrice rejects PricePerShare = 0
 func TestDCAEntryValidate_ZeroPrice(t *testing.T) {
 	entry := DCAEntry{
-		Amount:         500.0,
-		PricePerShare:  0,
-		Asset:          "BTC",
-		Date:           time.Now(),
-		Shares:         0,
+		Amount:        500.0,
+		PricePerShare: 0,
+		Asset:         "BTC",
+		Date:          time.Now(),
+		Shares:        0,
 	}
 
 	err := entry.Validate()
@@ -85,11 +85,11 @@ func TestDCAEntryValidate_ZeroPrice(t *testing.T) {
 // TestDCAEntryValidate_NegativePrice rejects PricePerShare < 0
 func TestDCAEntryValidate_NegativePrice(t *testing.T) {
 	entry := DCAEntry{
-		Amount:         500.0,
-		PricePerShare:  -500.0,
-		Asset:          "BTC",
-		Date:           time.Now(),
-		Shares:         0,
+		Amount:        500.0,
+		PricePerShare: -500.0,
+		Asset:         "BTC",
+		Date:          time.Now(),
+		Shares:        0,
 	}
 
 	err := entry.Validate()

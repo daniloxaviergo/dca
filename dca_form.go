@@ -125,7 +125,9 @@ func (m *FormModel) handleEnter() (tea.Model, tea.Cmd) {
 		}
 		m.Submitted = true
 		m.Step = StepDone
-		return m, tea.Quit
+		return m, func() tea.Msg {
+			return formSubmittedMsg{}
+		}
 	}
 
 	return m, nil

@@ -1,0 +1,13 @@
+{
+  "entries": {
+    "BTC": [
+      {
+        "amount": 100,
+        "date": "2026-03-17T08:06:34-03:00",
+        "asset": "BTC",
+        "pricePerShare": 65000,
+        "shares": 0.00153846
+      }
+    ]
+  }
+}
