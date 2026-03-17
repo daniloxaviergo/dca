@@ -5,7 +5,7 @@ status: To Do
 assignee:
   - Thomas
 created_date: '2026-03-17 17:38'
-updated_date: '2026-03-17 18:04'
+updated_date: '2026-03-17 18:06'
 labels: []
 dependencies:
   - GOT-022
@@ -230,24 +230,4 @@ None - minimal change, reuses existing transition mechanism.
 - [x] #2 Unit tests pass (go test)
 - [x] #3 No new compiler warnings
 - [x] #4 Code follows project style (go fmt)
-- [ ] #5 PRD referenced in task
-- [ ] #6 Documentation updated (comments)
-- [ ] #7 All acceptance criteria met
-- [ ] #8 Unit tests pass (go test)
-- [ ] #9 No new compiler warnings
-- [ ] #10 Code follows project style (go fmt)
-- [ ] #11 PRD referenced in task
-- [ ] #12 Documentation updated (comments)
-- [ ] #13 All acceptance criteria met
-- [ ] #14 Unit tests pass (go test)
-- [ ] #15 No new compiler warnings
-- [ ] #16 Code follows project style (go fmt)
-- [ ] #17 PRD referenced in task
-- [ ] #18 Documentation updated (comments)
-- [ ] #19 #1 All acceptance criteria met
-- [ ] #20 #2 Unit tests pass (go test)
-- [ ] #21 #3 No new compiler warnings
-- [ ] #22 #4 Code follows project style (go fmt)
-- [ ] #23 #5 PRD referenced in task
-- [ ] #24 #6 Documentation updated (comments)
 <!-- DOD:END -->
