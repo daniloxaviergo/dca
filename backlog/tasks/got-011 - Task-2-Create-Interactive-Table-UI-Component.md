@@ -10,7 +10,7 @@ dependencies: []
 references:
   - 'PRD: DCA Assets List Table View'
 priority: high
-ordinal: 6500
+ordinal: 5500
 ---
 
 ## Description
