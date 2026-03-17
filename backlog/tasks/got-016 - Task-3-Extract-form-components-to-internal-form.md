@@ -29,6 +29,7 @@ Move dca_form.go content to new package
 - [ ] #4 Package declaration changed to 'form'
 - [ ] #5 All tests pass
 - [ ] #6 #1 internal/form/model.go created with FormModel and related types
+- [ ] #7 #2 internal/form/validation.go created with validation functions
 <!-- AC:END -->
 
 ## Implementation Plan
