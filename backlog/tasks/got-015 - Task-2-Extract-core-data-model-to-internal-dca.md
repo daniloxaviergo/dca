@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - Thomas
 created_date: '2026-03-17 11:20'
-updated_date: '2026-03-17 11:33'
+updated_date: '2026-03-17 11:34'
 labels: []
 dependencies:
   - GOT-013
@@ -153,6 +153,12 @@ go fmt ./...
 - Application behavior unchanged.
 - Data file format (`dca_entries.json`) unchanged.
 <!-- SECTION:PLAN:END -->
+
+## Implementation Notes
+
+<!-- SECTION:NOTES:BEGIN -->
+Started implementation. Creating internal/dca/entry.go with core data model functions and types.
+<!-- SECTION:NOTES:END -->
 
 ## Definition of Done
 <!-- DOD:BEGIN -->
