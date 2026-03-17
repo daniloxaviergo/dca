@@ -1,11 +1,11 @@
 ---
 id: GOT-026
 title: 'Task 1: Define Fixed Column Widths'
-status: To Do
+status: Done
 assignee:
   - Thomas
 created_date: '2026-03-17 20:22'
-updated_date: '2026-03-17 20:42'
+updated_date: '2026-03-17 20:48'
 labels: []
 dependencies: []
 references:
@@ -17,6 +17,8 @@ priority: high
 
 <!-- SECTION:DESCRIPTION:BEGIN -->
 Define explicit column widths for the Assets View table to ensure 100% width coverage and consistent column sizing across all terminals.
+
+PRD Reference: [backlog/docs/doc-006.md](backlog/docs/doc-006.md)
 <!-- SECTION:DESCRIPTION:END -->
 
 ## Acceptance Criteria
@@ -202,6 +204,6 @@ Task description now references backlog/docs/doc-006.md (PRD: Fix Assets View Ta
 - [x] #2 Unit tests pass (go test)
 - [x] #3 No new compiler warnings
 - [x] #4 Code follows project style (go fmt)
-- [ ] #5 PRD referenced in task
+- [x] #5 PRD referenced in task
 - [x] #6 Documentation updated (comments)
 <!-- DOD:END -->
