@@ -2,10 +2,9 @@
 id: GOT-025
 title: 'Task 4: Exit from asset list'
 status: In Progress
-assignee:
-  - Catarina
+assignee: []
 created_date: '2026-03-17 17:38'
-updated_date: '2026-03-17 19:59'
+updated_date: '2026-03-17 20:01'
 labels: []
 dependencies: []
 references:
