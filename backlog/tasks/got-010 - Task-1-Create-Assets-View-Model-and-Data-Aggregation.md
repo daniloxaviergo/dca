@@ -1,11 +1,11 @@
 ---
 id: GOT-010
 title: 'Task 1: Create Assets View Model and Data Aggregation'
-status: To Do
+status: Done
 assignee:
   - Thomas
 created_date: '2026-03-17 00:42'
-updated_date: '2026-03-17 00:58'
+updated_date: '2026-03-17 01:01'
 labels: []
 dependencies: []
 references:
