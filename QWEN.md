@@ -23,6 +23,24 @@ This is a **Go command-line application** for tracking Dollar-Cost Averaging (DC
 ├── *.go                 # Test files for all modules
 ├── go.mod / go.sum      # Go module dependencies
 ├── .env                 # Environment variables (API keys - not used by app)
+├── backlog/             # Backlog.md MCP task management
+├── cmd/
+│   └── dca/             # Main application code
+│       ├── main.go      # Application entry point
+│       ├── dca_form.go  # Form model and UI
+│       └── dca_form_test.go
+└── internal/
+    ├── dca/             # Core data model and I/O
+    │   ├── entry.go     # DCAEntry, DCAData, file I/O
+    │   └── file.go      # LoadEntries, SaveEntries
+    ├── form/            # Form UI and validation
+    │   ├── model.go     # FormModel state management
+    │   ├── validation.go # Field validation
+    │   └── validation_test.go
+    └── assets/          # Asset aggregation and view
+        ├── aggregate.go # Data aggregation logic
+        ├── view.go      # AssetsView UI component
+        └── view_test.go
 ```
 
 ## Data Model
@@ -90,24 +108,36 @@ go test ./...
 
 ### Key Functions
 
-#### dca_entry.go
+#### dca_entry.go / internal/dca/entry.go
 - `LoadEntries(filename string) (*DCAData, error)`: Load entries from JSON file with graceful error handling
 - `SaveEntries(filename string, data *DCAData) error`: Atomic write with temp file + rename pattern
 - `DCAEntry.Validate() error`: Validates amount/price are positive, shares are finite
 - `DCAEntry.CalculateShares() float64`: Computes shares with 8-decimal rounding
 
-#### dca_form.go
+#### internal/form/validation.go
+- `validateAmount(value string) error`: Validates amount is a positive number
+- `validateDate(value string) error`: Validates date in RFC3339 format
+- `validateAsset(value string) error`: Validates asset ticker is non-empty
+- `validatePrice(value string) error`: Validates price is a positive number
+
+#### internal/form/model.go
 - `FormModel`: Bubble Tea model managing form state and navigation
-- `StepAmount → StepDone`: 6-step form with validation
+- `FormStep` enum: StepAmount → StepDate → StepAsset → StepPrice → StepShares → StepConfirm → StepDone
 - `validateAmount/Date/Asset/Price`: Field-level validation with exact error messages
 - `CalculateSharesFromValues(amount, price float64) float64`: Helper for share calculation
 - `RoundTo8Decimals(val float64) float64`: Precision helper
+
+#### internal/assets/aggregate.go
+- `LoadAndAggregateEntries(filename string) (*AssetsViewModel, error)`: Loads and aggregates entries by asset
+- `RoundTo8Decimals(val float64) float64`: Rounds to 8 decimal places
+- `CalculateWeightedAverage(totalAmount, totalShares float64) float64`: Weighted average price
 
 ### Testing Practices
 - **Table-driven tests** for validation functions
 - **Temp file tests** with cleanup for file I/O
 - **Exact error message** assertions for user-facing messages
 - **Edge case coverage:** empty values, negative numbers, zero, invalid formats
+- **Test naming:** `Test{Function}_{Condition}` pattern
 
 ### UI Conventions (Bubble Tea)
 - **Rounded borders** using lipgloss
