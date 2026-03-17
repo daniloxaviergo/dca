@@ -5,7 +5,7 @@ status: To Do
 assignee:
   - Thomas
 created_date: '2026-03-17 11:20'
-updated_date: '2026-03-17 15:29'
+updated_date: '2026-03-17 15:34'
 labels: []
 dependencies:
   - GOT-013
@@ -26,11 +26,11 @@ Move main.go to cmd/ and update imports
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 main.go moved to cmd/dca/main.go
-- [ ] #2 Import statements added for internal packages
-- [ ] #3 All references updated to use fully qualified names
-- [ ] #4 Application behavior unchanged
-- [ ] #5 All tests pass
+- [x] #1 main.go moved to cmd/dca/main.go
+- [x] #2 Import statements added for internal packages
+- [x] #3 All references updated to use fully qualified names
+- [x] #4 Application behavior unchanged
+- [x] #5 All tests pass
 <!-- AC:END -->
 
 ## Implementation Plan
