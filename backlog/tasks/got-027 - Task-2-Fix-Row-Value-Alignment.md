@@ -2,7 +2,8 @@
 id: GOT-027
 title: 'Task 2: Fix Row Value Alignment'
 status: To Do
-assignee: []
+assignee:
+  - Thomas
 created_date: '2026-03-17 20:22'
 updated_date: '2026-03-17 21:39'
 labels: []
