@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"runtime/debug"
 
 	"github.com/charmbracelet/bubbletea"
 )
@@ -39,6 +40,15 @@ func (m model) View() string {
 }
 
 func main() {
+	// Panic recovery wrapper for the entire application
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Fprintf(os.Stderr, "Panic recovered: %v\n", r)
+			fmt.Fprintf(os.Stderr, "Stack trace:\n%s\n", debug.Stack())
+			os.Exit(1)
+		}
+	}()
+
 	// Load existing entries
 	entries, err := LoadEntries(defaultEntriesPath)
 	if err != nil {

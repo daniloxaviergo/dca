@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"math"
 	"strconv"
 	"strings"
 	"time"
@@ -188,14 +189,14 @@ func (m *FormModel) getFieldFloat64(key string) float64 {
 // validateAmount validates that the amount is a positive number
 func (m *FormModel) validateAmount(value string) error {
 	if value == "" {
-		return fmt.Errorf("amount is required")
+		return fmt.Errorf("Amount must be positive")
 	}
 	val, err := strconv.ParseFloat(value, 64)
 	if err != nil {
-		return fmt.Errorf("amount must be a positive number: %v", err)
+		return fmt.Errorf("Amount must be positive")
 	}
 	if val <= 0 {
-		return fmt.Errorf("amount must be greater than 0")
+		return fmt.Errorf("Amount must be positive")
 	}
 	return nil
 }
@@ -203,11 +204,11 @@ func (m *FormModel) validateAmount(value string) error {
 // validateDate validates that the date is in RFC3339 format
 func (m *FormModel) validateDate(value string) error {
 	if value == "" {
-		return fmt.Errorf("date is required")
+		return fmt.Errorf("Use YYYY-MM-DD")
 	}
 	_, err := time.Parse(time.RFC3339, value)
 	if err != nil {
-		return fmt.Errorf("date must be in RFC3339 format (e.g., 2024-01-15T10:30:00Z): %v", err)
+		return fmt.Errorf("Use YYYY-MM-DD")
 	}
 	return nil
 }
@@ -215,10 +216,10 @@ func (m *FormModel) validateDate(value string) error {
 // validateAsset validates that the asset ticker is non-empty
 func (m *FormModel) validateAsset(value string) error {
 	if value == "" {
-		return fmt.Errorf("asset ticker is required")
+		return fmt.Errorf("Asset ticker is required")
 	}
 	if strings.TrimSpace(value) == "" {
-		return fmt.Errorf("asset ticker cannot be empty or whitespace")
+		return fmt.Errorf("Asset ticker is required")
 	}
 	return nil
 }
@@ -226,14 +227,14 @@ func (m *FormModel) validateAsset(value string) error {
 // validatePrice validates that the price is a positive number
 func (m *FormModel) validatePrice(value string) error {
 	if value == "" {
-		return fmt.Errorf("price per share is required")
+		return fmt.Errorf("Price must be positive")
 	}
 	val, err := strconv.ParseFloat(value, 64)
 	if err != nil {
-		return fmt.Errorf("price must be a positive number: %v", err)
+		return fmt.Errorf("Price must be positive")
 	}
 	if val <= 0 {
-		return fmt.Errorf("price per share must be greater than 0")
+		return fmt.Errorf("Price must be positive")
 	}
 	return nil
 }
@@ -287,6 +288,10 @@ func CalculateSharesFromValues(amount, price float64) float64 {
 		return 0
 	}
 	shares := amount / price
+	// Validate shares is a finite number
+	if math.IsNaN(shares) || math.IsInf(shares, 0) {
+		return 0
+	}
 	return RoundTo8Decimals(shares)
 }
 

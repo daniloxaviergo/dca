@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"strings"
 	"testing"
 )
@@ -25,8 +26,8 @@ func TestFormModel_ValidateAmount_RejectZero(t *testing.T) {
 	if err == nil {
 		t.Error("Expected zero amount to fail validation")
 	}
-	if !strings.Contains(err.Error(), "greater than 0") {
-		t.Errorf("Expected error message to mention 'greater than 0', got: %v", err)
+	if err.Error() != "Amount must be positive" {
+		t.Errorf("Expected exact error message 'Amount must be positive', got: %v", err)
 	}
 }
 
@@ -310,5 +311,113 @@ func TestFormModel_RenderForm(t *testing.T) {
 	// Check for key elements
 	if !strings.Contains(view, "Enter DCA Entry") {
 		t.Error("Expected header 'Enter DCA Entry' in view")
+	}
+}
+
+// TestFormModel_ValidateAmount_ExactErrorMessage tests exact error message format
+func TestFormModel_ValidateAmount_ExactErrorMessage(t *testing.T) {
+	entries := &DCAData{Entries: make(map[string][]DCAEntry)}
+	form := NewFormModel(entries, "test.json")
+	form.Fields["amount"].Value = "0"
+
+	err := form.validateAmount(form.Fields["amount"].Value)
+	if err == nil {
+		t.Error("Expected zero amount to fail validation")
+	}
+	if err.Error() != "Amount must be positive" {
+		t.Errorf("Expected exact error message 'Amount must be positive', got: %v", err)
+	}
+}
+
+// TestFormModel_ValidateAmount_NegativeExactErrorMessage tests exact error message for negative
+func TestFormModel_ValidateAmount_NegativeExactErrorMessage(t *testing.T) {
+	entries := &DCAData{Entries: make(map[string][]DCAEntry)}
+	form := NewFormModel(entries, "test.json")
+	form.Fields["amount"].Value = "-100"
+
+	err := form.validateAmount(form.Fields["amount"].Value)
+	if err == nil {
+		t.Error("Expected negative amount to fail validation")
+	}
+	if err.Error() != "Amount must be positive" {
+		t.Errorf("Expected exact error message 'Amount must be positive', got: %v", err)
+	}
+}
+
+// TestFormModel_ValidateDate_ExactErrorMessage tests exact error message format with YYYY-MM-DD
+func TestFormModel_ValidateDate_ExactErrorMessage(t *testing.T) {
+	entries := &DCAData{Entries: make(map[string][]DCAEntry)}
+	form := NewFormModel(entries, "test.json")
+	form.Fields["date"].Value = "invalid-date"
+
+	err := form.validateDate(form.Fields["date"].Value)
+	if err == nil {
+		t.Error("Expected invalid date to fail validation")
+	}
+	if err.Error() != "Use YYYY-MM-DD" {
+		t.Errorf("Expected exact error message 'Use YYYY-MM-DD', got: %v", err)
+	}
+}
+
+// TestFormModel_ValidateAsset_ExactErrorMessage tests exact error message format
+func TestFormModel_ValidateAsset_ExactErrorMessage(t *testing.T) {
+	entries := &DCAData{Entries: make(map[string][]DCAEntry)}
+	form := NewFormModel(entries, "test.json")
+	form.Fields["asset"].Value = ""
+
+	err := form.validateAsset(form.Fields["asset"].Value)
+	if err == nil {
+		t.Error("Expected empty asset to fail validation")
+	}
+	if err.Error() != "Asset ticker is required" {
+		t.Errorf("Expected exact error message 'Asset ticker is required', got: %v", err)
+	}
+}
+
+// TestFormModel_ValidatePrice_ExactErrorMessage tests exact error message format
+func TestFormModel_ValidatePrice_ExactErrorMessage(t *testing.T) {
+	entries := &DCAData{Entries: make(map[string][]DCAEntry)}
+	form := NewFormModel(entries, "test.json")
+	form.Fields["price"].Value = "0"
+
+	err := form.validatePrice(form.Fields["price"].Value)
+	if err == nil {
+		t.Error("Expected zero price to fail validation")
+	}
+	if err.Error() != "Price must be positive" {
+		t.Errorf("Expected exact error message 'Price must be positive', got: %v", err)
+	}
+}
+
+// TestFormModel_ValidatePrice_NegativeExactErrorMessage tests exact error message for negative
+func TestFormModel_ValidatePrice_NegativeExactErrorMessage(t *testing.T) {
+	entries := &DCAData{Entries: make(map[string][]DCAEntry)}
+	form := NewFormModel(entries, "test.json")
+	form.Fields["price"].Value = "-50"
+
+	err := form.validatePrice(form.Fields["price"].Value)
+	if err == nil {
+		t.Error("Expected negative price to fail validation")
+	}
+	if err.Error() != "Price must be positive" {
+		t.Errorf("Expected exact error message 'Price must be positive', got: %v", err)
+	}
+}
+
+// TestFormModel_InlineErrorDisplay tests error display with inline error
+func TestFormModel_InlineErrorDisplay(t *testing.T) {
+	entries := &DCAData{Entries: make(map[string][]DCAEntry)}
+	form := NewFormModel(entries, "test.json")
+	form.Fields["amount"].Value = "0"
+	form.Fields["amount"].Error = fmt.Errorf("Amount must be positive")
+
+	view := form.View()
+
+	// Check that error is displayed in the view
+	if !strings.Contains(view, "❌") {
+		t.Errorf("Expected ❌ error indicator in view, got: %s", view)
+	}
+	if !strings.Contains(view, "Amount must be positive") {
+		t.Errorf("Expected error message in view, got: %s", view)
 	}
 }

@@ -3,8 +3,10 @@ package main
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"math"
 	"os"
+	"path/filepath"
 	"time"
 )
 
@@ -33,6 +35,13 @@ func LoadEntries(filename string) (*DCAData, error) {
 		if errors.Is(err, os.ErrNotExist) {
 			return data, nil
 		}
+		// Handle permission errors with user-friendly message
+		var pathErr *os.PathError
+		if errors.As(err, &pathErr) {
+			if os.IsPermission(err) {
+				return nil, fmt.Errorf("Permission denied: check file permissions")
+			}
+		}
 		return nil, err
 	}
 
@@ -41,29 +50,79 @@ func LoadEntries(filename string) (*DCAData, error) {
 	}
 
 	if err := json.Unmarshal(file, data); err != nil {
-		return nil, err
+		// Handle JSON parse errors gracefully with diagnostic message
+		var jsonErr *json.SyntaxError
+		if errors.As(err, &jsonErr) {
+			return nil, fmt.Errorf("JSON parse error at byte %d: invalid data format", jsonErr.Offset)
+		}
+		return nil, fmt.Errorf("JSON parse error: %v", err)
 	}
 
 	return data, nil
 }
 
-// SaveEntries writes DCA entries to a JSON file with 2-space indentation
+// SaveEntries writes DCA entries to a JSON file with 2-space indentation using atomic write
 func SaveEntries(filename string, data *DCAData) error {
-	file, err := json.MarshalIndent(data, "", "  ")
+	// 1. Marshal JSON
+	fileBytes, err := json.MarshalIndent(data, "", "  ")
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to serialize data: %v", err)
 	}
 
-	return os.WriteFile(filename, file, 0644)
+	// 2. Create temp file in same directory
+	tmpfile, err := os.CreateTemp(filepath.Dir(filename), ".dca_entries_*.json")
+	if err != nil {
+		// Handle permission errors with user-friendly message
+		var pathErr *os.PathError
+		if errors.As(err, &pathErr) {
+			if os.IsPermission(err) {
+				return fmt.Errorf("Permission denied: check file permissions")
+			}
+		}
+		return fmt.Errorf("failed to create temp file: %v", err)
+	}
+
+	// 3. Write to temp file
+	if _, err := tmpfile.Write(fileBytes); err != nil {
+		tmpfile.Close()
+		os.Remove(tmpfile.Name())
+		return fmt.Errorf("failed to write to temp file: %v", err)
+	}
+
+	// 4. Close temp file before rename (required on Windows)
+	if err := tmpfile.Close(); err != nil {
+		os.Remove(tmpfile.Name())
+		return fmt.Errorf("failed to close temp file: %v", err)
+	}
+
+	// 5. Atomic rename
+	if err := os.Rename(tmpfile.Name(), filename); err != nil {
+		os.Remove(tmpfile.Name())
+		// Handle permission errors with user-friendly message
+		var pathErr *os.PathError
+		if errors.As(err, &pathErr) {
+			if os.IsPermission(err) {
+				return fmt.Errorf("Permission denied: check file permissions")
+			}
+		}
+		return fmt.Errorf("failed to rename temp file: %v", err)
+	}
+
+	return nil
 }
 
 // Validate checks that the DCAEntry has valid values
 func (e *DCAEntry) Validate() error {
 	if e.Amount <= 0 {
-		return errors.New("amount must be greater than 0")
+		return errors.New("Amount must be positive")
 	}
 	if e.PricePerShare <= 0 {
-		return errors.New("price per share must be greater than 0")
+		return errors.New("Price must be positive")
+	}
+	// Validate shares is a valid finite positive number
+	shares := e.CalculateShares()
+	if math.IsNaN(shares) || math.IsInf(shares, 0) || shares <= 0 {
+		return errors.New("Shares must be a positive finite number")
 	}
 	return nil
 }
