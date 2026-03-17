@@ -1,7 +1,7 @@
 ---
 id: GOT-015
 title: 'Task 2: Extract core data model to internal/dca/'
-status: To Do
+status: In Progress
 assignee:
   - Catarina
 created_date: '2026-03-17 11:20'
