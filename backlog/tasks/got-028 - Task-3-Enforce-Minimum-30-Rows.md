@@ -2,8 +2,10 @@
 id: GOT-028
 title: 'Task 3: Enforce Minimum 30 Rows'
 status: To Do
-assignee: []
+assignee:
+  - Catarina
 created_date: '2026-03-17 20:22'
+updated_date: '2026-03-17 22:08'
 labels: []
 dependencies: []
 references:
