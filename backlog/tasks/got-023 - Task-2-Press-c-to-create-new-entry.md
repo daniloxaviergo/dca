@@ -172,6 +172,58 @@ Key findings:
 - Minimal changes needed: 3 files, ~20 lines of code
 <!-- SECTION:NOTES:END -->
 
+## Final Summary
+
+<!-- SECTION:FINAL_SUMMARY:BEGIN -->
+## Summary
+
+Added 'c' key handler to asset list view to switch to form view for creating new DCA entries.
+
+## What Changed
+
+### Modified Files:
+1. **internal/assets/view.go** - Added 'c' key handler in `Update()` method (3 lines)
+   - Handles `tea.KeyRunes` for character 'c'
+   - Returns `ViewTransitionMsg{View: "form"}` to trigger state transition
+
+2. **internal/assets/view_test.go** - Added 3 new tests (69 lines)
+   - `TestAssetsView_UpdateKeyC` - Verifies 'c' key returns ViewTransitionMsg
+   - `TestAssetsView_UpdateKeyC_NavigatesToForm` - Verifies correct view target
+   - `TestAssetsView_UpdateKeyC_IgnoresCapitalC` - Verifies uppercase 'C' is ignored
+   - `TestAssetsView_UpdateKeyC_EmptyList` - Verifies 'c' works with empty asset list
+
+### No Changes Needed:
+- **cmd/dca/main.go** - Already handles `ViewTransitionMsg` for state transitions from assets view to form
+
+## How It Works
+
+1. User presses 'c' key in asset list view
+2. `AssetsView.Update()` returns `ViewTransitionMsg{View: "form"}`
+3. Main model switches to `StateForm` and creates new `FormModel`
+4. Form initializes with reset fields and default timestamp (via `NewFormModel()`)
+
+## Acceptance Criteria Status
+
+- [x] Pressing 'c' in asset list switches to form view
+- [x] Form fields are reset (amount=empty, asset=empty, price=empty) 
+- [x] Date defaults to current timestamp in RFC3339 format
+- [x] User can navigate form with Tab/Enter as before
+
+## Tests
+```
+ok      github.com/danilo/scripts/github/dca/internal/assets
+```
+
+## Build
+```bash
+go build -o dca ./cmd/dca
+```
+Build successful, no warnings.
+
+## Risks
+None - minimal change, reuses existing transition mechanism.
+<!-- SECTION:FINAL_SUMMARY:END -->
+
 ## Definition of Done
 <!-- DOD:BEGIN -->
 - [ ] #1 All acceptance criteria met
