@@ -1,7 +1,7 @@
 ---
 id: GOT-011
 title: 'Task 2: Create Interactive Table UI Component'
-status: In Progress
+status: Done
 assignee: []
 created_date: '2026-03-17 00:42'
 updated_date: '2026-03-17 08:23'
@@ -10,6 +10,7 @@ dependencies: []
 references:
   - 'PRD: DCA Assets List Table View'
 priority: high
+ordinal: 11000
 ---
 
 ## Description

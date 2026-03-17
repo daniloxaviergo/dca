@@ -4,7 +4,7 @@ title: 'Task 3: Implement JSON persistence layer'
 status: Done
 assignee: []
 created_date: '2026-03-16 21:24'
-updated_date: '2026-03-16 23:25'
+updated_date: '2026-03-17 08:23'
 labels: []
 dependencies: []
 references:
@@ -12,6 +12,7 @@ references:
     backlog/docs/doc-002 -
     PRD-DCA-Entry-Form-Persist-Crypto-Investments-in-JSON.md
 priority: high
+ordinal: 4000
 ---
 
 ## Description

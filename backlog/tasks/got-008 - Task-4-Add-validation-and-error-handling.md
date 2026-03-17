@@ -5,7 +5,7 @@ status: Done
 assignee:
   - Thomas
 created_date: '2026-03-16 21:25'
-updated_date: '2026-03-17 00:13'
+updated_date: '2026-03-17 08:23'
 labels: []
 dependencies: []
 references:
@@ -13,6 +13,7 @@ references:
     backlog/docs/doc-002 -
     PRD-DCA-Entry-Form-Persist-Crypto-Investments-in-JSON.md
 priority: medium
+ordinal: 3000
 ---
 
 ## Description

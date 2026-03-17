@@ -4,10 +4,11 @@ title: 'Task 3: Add interactive exit functionality'
 status: Done
 assignee: []
 created_date: '2026-03-16 19:35'
-updated_date: '2026-03-16 20:10'
+updated_date: '2026-03-17 08:23'
 labels: []
 dependencies: []
 priority: medium
+ordinal: 8000
 ---
 
 ## Description

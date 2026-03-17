@@ -4,12 +4,13 @@ title: 'Task 1: Create Assets View Model and Data Aggregation'
 status: Done
 assignee: []
 created_date: '2026-03-17 00:42'
-updated_date: '2026-03-17 01:01'
+updated_date: '2026-03-17 08:23'
 labels: []
 dependencies: []
 references:
   - 'PRD: DCA Assets List Table View'
 priority: high
+ordinal: 1000
 ---
 
 ## Description

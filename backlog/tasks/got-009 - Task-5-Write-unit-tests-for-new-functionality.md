@@ -5,7 +5,7 @@ status: Done
 assignee:
   - Thomas
 created_date: '2026-03-16 21:26'
-updated_date: '2026-03-17 00:24'
+updated_date: '2026-03-17 08:23'
 labels: []
 dependencies: []
 references:
@@ -13,6 +13,7 @@ references:
     backlog/docs/doc-002 -
     PRD-DCA-Entry-Form-Persist-Crypto-Investments-in-JSON.md
 priority: medium
+ordinal: 2000
 ---
 
 ## Description
@@ -289,3 +290,5 @@ No code changes required - the task was a verification of existing test coverage
 - [x] Coverage verified at 52.8%
 - [x] No new warnings or regressions introduced
 <!-- SECTION:FINAL_SUMMARY:END -->
+
+<!-- DOD:END -->
