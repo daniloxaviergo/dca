@@ -2,7 +2,8 @@
 id: GOT-023
 title: 'Task 2: Press ''c'' to create new entry'
 status: To Do
-assignee: []
+assignee:
+  - Thomas
 created_date: '2026-03-17 17:38'
 updated_date: '2026-03-17 17:54'
 labels: []
