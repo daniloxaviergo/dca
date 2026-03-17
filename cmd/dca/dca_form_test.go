@@ -4,10 +4,12 @@ import (
 	"fmt"
 	"strings"
 	"testing"
+
+	"github.com/danilo/scripts/github/dca/internal/dca"
 )
 
 func TestFormModel_ValidateAmount_Pass(t *testing.T) {
-	entries := &DCAData{Entries: make(map[string][]DCAEntry)}
+	entries := &dca.DCAData{Entries: make(map[string][]dca.DCAEntry)}
 	form := NewFormModel(entries, "test.json")
 	form.Fields["amount"].Value = "100.50"
 
@@ -18,7 +20,7 @@ func TestFormModel_ValidateAmount_Pass(t *testing.T) {
 }
 
 func TestFormModel_ValidateAmount_RejectZero(t *testing.T) {
-	entries := &DCAData{Entries: make(map[string][]DCAEntry)}
+	entries := &dca.DCAData{Entries: make(map[string][]dca.DCAEntry)}
 	form := NewFormModel(entries, "test.json")
 	form.Fields["amount"].Value = "0"
 
@@ -32,7 +34,7 @@ func TestFormModel_ValidateAmount_RejectZero(t *testing.T) {
 }
 
 func TestFormModel_ValidateAmount_RejectNegative(t *testing.T) {
-	entries := &DCAData{Entries: make(map[string][]DCAEntry)}
+	entries := &dca.DCAData{Entries: make(map[string][]dca.DCAEntry)}
 	form := NewFormModel(entries, "test.json")
 	form.Fields["amount"].Value = "-50"
 
@@ -43,7 +45,7 @@ func TestFormModel_ValidateAmount_RejectNegative(t *testing.T) {
 }
 
 func TestFormModel_ValidateAmount_RejectEmpty(t *testing.T) {
-	entries := &DCAData{Entries: make(map[string][]DCAEntry)}
+	entries := &dca.DCAData{Entries: make(map[string][]dca.DCAEntry)}
 	form := NewFormModel(entries, "test.json")
 	form.Fields["amount"].Value = ""
 
@@ -54,7 +56,7 @@ func TestFormModel_ValidateAmount_RejectEmpty(t *testing.T) {
 }
 
 func TestFormModel_ValidateAmount_RejectInvalid(t *testing.T) {
-	entries := &DCAData{Entries: make(map[string][]DCAEntry)}
+	entries := &dca.DCAData{Entries: make(map[string][]dca.DCAEntry)}
 	form := NewFormModel(entries, "test.json")
 	form.Fields["amount"].Value = "abc"
 
@@ -65,7 +67,7 @@ func TestFormModel_ValidateAmount_RejectInvalid(t *testing.T) {
 }
 
 func TestFormModel_ValidateDate_Pass(t *testing.T) {
-	entries := &DCAData{Entries: make(map[string][]DCAEntry)}
+	entries := &dca.DCAData{Entries: make(map[string][]dca.DCAEntry)}
 	form := NewFormModel(entries, "test.json")
 	form.Fields["date"].Value = "2024-01-15T10:30:00Z"
 
@@ -76,7 +78,7 @@ func TestFormModel_ValidateDate_Pass(t *testing.T) {
 }
 
 func TestFormModel_ValidateDate_RejectInvalid(t *testing.T) {
-	entries := &DCAData{Entries: make(map[string][]DCAEntry)}
+	entries := &dca.DCAData{Entries: make(map[string][]dca.DCAEntry)}
 	form := NewFormModel(entries, "test.json")
 	form.Fields["date"].Value = "01-15-2024"
 
@@ -87,7 +89,7 @@ func TestFormModel_ValidateDate_RejectInvalid(t *testing.T) {
 }
 
 func TestFormModel_ValidateAsset_Pass(t *testing.T) {
-	entries := &DCAData{Entries: make(map[string][]DCAEntry)}
+	entries := &dca.DCAData{Entries: make(map[string][]dca.DCAEntry)}
 	form := NewFormModel(entries, "test.json")
 	form.Fields["asset"].Value = "BTC"
 
@@ -98,7 +100,7 @@ func TestFormModel_ValidateAsset_Pass(t *testing.T) {
 }
 
 func TestFormModel_ValidateAsset_RejectEmpty(t *testing.T) {
-	entries := &DCAData{Entries: make(map[string][]DCAEntry)}
+	entries := &dca.DCAData{Entries: make(map[string][]dca.DCAEntry)}
 	form := NewFormModel(entries, "test.json")
 	form.Fields["asset"].Value = ""
 
@@ -109,7 +111,7 @@ func TestFormModel_ValidateAsset_RejectEmpty(t *testing.T) {
 }
 
 func TestFormModel_ValidateAsset_RejectWhitespace(t *testing.T) {
-	entries := &DCAData{Entries: make(map[string][]DCAEntry)}
+	entries := &dca.DCAData{Entries: make(map[string][]dca.DCAEntry)}
 	form := NewFormModel(entries, "test.json")
 	form.Fields["asset"].Value = "   "
 
@@ -120,7 +122,7 @@ func TestFormModel_ValidateAsset_RejectWhitespace(t *testing.T) {
 }
 
 func TestFormModel_ValidatePrice_Pass(t *testing.T) {
-	entries := &DCAData{Entries: make(map[string][]DCAEntry)}
+	entries := &dca.DCAData{Entries: make(map[string][]dca.DCAEntry)}
 	form := NewFormModel(entries, "test.json")
 	form.Fields["price"].Value = "50000.00"
 
@@ -131,7 +133,7 @@ func TestFormModel_ValidatePrice_Pass(t *testing.T) {
 }
 
 func TestFormModel_ValidatePrice_RejectZero(t *testing.T) {
-	entries := &DCAData{Entries: make(map[string][]DCAEntry)}
+	entries := &dca.DCAData{Entries: make(map[string][]dca.DCAEntry)}
 	form := NewFormModel(entries, "test.json")
 	form.Fields["price"].Value = "0"
 
@@ -142,7 +144,7 @@ func TestFormModel_ValidatePrice_RejectZero(t *testing.T) {
 }
 
 func TestFormModel_ValidatePrice_RejectNegative(t *testing.T) {
-	entries := &DCAData{Entries: make(map[string][]DCAEntry)}
+	entries := &dca.DCAData{Entries: make(map[string][]dca.DCAEntry)}
 	form := NewFormModel(entries, "test.json")
 	form.Fields["price"].Value = "-100"
 
@@ -203,7 +205,7 @@ func TestRoundTo8Decimals(t *testing.T) {
 }
 
 func TestFormModel_GetFieldFloat64(t *testing.T) {
-	entries := &DCAData{Entries: make(map[string][]DCAEntry)}
+	entries := &dca.DCAData{Entries: make(map[string][]dca.DCAEntry)}
 	form := NewFormModel(entries, "test.json")
 	form.Fields["amount"].Value = "123.45"
 
@@ -216,7 +218,7 @@ func TestFormModel_GetFieldFloat64(t *testing.T) {
 }
 
 func TestFormModel_GetFieldFloat64_Empty(t *testing.T) {
-	entries := &DCAData{Entries: make(map[string][]DCAEntry)}
+	entries := &dca.DCAData{Entries: make(map[string][]dca.DCAEntry)}
 	form := NewFormModel(entries, "test.json")
 	form.Fields["amount"].Value = ""
 
@@ -227,7 +229,7 @@ func TestFormModel_GetFieldFloat64_Empty(t *testing.T) {
 }
 
 func TestFormModel_GetCurrentFieldKey(t *testing.T) {
-	entries := &DCAData{Entries: make(map[string][]DCAEntry)}
+	entries := &dca.DCAData{Entries: make(map[string][]dca.DCAEntry)}
 	form := NewFormModel(entries, "test.json")
 
 	tests := []struct {
@@ -252,7 +254,7 @@ func TestFormModel_GetCurrentFieldKey(t *testing.T) {
 }
 
 func TestFormModel_TabForward(t *testing.T) {
-	entries := &DCAData{Entries: make(map[string][]DCAEntry)}
+	entries := &dca.DCAData{Entries: make(map[string][]dca.DCAEntry)}
 	form := NewFormModel(entries, "test.json")
 	form.CurrentField = 0
 
@@ -263,7 +265,7 @@ func TestFormModel_TabForward(t *testing.T) {
 }
 
 func TestFormModel_TabBackward(t *testing.T) {
-	entries := &DCAData{Entries: make(map[string][]DCAEntry)}
+	entries := &dca.DCAData{Entries: make(map[string][]dca.DCAEntry)}
 	form := NewFormModel(entries, "test.json")
 	form.CurrentField = 1
 
@@ -274,7 +276,7 @@ func TestFormModel_TabBackward(t *testing.T) {
 }
 
 func TestFormModel_HandleBackspace(t *testing.T) {
-	entries := &DCAData{Entries: make(map[string][]DCAEntry)}
+	entries := &dca.DCAData{Entries: make(map[string][]dca.DCAEntry)}
 	form := NewFormModel(entries, "test.json")
 	form.Fields["amount"].Value = "123"
 	form.CurrentField = 0
@@ -286,7 +288,7 @@ func TestFormModel_HandleBackspace(t *testing.T) {
 }
 
 func TestFormModel_HandleInput(t *testing.T) {
-	entries := &DCAData{Entries: make(map[string][]DCAEntry)}
+	entries := &dca.DCAData{Entries: make(map[string][]dca.DCAEntry)}
 	form := NewFormModel(entries, "test.json")
 	form.Fields["amount"].Value = ""
 	form.CurrentField = 0
@@ -298,7 +300,7 @@ func TestFormModel_HandleInput(t *testing.T) {
 }
 
 func TestFormModel_RenderForm(t *testing.T) {
-	entries := &DCAData{Entries: make(map[string][]DCAEntry)}
+	entries := &dca.DCAData{Entries: make(map[string][]dca.DCAEntry)}
 	form := NewFormModel(entries, "test.json")
 
 	view := form.View()
@@ -316,7 +318,7 @@ func TestFormModel_RenderForm(t *testing.T) {
 
 // TestFormModel_ValidateAmount_ExactErrorMessage tests exact error message format
 func TestFormModel_ValidateAmount_ExactErrorMessage(t *testing.T) {
-	entries := &DCAData{Entries: make(map[string][]DCAEntry)}
+	entries := &dca.DCAData{Entries: make(map[string][]dca.DCAEntry)}
 	form := NewFormModel(entries, "test.json")
 	form.Fields["amount"].Value = "0"
 
@@ -331,7 +333,7 @@ func TestFormModel_ValidateAmount_ExactErrorMessage(t *testing.T) {
 
 // TestFormModel_ValidateAmount_NegativeExactErrorMessage tests exact error message for negative
 func TestFormModel_ValidateAmount_NegativeExactErrorMessage(t *testing.T) {
-	entries := &DCAData{Entries: make(map[string][]DCAEntry)}
+	entries := &dca.DCAData{Entries: make(map[string][]dca.DCAEntry)}
 	form := NewFormModel(entries, "test.json")
 	form.Fields["amount"].Value = "-100"
 
@@ -346,7 +348,7 @@ func TestFormModel_ValidateAmount_NegativeExactErrorMessage(t *testing.T) {
 
 // TestFormModel_ValidateDate_ExactErrorMessage tests exact error message format with YYYY-MM-DD
 func TestFormModel_ValidateDate_ExactErrorMessage(t *testing.T) {
-	entries := &DCAData{Entries: make(map[string][]DCAEntry)}
+	entries := &dca.DCAData{Entries: make(map[string][]dca.DCAEntry)}
 	form := NewFormModel(entries, "test.json")
 	form.Fields["date"].Value = "invalid-date"
 
@@ -361,7 +363,7 @@ func TestFormModel_ValidateDate_ExactErrorMessage(t *testing.T) {
 
 // TestFormModel_ValidateAsset_ExactErrorMessage tests exact error message format
 func TestFormModel_ValidateAsset_ExactErrorMessage(t *testing.T) {
-	entries := &DCAData{Entries: make(map[string][]DCAEntry)}
+	entries := &dca.DCAData{Entries: make(map[string][]dca.DCAEntry)}
 	form := NewFormModel(entries, "test.json")
 	form.Fields["asset"].Value = ""
 
@@ -376,7 +378,7 @@ func TestFormModel_ValidateAsset_ExactErrorMessage(t *testing.T) {
 
 // TestFormModel_ValidatePrice_ExactErrorMessage tests exact error message format
 func TestFormModel_ValidatePrice_ExactErrorMessage(t *testing.T) {
-	entries := &DCAData{Entries: make(map[string][]DCAEntry)}
+	entries := &dca.DCAData{Entries: make(map[string][]dca.DCAEntry)}
 	form := NewFormModel(entries, "test.json")
 	form.Fields["price"].Value = "0"
 
@@ -391,7 +393,7 @@ func TestFormModel_ValidatePrice_ExactErrorMessage(t *testing.T) {
 
 // TestFormModel_ValidatePrice_NegativeExactErrorMessage tests exact error message for negative
 func TestFormModel_ValidatePrice_NegativeExactErrorMessage(t *testing.T) {
-	entries := &DCAData{Entries: make(map[string][]DCAEntry)}
+	entries := &dca.DCAData{Entries: make(map[string][]dca.DCAEntry)}
 	form := NewFormModel(entries, "test.json")
 	form.Fields["price"].Value = "-50"
 
@@ -406,7 +408,7 @@ func TestFormModel_ValidatePrice_NegativeExactErrorMessage(t *testing.T) {
 
 // TestFormModel_InlineErrorDisplay tests error display with inline error
 func TestFormModel_InlineErrorDisplay(t *testing.T) {
-	entries := &DCAData{Entries: make(map[string][]DCAEntry)}
+	entries := &dca.DCAData{Entries: make(map[string][]dca.DCAEntry)}
 	form := NewFormModel(entries, "test.json")
 	form.Fields["amount"].Value = "0"
 	form.Fields["amount"].Error = fmt.Errorf("Amount must be positive")

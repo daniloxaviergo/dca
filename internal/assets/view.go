@@ -1,7 +1,6 @@
-package main
+package assets
 
 import (
-	"errors"
 	"fmt"
 	"strings"
 
@@ -9,99 +8,9 @@ import (
 	"github.com/charmbracelet/lipgloss"
 )
 
-// AssetSummary represents aggregated data for a single asset
-type AssetSummary struct {
-	Ticker      string
-	EntryCount  int
-	TotalShares float64
-	AvgPrice    float64
-	TotalValue  float64
-}
-
-// AssetsViewModel manages the loaded and aggregated asset data
-type AssetsViewModel struct {
-	Entries []AssetSummary
-	Error   error
-}
-
-// LoadAndAggregateEntries loads entries from a JSON file and aggregates them by asset ticker
-func LoadAndAggregateEntries(filename string) (*AssetsViewModel, error) {
-	// Load entries from file
-	data, err := LoadEntries(filename)
-	if err != nil {
-		return nil, fmt.Errorf("failed to load entries: %w", err)
-	}
-
-	// Handle empty entries map gracefully
-	if len(data.Entries) == 0 {
-		return &AssetsViewModel{
-			Entries: []AssetSummary{},
-			Error:   nil,
-		}, nil
-	}
-
-	// Aggregate entries by asset
-	var summaries []AssetSummary
-	for ticker, entries := range data.Entries {
-		summary := aggregateEntries(ticker, entries)
-		summaries = append(summaries, summary)
-	}
-
-	return &AssetsViewModel{
-		Entries: summaries,
-		Error:   nil,
-	}, nil
-}
-
-// aggregateEntries aggregates a slice of DCAEntry for a single asset
-func aggregateEntries(ticker string, entries []DCAEntry) AssetSummary {
-	var totalShares float64
-	var totalAmount float64
-
-	for _, entry := range entries {
-		totalShares += entry.Shares
-		totalAmount += entry.Amount
-	}
-
-	// Calculate weighted average price: sum(amounts) / sum(shares)
-	var avgPrice float64
-	if totalShares > 0 {
-		avgPrice = RoundTo8Decimals(totalAmount / totalShares)
-	}
-
-	return AssetSummary{
-		Ticker:      ticker,
-		EntryCount:  len(entries),
-		TotalShares: RoundTo8Decimals(totalShares),
-		AvgPrice:    avgPrice,
-		TotalValue:  RoundTo8Decimals(totalAmount),
-	}
-}
-
-// CalculateWeightedAverage calculates the weighted average price
-// weightedAverage = sum(amounts) / sum(shares)
-func CalculateWeightedAverage(totalAmount, totalShares float64) float64 {
-	if totalShares == 0 {
-		return 0
-	}
-	return RoundTo8Decimals(totalAmount / totalShares)
-}
-
-// ValidateAssetSummary validates an AssetSummary
-func (s *AssetSummary) Validate() error {
-	if s.Ticker == "" {
-		return errors.New("Ticker is required")
-	}
-	if s.EntryCount < 0 {
-		return errors.New("EntryCount cannot be negative")
-	}
-	if s.TotalShares < 0 {
-		return errors.New("TotalShares cannot be negative")
-	}
-	if s.TotalValue < 0 {
-		return errors.New("TotalValue cannot be negative")
-	}
-	return nil
+// ViewTransitionMsg is a custom message for switching between views
+type ViewTransitionMsg struct {
+	View string
 }
 
 // AssetsView is a Bubble Tea component for displaying asset data in an interactive table
@@ -127,7 +36,7 @@ func (a *AssetsView) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		switch msg.Type {
 		case tea.KeyCtrlC, tea.KeyEsc:
 			return a, func() tea.Msg {
-				return viewTransitionMsg{view: "form"}
+				return ViewTransitionMsg{View: "form"}
 			}
 		case tea.KeyUp:
 			return a.handleUp()
@@ -136,12 +45,12 @@ func (a *AssetsView) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 	case tea.QuitMsg:
 		return a, func() tea.Msg {
-			return viewTransitionMsg{view: "form"}
+			return ViewTransitionMsg{View: "form"}
 		}
-	case viewTransitionMsg:
-		if msg.view == "form" {
+	case ViewTransitionMsg:
+		if msg.View == "form" {
 			return a, func() tea.Msg {
-				return viewTransitionMsg{view: "form"}
+				return ViewTransitionMsg{View: "form"}
 			}
 		}
 	}

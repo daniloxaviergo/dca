@@ -6,6 +6,10 @@ import (
 	"runtime/debug"
 
 	"github.com/charmbracelet/bubbletea"
+
+	"github.com/danilo/scripts/github/dca/internal/assets"
+	"github.com/danilo/scripts/github/dca/internal/dca"
+	"github.com/danilo/scripts/github/dca/internal/form"
 )
 
 // Default path for DCA entries JSON file
@@ -19,18 +23,13 @@ const (
 	StateAssetsView
 )
 
-// viewTransitionMsg is a custom message for switching between views
-type viewTransitionMsg struct {
-	view string
-}
-
 // formSubmittedMsg is sent when the form is successfully submitted
 type formSubmittedMsg struct{}
 
 type model struct {
-	form         *FormModel
-	assetsView   *AssetsView
-	entries      *DCAData
+	form         *form.FormModel
+	assetsView   *assets.AssetsView
+	entries      *dca.DCAData
 	currentState AppState
 }
 
@@ -51,14 +50,14 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case StateForm:
 		if m.form != nil {
 			newForm, cmd := m.form.Update(msg)
-			m.form = newForm.(*FormModel)
+			m.form = newForm.(*form.FormModel)
 			// Check for form submission or view transition from form
 			if _, ok := msg.(formSubmittedMsg); ok {
 				// After form submission, switch to assets view
 				m.currentState = StateAssetsView
-				m.assetsView = NewAssetsView()
+				m.assetsView = assets.NewAssetsView()
 				// Load data into assets view
-				vm, err := LoadAndAggregateEntries(defaultEntriesPath)
+				vm, err := assets.LoadAndAggregateEntries(defaultEntriesPath)
 				if err != nil {
 					m.assetsView.Error = err
 				} else {
@@ -67,7 +66,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				}
 				return m, nil
 			}
-			if _, ok := msg.(viewTransitionMsg); ok {
+			if _, ok := msg.(assets.ViewTransitionMsg); ok {
 				// Handle view transition from form (e.g., Ctrl+C during form)
 				return m, tea.Quit
 			}
@@ -77,11 +76,11 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case StateAssetsView:
 		if m.assetsView != nil {
 			newAssetsView, cmd := m.assetsView.Update(msg)
-			m.assetsView = newAssetsView.(*AssetsView)
+			m.assetsView = newAssetsView.(*assets.AssetsView)
 			// On exit (Esc/Ctrl+C), switch back to form
-			if _, ok := msg.(viewTransitionMsg); ok {
+			if _, ok := msg.(assets.ViewTransitionMsg); ok {
 				m.currentState = StateForm
-				m.form = NewFormModel(m.entries, defaultEntriesPath)
+				m.form = form.NewFormModel(m.entries, defaultEntriesPath)
 				return m, nil
 			}
 			return m, cmd
@@ -117,14 +116,14 @@ func main() {
 	}()
 
 	// Load existing entries
-	entries, err := LoadEntries(defaultEntriesPath)
+	entries, err := dca.LoadEntries(defaultEntriesPath)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error loading entries: %v\n", err)
 		os.Exit(1)
 	}
 
 	// Create form model and initialize with entries
-	form := NewFormModel(entries, defaultEntriesPath)
+	form := form.NewFormModel(entries, defaultEntriesPath)
 
 	// Create initial model with form state
 	m := model{
@@ -142,7 +141,7 @@ func main() {
 
 	// Save entries after form submission
 	if form.Submitted {
-		if err := SaveEntries(defaultEntriesPath, entries); err != nil {
+		if err := dca.SaveEntries(defaultEntriesPath, entries); err != nil {
 			fmt.Fprintf(os.Stderr, "Error saving entries: %v\n", err)
 			os.Exit(1)
 		}

@@ -1,4 +1,4 @@
-package main
+package form
 
 import (
 	"fmt"
@@ -9,6 +9,8 @@ import (
 
 	"github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
+
+	"github.com/danilo/scripts/github/dca/internal/dca"
 )
 
 // FormStep represents the current step in the form
@@ -37,7 +39,7 @@ type FormModel struct {
 	Step         FormStep
 	Fields       map[string]*FormField
 	CurrentField int
-	Entries      *DCAData
+	Entries      *dca.DCAData
 	FilePath     string
 	Submitted    bool
 }
@@ -188,59 +190,6 @@ func (m *FormModel) getFieldFloat64(key string) float64 {
 	return val
 }
 
-// validateAmount validates that the amount is a positive number
-func (m *FormModel) validateAmount(value string) error {
-	if value == "" {
-		return fmt.Errorf("Amount must be positive")
-	}
-	val, err := strconv.ParseFloat(value, 64)
-	if err != nil {
-		return fmt.Errorf("Amount must be positive")
-	}
-	if val <= 0 {
-		return fmt.Errorf("Amount must be positive")
-	}
-	return nil
-}
-
-// validateDate validates that the date is in RFC3339 format
-func (m *FormModel) validateDate(value string) error {
-	if value == "" {
-		return fmt.Errorf("Use YYYY-MM-DD")
-	}
-	_, err := time.Parse(time.RFC3339, value)
-	if err != nil {
-		return fmt.Errorf("Use YYYY-MM-DD")
-	}
-	return nil
-}
-
-// validateAsset validates that the asset ticker is non-empty
-func (m *FormModel) validateAsset(value string) error {
-	if value == "" {
-		return fmt.Errorf("Asset ticker is required")
-	}
-	if strings.TrimSpace(value) == "" {
-		return fmt.Errorf("Asset ticker is required")
-	}
-	return nil
-}
-
-// validatePrice validates that the price is a positive number
-func (m *FormModel) validatePrice(value string) error {
-	if value == "" {
-		return fmt.Errorf("Price must be positive")
-	}
-	val, err := strconv.ParseFloat(value, 64)
-	if err != nil {
-		return fmt.Errorf("Price must be positive")
-	}
-	if val <= 0 {
-		return fmt.Errorf("Price must be positive")
-	}
-	return nil
-}
-
 // saveEntry saves the current entry to the data file
 func (m *FormModel) saveEntry() error {
 	amount := m.getFieldFloat64("amount")
@@ -255,7 +204,7 @@ func (m *FormModel) saveEntry() error {
 	// Create entry with calculated shares
 	shares := CalculateSharesFromValues(amount, price)
 
-	entry := DCAEntry{
+	entry := dca.DCAEntry{
 		Amount:        amount,
 		Date:          date,
 		Asset:         asset,
@@ -270,14 +219,14 @@ func (m *FormModel) saveEntry() error {
 
 	// Initialize entries map if nil
 	if m.Entries.Entries == nil {
-		m.Entries.Entries = make(map[string][]DCAEntry)
+		m.Entries.Entries = make(map[string][]dca.DCAEntry)
 	}
 
 	// Add entry to the asset's list
 	m.Entries.Entries[asset] = append(m.Entries.Entries[asset], entry)
 
 	// Save to file
-	if err := SaveEntries(m.FilePath, m.Entries); err != nil {
+	if err := dca.SaveEntries(m.FilePath, m.Entries); err != nil {
 		return err
 	}
 
@@ -460,7 +409,7 @@ func (m *FormModel) renderFooter() string {
 }
 
 // NewFormModel creates a new form model with default values
-func NewFormModel(entries *DCAData, filePath string) *FormModel {
+func NewFormModel(entries *dca.DCAData, filePath string) *FormModel {
 	now := time.Now()
 	defaultDate := now.Format(time.RFC3339)
 
@@ -479,3 +428,6 @@ func NewFormModel(entries *DCAData, filePath string) *FormModel {
 		},
 	}
 }
+
+// formSubmittedMsg is sent when the form is successfully submitted
+type formSubmittedMsg struct{}
