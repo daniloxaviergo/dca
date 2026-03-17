@@ -2,7 +2,8 @@
 id: GOT-021
 title: Create make commands
 status: To Do
-assignee: []
+assignee:
+  - Catarina
 created_date: '2026-03-17 17:09'
 updated_date: '2026-03-17 17:10'
 labels: []
