@@ -5,10 +5,9 @@ status: Done
 assignee:
   - Thomas
 created_date: '2026-03-17 11:20'
-updated_date: '2026-03-17 12:32'
+updated_date: '2026-03-17 17:08'
 labels: []
-dependencies:
-  - GOT-013
+dependencies: []
 references:
   - backlog/docs/doc-004.md
 priority: high

@@ -4,10 +4,9 @@ title: 'Task 3: Extract form components to internal/form/'
 status: Done
 assignee: []
 created_date: '2026-03-17 11:20'
-updated_date: '2026-03-17 13:15'
+updated_date: '2026-03-17 17:08'
 labels: []
-dependencies:
-  - GOT-013
+dependencies: []
 references:
   - backlog/docs/doc-004.md
 priority: high
