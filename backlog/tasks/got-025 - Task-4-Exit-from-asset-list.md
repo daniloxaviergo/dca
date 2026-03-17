@@ -2,8 +2,7 @@
 id: GOT-025
 title: 'Task 4: Exit from asset list'
 status: Done
-assignee:
-  - Thomas
+assignee: []
 created_date: '2026-03-17 17:38'
 updated_date: '2026-03-17 20:10'
 labels: []
