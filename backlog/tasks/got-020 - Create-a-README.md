@@ -2,10 +2,9 @@
 id: GOT-020
 title: Create a README
 status: To Do
-assignee:
-  - Catarina
+assignee: []
 created_date: '2026-03-17 15:51'
-updated_date: '2026-03-17 15:57'
+updated_date: '2026-03-17 16:13'
 labels: []
 dependencies: []
 ordinal: 4000
