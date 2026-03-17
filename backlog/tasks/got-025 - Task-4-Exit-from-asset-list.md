@@ -1,11 +1,11 @@
 ---
 id: GOT-025
 title: 'Task 4: Exit from asset list'
-status: In Progress
+status: Done
 assignee:
   - Thomas
 created_date: '2026-03-17 17:38'
-updated_date: '2026-03-17 20:04'
+updated_date: '2026-03-17 20:10'
 labels: []
 dependencies: []
 references:
@@ -167,6 +167,40 @@ The fix ensures that:
 - 'c' key still correctly switches to form view
 - No unsaved data loss - entries are only saved on form submission
 <!-- SECTION:NOTES:END -->
+
+## Final Summary
+
+<!-- SECTION:FINAL_SUMMARY:BEGIN -->
+## Summary
+
+Fixed the exit functionality from the asset list view. Previously, pressing Esc/Ctrl+C in the asset list view would incorrectly switch back to the form view instead of exiting the application.
+
+## Changes Made
+
+### internal/assets/view.go
+- Modified `Update()` to return `tea.Quit` directly for `tea.KeyCtrlC`, `tea.KeyEsc`, and `tea.QuitMsg`
+- Kept `ViewTransitionMsg{View: "form"}` only for the 'c' key (form view switch)
+
+### cmd/dca/main.go  
+- Simplified `StateAssetsView` case to properly handle `ViewTransitionMsg` only for the 'c' key
+- Removed redundant `ViewTransitionMsg` handling that was converting it to `tea.Quit`
+
+### internal/assets/view_test.go
+- Updated `TestAssetsView_UpdateEscape` to verify `tea.QuitMsg` is returned
+- Updated `TestAssetsView_UpdateCtrlC` to verify `tea.QuitMsg` is returned
+- Updated `TestAssetsView_UpdateQuitMsg` to verify `tea.QuitMsg` is returned
+
+## Test Results
+- All 26 tests pass: `go test ./...` ✓
+- No new compiler warnings
+- Code formatted with `go fmt` ✓
+- Binary builds successfully ✓
+
+## Acceptance Criteria
+- [x] #1 Esc key exits application
+- [x] #2 Ctrl+C exits application
+- [x] #3 No unsaved data loss (entries saved on form submit only)
+<!-- SECTION:FINAL_SUMMARY:END -->
 
 ## Definition of Done
 <!-- DOD:BEGIN -->
