@@ -2,8 +2,7 @@
 id: GOT-012
 title: 'Task 3: Integrate Assets View into Main Application'
 status: In Progress
-assignee:
-  - Catarina
+assignee: []
 created_date: '2026-03-17 00:42'
 updated_date: '2026-03-17 08:32'
 labels: []
