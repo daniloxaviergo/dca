@@ -2,10 +2,9 @@
 id: GOT-024
 title: 'Task 3: Return to asset list after entry'
 status: To Do
-assignee:
-  - Thomas
+assignee: []
 created_date: '2026-03-17 17:38'
-updated_date: '2026-03-17 18:26'
+updated_date: '2026-03-17 19:13'
 labels: []
 dependencies:
   - GOT-023
