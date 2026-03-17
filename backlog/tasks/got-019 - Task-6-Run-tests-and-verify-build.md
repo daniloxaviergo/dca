@@ -2,9 +2,10 @@
 id: GOT-019
 title: 'Task 6: Run tests and verify build'
 status: To Do
-assignee: []
+assignee:
+  - Catarina
 created_date: '2026-03-17 11:20'
-updated_date: '2026-03-17 11:22'
+updated_date: '2026-03-17 15:42'
 labels: []
 dependencies:
   - GOT-013
