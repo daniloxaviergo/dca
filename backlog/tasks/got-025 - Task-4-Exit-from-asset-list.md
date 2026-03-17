@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - Thomas
 created_date: '2026-03-17 17:38'
-updated_date: '2026-03-17 20:01'
+updated_date: '2026-03-17 20:03'
 labels: []
 dependencies: []
 references:
@@ -26,6 +26,9 @@ Users can exit the application from the asset list view. Verify existing Esc/Ctr
 - [ ] #1 Esc key exits application
 - [ ] #2 Ctrl+C exits application
 - [ ] #3 No unsaved data loss (entries saved on form submit only)
+- [ ] #4 #1 Esc key exits application
+- [ ] #5 #2 Ctrl+C exits application
+- [ ] #6 #3 No unsaved data loss (entries saved on form submit only)
 <!-- AC:END -->
 
 ## Implementation Plan
@@ -152,6 +155,20 @@ The correct behavior should be: **Esc/Ctrl+C from asset list should exit the app
 Looking at the tests (`view_test.go:157-177`), they verify that `ViewTransitionMsg` is returned, but the main model doesn't actually call `tea.Quit` when this message comes from the asset list.
 
 **This is the bug that needs fixing for GOT-025.**
+
+I've completed the implementation to fix the exit functionality from the asset list view. Here's what was changed:
+
+1. **internal/assets/view.go**: Modified the `Update()` method to return `tea.Quit` directly for exit commands (Esc, Ctrl+C, QuitMsg) instead of `ViewTransitionMsg{View: "form"}`. The 'c' key still returns `ViewTransitionMsg{View: "form"}` for form view switching.
+
+2. **cmd/dca/main.go**: Simplified the `StateAssetsView` case to properly handle `ViewTransitionMsg` only for the 'c' key (switching to form view). When `tea.Quit` is returned from the assets view, the app exits directly without state transitions.
+
+3. **internal/assets/view_test.go**: Updated tests to verify `tea.QuitMsg` is returned for Esc, Ctrl+C, and QuitMsg handlers. All 'c' key tests remain unchanged, still verifying `ViewTransitionMsg{View: "form"}`.
+
+The fix ensures that:
+- Esc key now properly exits the application from asset list view
+- Ctrl+C now properly exits the application from asset list view  
+- 'c' key still correctly switches to form view
+- No unsaved data loss - entries are only saved on form submission
 <!-- SECTION:NOTES:END -->
 
 ## Definition of Done
@@ -162,4 +179,10 @@ Looking at the tests (`view_test.go:157-177`), they verify that `ViewTransitionM
 - [ ] #4 Code follows project style (go fmt)
 - [ ] #5 PRD referenced in task
 - [ ] #6 Documentation updated (comments)
+- [ ] #7 #1 All acceptance criteria met
+- [ ] #8 #2 Unit tests pass (go test)
+- [ ] #9 #3 No new compiler warnings
+- [ ] #10 #4 Code follows project style (go fmt)
+- [ ] #11 #5 PRD referenced in task
+- [ ] #12 #6 Documentation updated (comments)
 <!-- DOD:END -->
