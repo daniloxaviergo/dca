@@ -2,10 +2,9 @@
 id: GOT-028
 title: 'Task 3: Enforce Minimum 30 Rows'
 status: In Progress
-assignee:
-  - Thomas
+assignee: []
 created_date: '2026-03-17 20:22'
-updated_date: '2026-03-17 22:13'
+updated_date: '2026-03-17 23:19'
 labels: []
 dependencies: []
 references:
