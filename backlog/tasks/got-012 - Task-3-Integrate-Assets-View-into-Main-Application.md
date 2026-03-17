@@ -5,7 +5,7 @@ status: To Do
 assignee:
   - Catarina
 created_date: '2026-03-17 00:42'
-updated_date: '2026-03-17 08:27'
+updated_date: '2026-03-17 08:30'
 labels: []
 dependencies: []
 references:
@@ -32,130 +32,141 @@ Integrate assets view into main.go with view state management and keyboard navig
 <!-- SECTION:PLAN:BEGIN -->
 ### 1. Technical Approach
 
-Integrate the existing AssetsView Bubble Tea component into the main application flow by implementing state management and view transitions.
+The AssetsView integration is already implemented in `main.go` with state management and transitions. This task's primary goal is to verify and test the complete application flow through integration tests.
 
-**Architecture:**
-- Add `AppState` enum to track which view is active (Form vs AssetsView)
-- Modify `model` struct to include `assetsView` and `currentState` fields
-- Update `Update()` method to delegate to current view and handle state transitions
-- Update `View()` method to render the current view
-- Handle data persistence: entries are shared between views, changes in form save to JSON
+**Testing Strategy:**
+- Add integration tests to `main_test.go` covering state transitions
+- Verify data consistency between views
+- Test exit behavior from AssetsView
+- Ensure clean application lifecycle
 
-**Key Design Decisions:**
-1. **Shared Data**: `DCAData` is passed to both views; form writes, view reads
-2. **Transition Triggers**: Form submission (Enter + Confirm y) switches to AssetsView; AssetsView exit (Esc/Ctrl+C) switches back
-3. **Data Loading**: AssetsView loads aggregated data from `LoadAndAggregateEntries()` on transition
-4. **No Persistent Selection**: Selected row index resets when switching back to AssetsView
-
-**Why This Approach:**
-- Minimal changes to existing code (no restructuring needed)
-- Reuses existing `AssetsView` component (already implemented in Task 2)
-- Maintains data consistency through shared `DCAData` reference
-- Follows existing Bubble Tea pattern from `FormModel`
+**Key Scenarios to Test:**
+1. Application starts in Form state
+2. Form submission (Enter + confirm 'y') transitions to AssetsView
+3. AssetsView displays aggregated data correctly
+4. Esc/Ctrl+C in AssetsView exits application
+5. Data entered in Form is reflected in AssetsView after save
 
 ### 2. Files to Modify
 
 | File | Action | Reason |
-|------|--------|--------|
-| `main.go` | Modify | Add AppState enum, update model struct, implement Update/View state delegation |
-| `main_test.go` | Add tests | Integration tests for state transitions, data flow |
+|------|--------|--|
+| `main_test.go` | Add tests | Integration tests for state transitions, data flow, and exit behavior |
+| `main.go` | No change | Implementation already exists and tested |
 | `assets_view.go` | No change | Component already exists from Task 2 |
 | `dca_entry.go` | No change | Data model and I/O already exist |
 | `dca_form.go` | No change | Form component unchanged |
 
-**New Files:** None (all functionality already implemented in main.go)
+**New Tests to Add:**
+
+| Test Case | Purpose |
+|-----------|---------|
+| `TestAppState_InitState` | Application starts in Form state |
+| `TestModel_Update_FormToAssets_Transition` | Form submission transitions to AssetsView |
+| `TestModel_Update_FormToAssets_DataLoaded` | AssetsView loads data correctly on transition |
+| `TestModel_Update_AssetsToForm_Exit` | AssetsView exit transitions back to Form |
+| `TestModel_Update_QuitFromAssets` | Ctrl+C in AssetsView returns quit command |
+| `TestModel_Update_KeyNavigation_Assets` | AssetsView Up/Down navigation works |
+| `TestModel_View_AssetsRenders` | AssetsView renders table correctly |
+| `TestModel_DataConsistency` | Form changes reflected in AssetsView after save |
+| `TestMain_AppRoundtrip` | Full end-to-end flow test |
 
 ### 3. Dependencies
 
 **Prerequisites (must be complete first):**
-- ✅ Task GOT-010: Assets View Model and Data Aggregation (assets_view.go with LoadAndAggregateEntries)
-- ✅ Task GOT-011: Interactive Table UI Component (AssetsView Bubble Tea component)
-- ✅ Existing Bubble Tea v1.3.10 and Lipgloss v1.1.0
+- ✅ Task GOT-010: Assets View Model and Data Aggregation
+- ✅ Task GOT-011: Interactive Table UI Component
+- ✅ Task GOT-012: Main.go integration (existing implementation)
 
 **No external dependencies required.**
 
-**Blocking issues:** None - existing assets_view.go and dca_form.go are stable.
+**Blocking issues:** None
 
-**Setup steps:** None required - integration uses existing components.
+**Setup steps:** None required
 
 ### 4. Code Patterns
 
-**Follow existing patterns from dca_form.go and main.go:**
+**Follow existing patterns from main_test.go:**
 
 | Pattern | Implementation |
 |---------|----------------|
-| **State enum** | `type AppState int` with iota (StateForm, StateAssetsView) |
-| **Model struct** | Include all view models as pointers |
-| **Update delegation** | Switch on currentState, call current view's Update() |
-| **View delegation** | Switch on currentState, call current view's View() |
-| **State transition** | Update currentState, create new view instance |
-| **Quit handling** | Detect tea.QuitMsg to trigger exit transition |
+| **Test setup** | Create model with entries, form, and currentState |
+| **Key messages** | Use `tea.KeyMsg{Type: tea.KeyCtrlC}`, `tea.KeyMsg{Type: tea.KeyEsc}` |
+| **Update assertions** | Call Update(), verify cmd != nil for quit |
+| **View assertions** | Check strings.Contains(view, expectedText) |
+| **Test helper** | Use `m := model{form: form, currentState: StateForm}` pattern |
 
 **Specific conventions:**
-- Use type assertions: `newForm.(*FormModel)` after Update()
-- Update receiver fields in-place for Bubble Tea model pattern
-- Pass `*DCAData` reference to share data between views
-- Use `tea.Quit` command to signal exit from AssetsView
+- Test exact quit command behavior: `if cmd == nil { t.Error(...) }`
+- Use temp files for I/O tests (defer os.Remove)
+- Verify state changes via `m.currentState`
+- Test data consistency with shared `*DCAData` reference
 
 **Style requirements:**
-- Match existing `dca_form.go` key handling (Esc/Ctrl+C for quit)
-- Use lipgloss styling from AssetsView (already implemented)
-- Maintain 8-decimal precision for financial values
+- Follow existing test naming: `Test{Component}_{Action}_{Condition}`
+- Use table-driven tests for multiple similar scenarios
+- Test error cases with exact error message assertions
 
 ### 5. Testing Strategy
 
 **Integration tests in main_test.go:**
 
-| Test Case | Purpose |
-|-----------|---------|
-| `TestAppState_InitState` | Application starts in Form state |
-| `TestModel_Update_FormToAssets` | Form submission transitions to AssetsView |
-| `TestModel_Update_AssetsToForm` | AssetsView exit transitions back to Form |
-| `TestModel_Update_QuitFromAssets` | Ctrl+C in AssetsView exits cleanly |
-| `TestModel_Update_KeyNavigation_Form` | Form keyboard navigation works |
-| `TestModel_Update_KeyNavigation_Assets` | AssetsView navigation works |
-| `TestModel_View_FormRenders` | Form view renders without panic |
-| `TestModel_View_AssetsRenders` | AssetsView renders without panic |
-| `TestModel_DataConsistency` | Entries modified in form visible in AssetsView |
-| `TestMain_EntryRoundtrip` | Full flow: add entry → save → view → exit |
+```go
+// State initialization
+func TestAppState_InitState(t *testing.T)
+
+// Form to AssetsView transition
+func TestModel_Update_FormToAssets_Transition(t *testing.T)
+func TestModel_Update_FormToAssets_DataLoaded(t *testing.T)
+
+// AssetsView to Form exit
+func TestModel_Update_AssetsToForm_Exit(t *testing.T)
+func TestModel_Update_QuitFromAssets(t *testing.T)
+
+// AssetsView navigation
+func TestModel_Update_KeyNavigation_Assets(t *testing.T)
+
+// Rendering
+func TestModel_View_AssetsRenders(t *testing.T)
+
+// Data consistency
+func TestModel_DataConsistency(t *testing.T)
+
+// End-to-end flow
+func TestMain_AppRoundtrip(t *testing.T)
+```
 
 **Test approach:**
-- Unit test each state transition with mock keyboard inputs
-- Verify `currentState` changes correctly after each message
-- Test data consistency: add entry in form, verify it appears in AssetsView
-- Test exit behavior: AssetsView quit command returns to Form state
-- Use temp file I/O tests for persistence verification
+- Mock form submission by setting `form.Submitted = true` and sending Enter key
+- Verify AssetsView loads with data: check `assetsView.Loaded == true`
+- Test exit behavior: AssetsView returns `tea.Quit` on Esc/Ctrl+C
+- Verify data consistency: modify form, save, then check AssetsView data
 
 **Edge cases:**
-- Empty entries file → AssetsView shows empty state
-- Invalid JSON → Form validation error (existing behavior)
-- Nil AssetsView → Graceful fallback in Update/View
-- Multiple quick transitions → State is replaced correctly
+- Empty entries file → AssetsView shows empty state message
+- No entries in AssetsView → "No assets yet" message displayed
+- Multiple entries → All aggregated correctly in table
 
 ### 6. Risks and Considerations
 
 **Potential issues:**
 
 | Risk | Mitigation |
-|------|------------|
-| State not updating correctly | Type assertions must match actual types; test thoroughly |
-| Data inconsistency | Pass `*DCAData` reference, not copy; verify in tests |
-| Memory leaks from old views | Old view discarded after state change; Go GC handles it |
-| Race conditions | Single-threaded Bubble Tea event loop; no concurrent access |
-| Nil pointer dereference | Check `m.form != nil` and `m.assetsView != nil` in Update/View |
+|------|------|
+| State enum not exported | Use package-private tests (same package) |
+| Nil pointer dereference | Check for nil views in Update/View before delegating |
+| Data race conditions | Single-threaded Bubble Tea event loop; no concurrent access |
 
 **Design trade-offs:**
-- **No "back" from AssetsView to Form**: Transition is one-way (form → view); must exit to return (simpler than full navigation stack)
-- **No persistence in AssetsView**: View is read-only; changes only in form (clear separation of concerns)
-- **Fresh load on each view switch**: AssetsView reloads data on transition (ensures consistency)
+- **Current implementation**: Form → AssetsView is one-way; must exit to return (acceptable per PRD)
+- **No persistent selection**: Selected index resets on each AssetsView load (simpler state management)
 
 **Implementation checkpoints:**
-1. First: Add AppState enum and update model struct with minimal compilation
-2. Second: Implement Update() state delegation (form transition works)
-3. Third: Implement View() delegation (assets view renders)
-4. Fourth: Add exit transition (AssetsView → Form)
-5. Fifth: Write integration tests for all state transitions
-6. Sixth: Run full test suite and verify no regressions
+1. First: Add basic state transition tests (Form → AssetsView)
+2. Second: Add AssetsView rendering tests
+3. Third: Add exit behavior tests (Esc/Ctrl+C from AssetsView)
+4. Fourth: Add data consistency tests
+5. Fifth: Run full test suite and verify no regressions
 
 **Blocking issues:** None identified
 
@@ -165,7 +176,7 @@ Integrate the existing AssetsView Bubble Tea component into the main application
 - [ ] `go build` completes without warnings
 - [ ] `go fmt` applied (no changes)
 - [ ] PRD referenced in task
-- [ ] Comments updated if code changes
+- [ ] Test coverage for state transitions
 <!-- SECTION:PLAN:END -->
 
 ## Definition of Done
