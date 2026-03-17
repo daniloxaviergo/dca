@@ -17,6 +17,8 @@ priority: high
 
 <!-- SECTION:DESCRIPTION:BEGIN -->
 Integrate assets view into main.go with view state management and keyboard navigation between views, focus on unit test
+
+The first view should be a list of assets
 <!-- SECTION:DESCRIPTION:END -->
 
 ## Acceptance Criteria
