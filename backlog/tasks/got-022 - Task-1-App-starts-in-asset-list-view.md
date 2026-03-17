@@ -5,7 +5,7 @@ status: Done
 assignee:
   - Thomas
 created_date: '2026-03-17 17:38'
-updated_date: '2026-03-17 17:48'
+updated_date: '2026-03-17 17:49'
 labels: []
 dependencies: []
 references:
@@ -146,6 +146,63 @@ vm, err := assets.LoadAndAggregateEntries(defaultEntriesPath)
 - Error state should be displayed if loading fails
 - No initialization command (`Init()` returns nil) as AssetsView doesn't need async setup
 <!-- SECTION:PLAN:END -->
+
+## Implementation Notes
+
+<!-- SECTION:NOTES:BEGIN -->
+## Implementation Notes
+
+Task completed successfully. The application now starts in asset list view instead of form view.
+
+### Changes Made to `cmd/dca/main.go`:
+1. Modified `main()` to initialize `currentState` to `StateAssetsView`
+2. Added data loading and aggregation before model creation
+3. Updated form saving condition to check `m.form != nil` since form may not be initialized yet
+
+### Verification:
+- All acceptance criteria met ✓
+- Unit tests pass ✓
+- No compiler warnings ✓
+- Code properly formatted ✓
+
+### Manual Testing:
+The app can be tested with: `go run cmd/dca/main.go`
+
+Users will see the asset list immediately on startup, can navigate with ↑/↓, and exit with Esc/Ctrl+C.
+<!-- SECTION:NOTES:END -->
+
+## Final Summary
+
+<!-- SECTION:FINAL_SUMMARY:BEGIN -->
+## Summary
+
+**What Changed:**
+- Modified `cmd/dca/main.go` to initialize the application in `StateAssetsView` instead of `StateForm`
+- On startup, the app now loads and aggregates entries into `AssetsView` with data from `dca_entries.json`
+- The initial model now sets `currentState: StateAssetsView` and populates `assetsView` with aggregated data
+
+**Why:**
+- Aligns with PRD goal: "users want to view assets before entering data"
+- Reuses existing tested `AssetsView` component and `ViewTransitionMsg` system
+- Minimal code change (data loading + state initialization)
+
+**Tests:**
+```
+ok      github.com/danilo/scripts/github/dca
+ok      github.com/danilo/scripts/github/dca/cmd/dca
+ok      github.com/danilo/scripts/github/dca/internal/assets
+ok      github.com/danilo/scripts/github/dca/internal/dca
+ok      github.com/danilo/scripts/github/dca/internal/form
+```
+
+**Build:**
+- `go build -o dca ./cmd/dca` - Success, no warnings
+- `gofmt -l` - Code properly formatted
+
+**Risks/Follow-ups:**
+- Form initialization is deferred until user action (Task 2)
+- Empty asset list shows "No assets yet" message (intended behavior per PRD)
+<!-- SECTION:FINAL_SUMMARY:END -->
 
 ## Definition of Done
 <!-- DOD:BEGIN -->
