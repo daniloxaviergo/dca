@@ -5,7 +5,7 @@ status: To Do
 assignee:
   - Thomas
 created_date: '2026-03-17 17:38'
-updated_date: '2026-03-17 18:03'
+updated_date: '2026-03-17 18:04'
 labels: []
 dependencies:
   - GOT-022
@@ -25,10 +25,10 @@ Add 'c' key handler in asset list to switch to form view. Modify internal/assets
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 Pressing 'c' in asset list switches to form view
-- [ ] #2 Form fields are reset (amount=empty, asset=empty, price=empty)
-- [ ] #3 Date defaults to current timestamp in RFC3339 format
-- [ ] #4 User can navigate form with Tab/Enter as before
+- [x] #1 Pressing 'c' in asset list switches to form view
+- [x] #2 Form fields are reset (amount=empty, asset=empty, price=empty)
+- [x] #3 Date defaults to current timestamp in RFC3339 format
+- [x] #4 User can navigate form with Tab/Enter as before
 <!-- AC:END -->
 
 ## Implementation Plan
@@ -226,10 +226,10 @@ None - minimal change, reuses existing transition mechanism.
 
 ## Definition of Done
 <!-- DOD:BEGIN -->
-- [ ] #1 All acceptance criteria met
-- [ ] #2 Unit tests pass (go test)
-- [ ] #3 No new compiler warnings
-- [ ] #4 Code follows project style (go fmt)
+- [x] #1 All acceptance criteria met
+- [x] #2 Unit tests pass (go test)
+- [x] #3 No new compiler warnings
+- [x] #4 Code follows project style (go fmt)
 - [ ] #5 PRD referenced in task
 - [ ] #6 Documentation updated (comments)
 - [ ] #7 All acceptance criteria met
