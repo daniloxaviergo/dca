@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - Thomas
 created_date: '2026-03-17 00:42'
-updated_date: '2026-03-17 08:33'
+updated_date: '2026-03-17 08:34'
 labels: []
 dependencies: []
 references:
@@ -178,6 +178,12 @@ func TestMain_AppRoundtrip(t *testing.T)
 - [ ] PRD referenced in task
 - [ ] Test coverage for state transitions
 <!-- SECTION:PLAN:END -->
+
+## Implementation Notes
+
+<!-- SECTION:NOTES:BEGIN -->
+Start implementing integration tests for main.go state transitions. Reviewing existing test patterns and implementation to understand form submission flow and state management.
+<!-- SECTION:NOTES:END -->
 
 ## Definition of Done
 <!-- DOD:BEGIN -->
