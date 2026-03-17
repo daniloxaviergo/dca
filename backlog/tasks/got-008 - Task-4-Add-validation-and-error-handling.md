@@ -1,11 +1,11 @@
 ---
 id: GOT-008
 title: 'Task 4: Add validation and error handling'
-status: To Do
+status: Done
 assignee:
   - Thomas
 created_date: '2026-03-16 21:25'
-updated_date: '2026-03-17 00:12'
+updated_date: '2026-03-17 00:13'
 labels: []
 dependencies: []
 references:
