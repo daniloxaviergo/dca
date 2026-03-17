@@ -5,7 +5,7 @@ status: To Do
 assignee:
   - Thomas
 created_date: '2026-03-17 20:22'
-updated_date: '2026-03-17 21:59'
+updated_date: '2026-03-17 22:00'
 labels: []
 dependencies: []
 references:
@@ -140,6 +140,34 @@ Run tests: `go test ./internal/assets/... -v`
 - Ensure columns are vertically aligned across all rows
 <!-- SECTION:PLAN:END -->
 
+## Implementation Notes
+
+<!-- SECTION:NOTES:BEGIN -->
+Task reference: backlog/docs/doc-006.md - PRD for Assets View feature.
+
+## Implementation Notes
+
+### Column Width Calculations
+The root cause was that header text lengths exceeded the defined column widths:
+- "Total Shares" (12 chars) required width of at least 14 (header + 2-char separator)
+- "Avg Price" (9 chars) required width of at least 13 (header + 2-char separator)
+- "Total Value" (11 chars) required width of 13 (header + 2-char separator)
+
+### Alignment Testing Strategy
+Added comprehensive tests:
+1. `TestColumnWidths_ConstantsDefined` - Verify width constants are correct
+2. `TestRenderHeaderRow_Alignment` - Verify headers render correctly
+3. `TestRenderDataRow_AlignmentWithHeader` - Verify data row field widths
+4. `TestRenderTable_ColumnAlignment` - Verify headers and data align in full table
+5. `TestRenderDataRow_FieldWidths` - Table-driven test with various value lengths
+
+### Build Verification
+Built cmd/dca package successfully with no warnings. All tests pass.
+
+### go fmt Applied
+No formatting changes required - code already followed project style.
+<!-- SECTION:NOTES:END -->
+
 ## Final Summary
 
 <!-- SECTION:FINAL_SUMMARY:BEGIN -->
@@ -183,6 +211,6 @@ Fix row value formatting to ensure all values align with column headers using fm
 - [x] #2 Unit tests pass (go test)
 - [x] #3 No new compiler warnings
 - [x] #4 Code follows project style (go fmt)
-- [ ] #5 PRD referenced in task
+- [x] #5 PRD referenced in task
 - [ ] #6 Documentation updated (comments)
 <!-- DOD:END -->
