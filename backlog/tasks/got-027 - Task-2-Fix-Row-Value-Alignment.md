@@ -1,11 +1,11 @@
 ---
 id: GOT-027
 title: 'Task 2: Fix Row Value Alignment'
-status: To Do
+status: Done
 assignee:
   - Thomas
 created_date: '2026-03-17 20:22'
-updated_date: '2026-03-17 22:00'
+updated_date: '2026-03-17 22:01'
 labels: []
 dependencies: []
 references:
@@ -212,5 +212,5 @@ Fix row value formatting to ensure all values align with column headers using fm
 - [x] #3 No new compiler warnings
 - [x] #4 Code follows project style (go fmt)
 - [x] #5 PRD referenced in task
-- [ ] #6 Documentation updated (comments)
+- [x] #6 Documentation updated (comments)
 <!-- DOD:END -->
