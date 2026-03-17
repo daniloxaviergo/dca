@@ -2,10 +2,9 @@
 id: GOT-016
 title: 'Task 3: Extract form components to internal/form/'
 status: Done
-assignee:
-  - Thomas
+assignee: []
 created_date: '2026-03-17 11:20'
-updated_date: '2026-03-17 13:09'
+updated_date: '2026-03-17 13:15'
 labels: []
 dependencies:
   - GOT-013
