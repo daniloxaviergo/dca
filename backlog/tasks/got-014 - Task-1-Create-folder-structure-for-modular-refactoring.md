@@ -2,8 +2,10 @@
 id: GOT-014
 title: 'Task 1: Create folder structure for modular refactoring'
 status: To Do
-assignee: []
+assignee:
+  - Catarina
 created_date: '2026-03-17 11:20'
+updated_date: '2026-03-17 11:22'
 labels: []
 dependencies: []
 references:
