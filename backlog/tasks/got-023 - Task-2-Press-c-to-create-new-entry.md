@@ -25,14 +25,10 @@ Add 'c' key handler in asset list to switch to form view. Modify internal/assets
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 Pressing 'c' in asset list switches to form view
-- [ ] #2 Form fields are reset (amount=empty, asset=empty, price=empty)
-- [ ] #3 Date defaults to current timestamp in RFC3339 format
-- [ ] #4 User can navigate form with Tab/Enter as before
-- [ ] #5 #1 Pressing 'c' in asset list switches to form view
-- [ ] #6 #2 Form fields are reset (amount=empty, asset=empty, price=empty)
-- [ ] #7 #3 Date defaults to current timestamp in RFC3339 format
-- [ ] #8 #4 User can navigate form with Tab/Enter as before
+- [ ] #1 #1 Pressing 'c' in asset list switches to form view
+- [ ] #2 #2 Form fields are reset (amount=empty, asset=empty, price=empty)
+- [ ] #3 #3 Date defaults to current timestamp in RFC3339 format
+- [ ] #4 #4 User can navigate form with Tab/Enter as before
 <!-- AC:END -->
 
 ## Implementation Plan
@@ -190,4 +186,10 @@ Key findings:
 - [ ] #10 Code follows project style (go fmt)
 - [ ] #11 PRD referenced in task
 - [ ] #12 Documentation updated (comments)
+- [ ] #13 All acceptance criteria met
+- [ ] #14 Unit tests pass (go test)
+- [ ] #15 No new compiler warnings
+- [ ] #16 Code follows project style (go fmt)
+- [ ] #17 PRD referenced in task
+- [ ] #18 Documentation updated (comments)
 <!-- DOD:END -->
