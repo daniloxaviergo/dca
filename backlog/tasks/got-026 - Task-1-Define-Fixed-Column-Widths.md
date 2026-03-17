@@ -2,8 +2,10 @@
 id: GOT-026
 title: 'Task 1: Define Fixed Column Widths'
 status: To Do
-assignee: []
+assignee:
+  - Catarina
 created_date: '2026-03-17 20:22'
+updated_date: '2026-03-17 20:28'
 labels: []
 dependencies: []
 references:
