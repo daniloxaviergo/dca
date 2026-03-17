@@ -5,7 +5,7 @@ status: To Do
 assignee:
   - Thomas
 created_date: '2026-03-17 11:20'
-updated_date: '2026-03-17 12:53'
+updated_date: '2026-03-17 12:54'
 labels: []
 dependencies:
   - GOT-013
@@ -184,6 +184,43 @@ This task extracts form components from the flat `main` package into a dedicated
 - [ ] #6 `go fmt` passes without errors
 - [ ] #7 `go build ./...` succeeds with no warnings
 <!-- SECTION:PLAN:END -->
+
+## Implementation Notes
+
+<!-- SECTION:NOTES:BEGIN -->
+## Implementation Notes
+
+**Date Completed:** 2026-03-17
+
+**Files Created:**
+- `internal/form/model.go` - Contains FormModel struct, Bubble Tea methods (Update, View, Init), form rendering logic, and helper functions (CalculateSharesFromValues, RoundTo8Decimals). Package declaration: `package form`.
+- `internal/form/validation.go` - Contains validation methods: validateAmount, validateDate, validateAsset, validatePrice. Package declaration: `package form`.
+- `internal/form/validation_test.go` - Contains 36 tests for validation functions and FormModel methods. Package declaration: `package form`.
+
+**Files Modified:**
+- `main.go` - Added import for `internal/form` package. Replaced `*FormModel` with `*form.FormModel` in model struct and type assertions. Replaced `NewFormModel()` with `form.NewFormModel()`.
+
+**Test Results:**
+```
+ok      github.com/danilo/scripts/github/dca    0.005s
+ok      github.com/danilo/scripts/github/dca/internal/dca       (cached)
+ok      github.com/danilo/scripts/github/dca/internal/form      0.003s
+```
+
+**Build Verification:**
+- `go build ./...` - Success, no errors
+- `go fmt ./...` - Success, code properly formatted
+
+**Architecture Decisions:**
+1. Split validation functions into separate `validation.go` file for better organization
+2. All validation methods remain as methods on FormModel (not standalone functions) to maintain access to field validation context
+3. Created `formSubmittedMsg` type in model.go (since it's used by the main package's Update logic)
+
+**Migration Notes:**
+- Root-level `dca_form.go` and `dca_form_test.go` remain as duplicates for now (follows GOT-015 pattern for gradual cleanup)
+- All 36 tests from the form package pass successfully
+- All existing tests in main and internal/dca continue to pass
+<!-- SECTION:NOTES:END -->
 
 ## Definition of Done
 <!-- DOD:BEGIN -->
