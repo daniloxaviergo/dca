@@ -5,7 +5,7 @@ status: To Do
 assignee:
   - Thomas
 created_date: '2026-03-17 15:51'
-updated_date: '2026-03-17 16:18'
+updated_date: '2026-03-17 16:22'
 labels: []
 dependencies: []
 ordinal: 4000
@@ -97,6 +97,27 @@ Tests cover:
   - Will include ASCII-style diagrams for architecture
 - **Scope considerations**: README focuses on the current implementation state; future extensibility notes will be added as features are developed
 <!-- SECTION:DESCRIPTION:END -->
+
+## Definition of Done
+<!-- DOD:BEGIN -->
+- [ ] #1 All acceptance criteria met
+- [ ] #2 Unit tests pass (go test)
+- [ ] #3 No new compiler warnings
+- [ ] #4 Code follows project style (go fmt)
+- [ ] #5 PRD referenced in task
+- [ ] #6 Documentation updated (comments)
+- [ ] #7 - [ ] All acceptance criteria met
+- [ ] #8 - [ ] Unit tests pass (go test)
+- [ ] #9 - [ ] No new compiler warnings
+- [ ] #10 - [ ] Code follows project style (go fmt)
+- [ ] #11 - [ ] PRD referenced in task
+- [ ] #12 - [ ] Documentation updated (README.md created)
+<!-- DOD:END -->
+
+## Acceptance Criteria
+<!-- AC:BEGIN -->
+- [ ] #1 All acceptance criteria are met - task is a documentation task with no specific acceptance criteria
+<!-- AC:END -->
 
 ## Implementation Plan
 
@@ -196,13 +217,3 @@ Tests cover:
 
 - README should document: cmd/dca/ directory structure, internal packages, Bubble Tea TUI, form data entry, assets view
 <!-- SECTION:NOTES:END -->
-
-## Definition of Done
-<!-- DOD:BEGIN -->
-- [ ] #1 All acceptance criteria met
-- [ ] #2 Unit tests pass (go test)
-- [ ] #3 No new compiler warnings
-- [ ] #4 Code follows project style (go fmt)
-- [ ] #5 PRD referenced in task
-- [ ] #6 Documentation updated (comments)
-<!-- DOD:END -->
