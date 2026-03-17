@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - Thomas
 created_date: '2026-03-17 00:42'
-updated_date: '2026-03-17 01:37'
+updated_date: '2026-03-17 01:39'
 labels: []
 dependencies: []
 references:
@@ -21,12 +21,12 @@ Create assets_view.go with Bubble Tea model pattern for interactive table UI wit
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 Table displays with headers: Asset, Count, Total Shares, Avg Price, Total Value
-- [ ] #2 Up/Down arrows navigate rows
-- [ ] #3 Active row highlighted
-- [ ] #4 Esc returns to menu or exits
-- [ ] #5 Ctrl+C exits cleanly
-- [ ] #6 No assets message displays when list is empty
+- [x] #1 Table displays with headers: Asset, Count, Total Shares, Avg Price, Total Value
+- [x] #2 Up/Down arrows navigate rows
+- [x] #3 Active row highlighted
+- [x] #4 Esc returns to menu or exits
+- [x] #5 Ctrl+C exits cleanly
+- [x] #6 No assets message displays when list is empty
 <!-- AC:END -->
 
 ## Implementation Plan
