@@ -1,7 +1,7 @@
 ---
 id: GOT-025
 title: 'Task 4: Exit from asset list'
-status: To Do
+status: In Progress
 assignee:
   - Catarina
 created_date: '2026-03-17 17:38'
