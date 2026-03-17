@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - Thomas
 created_date: '2026-03-17 00:42'
-updated_date: '2026-03-17 10:57'
+updated_date: '2026-03-17 10:59'
 labels: []
 dependencies: []
 references:
@@ -198,6 +198,86 @@ go vet ./...
 <!-- SECTION:NOTES:BEGIN -->
 Implementation complete: State transitions working correctly. Custom message types added for view transitions instead of relying on tea.Quit. All tests pass (37 tests). Build succeeds with no warnings. Code formatting verified with gofmt.
 <!-- SECTION:NOTES:END -->
+
+## Final Summary
+
+<!-- SECTION:FINAL_SUMMARY:BEGIN -->
+# Implementation Summary: Integrate Assets View into Main Application
+
+## Changes Made
+
+### 1. main.go
+- Added `viewTransitionMsg` and `formSubmittedMsg` message types for inter-view communication
+- Updated `Update()` to handle state transitions using custom messages instead of `tea.Quit`
+- Added `formSubmittedMsg` case to switch from form to assets view
+- Added `viewTransitionMsg` case to switch from assets view back to form
+
+### 2. assets_view.go
+- Removed duplicate `viewTransitionMsg` type definition (moved to main.go)
+- Updated `Update()` to return `func() tea.Msg` commands instead of raw messages
+- Changed Esc/Ctrl+C handling to return `viewTransitionMsg{view: "form"}` instead of `tea.Quit`
+- Added `tea.QuitMsg` case to handle program termination signals
+
+### 3. dca_form.go
+- Removed duplicate `formSubmittedMsg` type definition (moved to main.go)
+- Updated `handleEnter()` to return `formSubmittedMsg{}` via command function
+- Removed `formSubmittedMsg` case from Update (form should not receive its own submitted message)
+
+### 4. Test Updates (assets_view_test.go)
+- Updated tests to execute commands using `cmd()` to get the message value
+- Changed test assertions to check command execution results
+
+## Architecture Pattern
+
+**Custom Message Types for View Transitions:**
+```go
+type viewTransitionMsg struct {
+    view string
+}
+
+type formSubmittedMsg struct{}
+```
+
+**Command Pattern:**
+```go
+return m, func() tea.Msg {
+    return viewTransitionMsg{view: "assets"}
+}
+```
+
+## Test Results
+
+- **All 37 tests pass** ✓
+- **Build succeeds** with no warnings ✓
+- **go vet** passes with no issues ✓
+- **gofmt** verification passes ✓
+
+## Data Flow
+
+1. **Form Submission**: User fills form → Enter → `formSubmittedMsg` command → main.go switches to assets view
+2. **Assets View Exit**: User presses Esc/Ctrl+C → `viewTransitionMsg{view: "form"}` → main.go switches back to form
+3. **Data Consistency**: Same `DCAData` instance passed to both views; assets view reloads from file on transition
+
+## Acceptance Criteria
+
+| # | Criterion | Status |
+|---|-----------|--------|
+| 1 | Assets view accessible from main entry | ✓ |
+| 2 | Data consistency maintained across views | ✓ |
+| 3 | Changes reflected after save | ✓ |
+| 4 | Clean exit from assets view | ✓ |
+
+## Definition of Done
+
+| # | Item | Status |
+|---|------|--------|
+| 1 | All acceptance criteria met | ✓ |
+| 2 | Unit tests pass (go test) | ✓ |
+| 3 | No new compiler warnings | ✓ |
+| 4 | Code follows project style (go fmt) | ✓ |
+| 5 | PRD referenced in task | ✓ |
+| 6 | Documentation updated (comments) | ✓ |
+<!-- SECTION:FINAL_SUMMARY:END -->
 
 ## Definition of Done
 <!-- DOD:BEGIN -->
