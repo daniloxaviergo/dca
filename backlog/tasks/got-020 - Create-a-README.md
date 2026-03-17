@@ -4,8 +4,10 @@ title: Create a README
 status: To Do
 assignee: []
 created_date: '2026-03-17 15:51'
+updated_date: '2026-03-17 15:51'
 labels: []
 dependencies: []
+ordinal: 4000
 ---
 
 ## Description
