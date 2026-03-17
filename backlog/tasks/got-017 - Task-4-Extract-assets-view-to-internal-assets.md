@@ -2,9 +2,10 @@
 id: GOT-017
 title: 'Task 4: Extract assets view to internal/assets/'
 status: To Do
-assignee: []
+assignee:
+  - Thomas
 created_date: '2026-03-17 11:20'
-updated_date: '2026-03-17 14:49'
+updated_date: '2026-03-17 14:58'
 labels: []
 dependencies:
   - GOT-013
