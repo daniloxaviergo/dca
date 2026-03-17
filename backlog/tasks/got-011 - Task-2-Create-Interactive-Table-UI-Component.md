@@ -2,10 +2,9 @@
 id: GOT-011
 title: 'Task 2: Create Interactive Table UI Component'
 status: In Progress
-assignee:
-  - Thomas
+assignee: []
 created_date: '2026-03-17 00:42'
-updated_date: '2026-03-17 01:44'
+updated_date: '2026-03-17 08:23'
 labels: []
 dependencies: []
 references:
