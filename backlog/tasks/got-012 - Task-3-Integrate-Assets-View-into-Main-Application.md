@@ -2,10 +2,9 @@
 id: GOT-012
 title: 'Task 3: Integrate Assets View into Main Application'
 status: In Progress
-assignee:
-  - Catarina
+assignee: []
 created_date: '2026-03-17 00:42'
-updated_date: '2026-03-17 10:26'
+updated_date: '2026-03-17 10:30'
 labels: []
 dependencies: []
 references:
@@ -45,7 +44,7 @@ The integration involves connecting the existing `AssetsView` Bubble Tea compone
 
 ### Architecture Decision
 - Keep the current `AppState` enum with two states
-- Use `tea.Quit` from AssetsView to return to form (not full app exit)
+- **Key Fix**: Use custom message to signal "return to form" instead of `tea.Quit`
 - Reuse the same `DCAData` instance across views for data consistency
 - Load asset summaries fresh from file on each transition to assets view
 
@@ -101,10 +100,21 @@ The integration involves connecting the existing `AssetsView` Bubble Tea compone
    - Use same `DCAData` instance passed between views
 
 ### Implementation Steps
-1. Fix `main.go` Update loop to properly handle state transitions
-2. Ensure assets view reloads fresh data from file on each entry
-3. Verify form data is saved before switching to assets view
-4. Test clean transitions in both directions
+1. **Create custom message type** in `main.go`:
+   - Add `type viewTransitionMsg struct{ view string }` for state transitions
+
+2. **Update `AssetsView.Update()` in `assets_view.go`**:
+   - Change `tea.Quit` to return `viewTransitionMsg{view: "form"}`
+
+3. **Update `main.go` model Update loop**:
+   - Add case for `viewTransitionMsg` to switch `currentState`
+   - Reload assets view data when entering `StateAssetsView`
+   - Reinitialize form when returning from `StateAssetsView`
+
+4. **Verify state transition flow**:
+   - Test: Form submission → saves → switches to assets view
+   - Test: Esc in assets view → returns to form
+   - Test: Ctrl+C exits application from any view
 
 ## 5. Testing Strategy
 
@@ -149,14 +159,15 @@ go vet ./...
 ## 6. Risks and Considerations
 
 ### Known Issues to Address
-1. **Data Loading Timing**: Current code may load data before form submission completes
-   - Fix: Ensure save completes before switching views
+1. **State Transition Message**: Current code uses `tea.Quit` which exits full application
+   - Fix: Create custom `tea.Msg` type for view transitions (e.g., `ReturnToFormMsg`)
+   - Update `AssetsView.Update()` to return this message instead of `tea.Quit`
 
-2. **State Persistence**: Need to verify `entries` pointer remains consistent
-   - Both views must reference same `DCAData` instance
+2. **Data Loading Timing**: Current code may load data before form submission completes
+   - Fix: Ensure save completes before switching views in `handleEnter()` logic
 
-3. **Exit Behavior**: Currently uses `tea.Quit` which exits full application
-   - Fix: Consider returning to form instead of quitting on Esc from assets view
+3. **State Persistence**: Need to verify `entries` pointer remains consistent
+   - Verify: Same `DCAData` instance passed to both `FormModel` and `AssetsView`
 
 ### Potential Pitfalls
 - **File I/O Race Conditions**: If form saves while assets view loads
@@ -169,9 +180,16 @@ go vet ./...
   - Mitigation: Update model synchronously, no async operations
 
 ### Rollback Considerations
-- Changes are isolated to `main.go`
+- Changes are isolated to `main.go` and minimal `assets_view.go` modification
 - Can revert by replacing `main.go` with previous version
 - No database or file format changes
+
+### Verification Checklist (before approval)
+- [ ] Read task references and PRD
+- [ ] Review current `main.go` implementation
+- [ ] Review `assets_view.go` component interface
+- [ ] Confirm no breaking changes to existing functionality
+- [ ] Plan aligns with project's Bubble Tea patterns
 <!-- SECTION:PLAN:END -->
 
 ## Definition of Done
