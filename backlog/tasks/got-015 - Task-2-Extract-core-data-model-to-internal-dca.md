@@ -2,10 +2,9 @@
 id: GOT-015
 title: 'Task 2: Extract core data model to internal/dca/'
 status: In Progress
-assignee:
-  - Thomas
+assignee: []
 created_date: '2026-03-17 11:20'
-updated_date: '2026-03-17 11:38'
+updated_date: '2026-03-17 12:16'
 labels: []
 dependencies:
   - GOT-013
