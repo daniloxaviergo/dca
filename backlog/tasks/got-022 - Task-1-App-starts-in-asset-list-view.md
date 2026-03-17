@@ -5,7 +5,7 @@ status: To Do
 assignee:
   - Thomas
 created_date: '2026-03-17 17:38'
-updated_date: '2026-03-17 17:42'
+updated_date: '2026-03-17 17:45'
 labels: []
 dependencies: []
 references:
@@ -23,10 +23,10 @@ Change app to initialize in asset list view instead of form view. Modify cmd/dca
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 App initializes with StateAssetsView instead of StateForm
-- [ ] #2 Asset list displays on first render
-- [ ] #3 User can navigate with ↑/↓ arrow keys
-- [ ] #4 Esc/Ctrl+C exits the app from asset list
+- [x] #1 App initializes with StateAssetsView instead of StateForm
+- [x] #2 Asset list displays on first render
+- [x] #3 User can navigate with ↑/↓ arrow keys
+- [x] #4 Esc/Ctrl+C exits the app from asset list
 <!-- AC:END -->
 
 ## Implementation Plan
