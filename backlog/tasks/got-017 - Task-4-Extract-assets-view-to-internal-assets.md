@@ -5,7 +5,7 @@ status: To Do
 assignee:
   - Thomas
 created_date: '2026-03-17 11:20'
-updated_date: '2026-03-17 14:58'
+updated_date: '2026-03-17 15:03'
 labels: []
 dependencies:
   - GOT-013
@@ -23,11 +23,11 @@ Move assets_view.go content to new package
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 internal/assets/view.go created with AssetsView
-- [ ] #2 internal/assets/aggregate.go created with aggregation functions
-- [ ] #3 internal/assets/aggregate_test.go created with all tests
-- [ ] #4 Package declaration changed to 'assets'
-- [ ] #5 All tests pass
+- [x] #1 internal/assets/view.go created with AssetsView
+- [x] #2 internal/assets/aggregate.go created with aggregation functions
+- [x] #3 internal/assets/aggregate_test.go created with all tests
+- [x] #4 Package declaration changed to 'assets'
+- [x] #5 All tests pass
 <!-- AC:END -->
 
 ## Implementation Plan
