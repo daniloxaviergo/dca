@@ -1,11 +1,11 @@
 ---
 id: GOT-017
 title: 'Task 4: Extract assets view to internal/assets/'
-status: To Do
+status: Done
 assignee:
   - Thomas
 created_date: '2026-03-17 11:20'
-updated_date: '2026-03-17 15:03'
+updated_date: '2026-03-17 15:04'
 labels: []
 dependencies:
   - GOT-013
@@ -128,6 +128,63 @@ go test ./...
 go build ./...
 ```
 <!-- SECTION:PLAN:END -->
+
+## Final Summary
+
+<!-- SECTION:FINAL_SUMMARY:BEGIN -->
+## Summary
+
+Task GOT-017 completed successfully. Extracted assets_view.go content to the new internal/assets/ package.
+
+## What Changed
+
+### New Files Created
+- `internal/assets/view.go` - Bubble Tea UI component (AssetsView, ViewTransitionMsg)
+- `internal/assets/aggregate.go` - Data aggregation functions (AssetSummary, AssetsViewModel, RoundTo8Decimals, LoadAndAggregateEntries, CalculateWeightedAverage)
+- `internal/assets/view_test.go` - UI/component tests
+- `internal/assets/aggregate_test.go` - Aggregation/data tests
+
+### Files Removed
+- `assets_view.go` - Migrated to internal/assets/
+- `assets_view_test.go` - Migrated to internal/assets/ (split into view_test.go and aggregate_test.go)
+
+### Key Fixes
+- Added missing `AssetSummary` and `AssetsViewModel` struct definitions to aggregate.go
+- Removed unused `math` import
+
+## Verification Results
+
+```bash
+$ go test ./...
+ok      github.com/danilo/scripts/github/dca                    0.003s
+ok      github.com/danilo/scripts/github/dca/internal/assets    0.004s
+ok      github.com/danilo/scripts/github/dca/internal/dca       (cached)
+ok      github.com/danilo/scripts/github/dca/internal/form      (cached)
+
+$ go build -o dca
+Success
+
+$ go fmt ./...
+No formatting changes needed
+```
+
+## Acceptance Criteria
+
+- [x] #1 internal/assets/view.go created with AssetsView
+- [x] #2 internal/assets/aggregate.go created with aggregation functions
+- [x] #3 internal/assets/aggregate_test.go created with all tests
+- [x] #4 Package declaration changed to 'assets'
+- [x] #5 All tests pass
+
+## Definition of Done
+
+- [x] #1 All acceptance criteria met
+- [x] #2 Unit tests pass (go test ./...)
+- [x] #3 No new compiler warnings
+- [x] #4 Code follows project style (go fmt)
+- [x] #5 PRD referenced in task (backlog/docs/doc-004.md)
+- [x] #6 Documentation updated (comments in code)
+<!-- SECTION:FINAL_SUMMARY:END -->
 
 ## Definition of Done
 <!-- DOD:BEGIN -->
