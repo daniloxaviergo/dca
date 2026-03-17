@@ -4,6 +4,7 @@ title: 'Task 5: Update main.go to use new packages'
 status: To Do
 assignee: []
 created_date: '2026-03-17 11:20'
+updated_date: '2026-03-17 11:22'
 labels: []
 dependencies:
   - GOT-013
@@ -13,6 +14,7 @@ dependencies:
 references:
   - backlog/docs/doc-004.md
 priority: medium
+ordinal: 6000
 ---
 
 ## Description

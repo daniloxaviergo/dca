@@ -4,12 +4,14 @@ title: 'Task 2: Extract core data model to internal/dca/'
 status: To Do
 assignee: []
 created_date: '2026-03-17 11:20'
+updated_date: '2026-03-17 11:22'
 labels: []
 dependencies:
   - GOT-013
 references:
   - backlog/docs/doc-004.md
 priority: high
+ordinal: 2000
 ---
 
 ## Description

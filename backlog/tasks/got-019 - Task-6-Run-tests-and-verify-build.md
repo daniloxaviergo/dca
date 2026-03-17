@@ -4,6 +4,7 @@ title: 'Task 6: Run tests and verify build'
 status: To Do
 assignee: []
 created_date: '2026-03-17 11:20'
+updated_date: '2026-03-17 11:22'
 labels: []
 dependencies:
   - GOT-013
@@ -14,6 +15,7 @@ dependencies:
 references:
   - backlog/docs/doc-004.md
 priority: high
+ordinal: 7000
 ---
 
 ## Description

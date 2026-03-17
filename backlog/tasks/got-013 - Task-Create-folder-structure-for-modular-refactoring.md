@@ -4,10 +4,12 @@ title: 'Task: Create folder structure for modular refactoring'
 status: To Do
 assignee: []
 created_date: '2026-03-17 11:16'
+updated_date: '2026-03-17 11:22'
 labels: []
 dependencies: []
 references:
   - backlog/docs/doc-004.md
+ordinal: 4000
 ---
 
 ## Description
