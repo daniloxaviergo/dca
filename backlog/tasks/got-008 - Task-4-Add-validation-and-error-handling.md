@@ -5,7 +5,7 @@ status: To Do
 assignee:
   - Thomas
 created_date: '2026-03-16 21:25'
-updated_date: '2026-03-16 23:27'
+updated_date: '2026-03-17 00:12'
 labels: []
 dependencies: []
 references:
@@ -23,16 +23,16 @@ Implement comprehensive validation and error handling across all form inputs and
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 Reject negative or zero amounts with message: 'Amount must be positive'
-- [ ] #2 Reject invalid date format with helpful example: 'Use YYYY-MM-DD'
-- [ ] #3 Reject negative or zero prices with message: 'Price must be positive'
-- [ ] #4 Reject empty asset ticker with message: 'Asset ticker is required'
-- [ ] #5 Handle file permission errors with user-friendly message: 'Permission denied: check file permissions'
-- [ ] #6 Handle JSON parse errors gracefully with diagnostic message
-- [ ] #7 Handle file write errors with clear user message
-- [ ] #8 Validate that calculated shares is a valid finite number
-- [ ] #9 Catch and handle panics from numeric operations
-- [ ] #10 Display validation errors inline with the prompt for re-entry
+- [x] #1 Reject negative or zero amounts with message: 'Amount must be positive'
+- [x] #2 Reject invalid date format with helpful example: 'Use YYYY-MM-DD'
+- [x] #3 Reject negative or zero prices with message: 'Price must be positive'
+- [x] #4 Reject empty asset ticker with message: 'Asset ticker is required'
+- [x] #5 Handle file permission errors with user-friendly message: 'Permission denied: check file permissions'
+- [x] #6 Handle JSON parse errors gracefully with diagnostic message
+- [x] #7 Handle file write errors with clear user message
+- [x] #8 Validate that calculated shares is a valid finite number
+- [x] #9 Catch and handle panics from numeric operations
+- [x] #10 Display validation errors inline with the prompt for re-entry
 <!-- AC:END -->
 
 ## Implementation Plan
@@ -104,4 +104,44 @@ Verify all existing tests pass and error messages match acceptance criteria.
 
 <!-- SECTION:NOTES:BEGIN -->
 Starting implementation of validation and error handling. Reviewing codebase structure in dca_entry.go, dca_form.go, and main.go. Planning to update all validation functions to match exact error message formats from acceptance criteria.
+
+Implementation complete. All validation functions updated to return exact error messages from acceptance criteria. Error handling for file operations and JSON parsing enhanced. Panic recovery added to main.go. All 54 tests passing. Build successful.
 <!-- SECTION:NOTES:END -->
+
+## Final Summary
+
+<!-- SECTION:FINAL_SUMMARY:BEGIN -->
+### Implementation Summary
+
+Implemented comprehensive validation and error handling across all form inputs and file operations:
+
+**dca_entry.go:**
+- Updated `Validate()` method to check shares is finite and positive
+- Updated error messages to match exact format from acceptance criteria ("Amount must be positive", "Price must be positive", "Shares must be a positive finite number")
+- Enhanced `LoadEntries()` to handle permission errors and JSON parse errors with user-friendly messages
+- Enhanced `SaveEntries()` to handle permission errors and provide clear file operation errors
+
+**dca_form.go:**
+- Updated `validateAmount()` to return exact message "Amount must be positive"
+- Updated `validateDate()` to return exact message "Use YYYY-MM-DD"
+- Updated `validateAsset()` to return exact message "Asset ticker is required"
+- Updated `validatePrice()` to return exact message "Price must be positive"
+- Added `math` import for NaN/Inf validation
+- Updated `CalculateSharesFromValues()` to validate shares is finite
+- Enhanced error display (already inline with red foreground and ❌ indicator)
+
+**main.go:**
+- Added panic recovery wrapper around main() with stack trace output
+
+**Tests:**
+- Updated existing tests to verify new error message formats
+- Added new tests for exact error messages in all validation functions
+- Added tests for inline error display
+- Added tests for file permission and JSON parse error handling
+- All 54 tests passing
+
+**Verification:**
+- All tests pass: `go test ./... -v`
+- Build succeeds: `go build -o dca .`
+- No new warnings or regressions
+<!-- SECTION:FINAL_SUMMARY:END -->
