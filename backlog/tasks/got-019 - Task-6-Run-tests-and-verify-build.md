@@ -2,7 +2,8 @@
 id: GOT-019
 title: 'Task 6: Run tests and verify build'
 status: To Do
-assignee: []
+assignee:
+  - Thomas
 created_date: '2026-03-17 11:20'
 updated_date: '2026-03-17 15:46'
 labels: []
