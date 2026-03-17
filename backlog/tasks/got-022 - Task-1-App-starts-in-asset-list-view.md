@@ -2,7 +2,8 @@
 id: GOT-022
 title: 'Task 1: App starts in asset list view'
 status: To Do
-assignee: []
+assignee:
+  - Thomas
 created_date: '2026-03-17 17:38'
 updated_date: '2026-03-17 17:42'
 labels: []
