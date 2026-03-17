@@ -5,7 +5,7 @@ status: To Do
 assignee:
   - Thomas
 created_date: '2026-03-17 15:51'
-updated_date: '2026-03-17 16:14'
+updated_date: '2026-03-17 16:18'
 labels: []
 dependencies: []
 ordinal: 4000
@@ -182,6 +182,20 @@ Tests cover:
   - Will include ASCII-style diagrams for architecture
 - **Scope considerations**: README focuses on the current implementation state; future extensibility notes will be added as features are developed
 <!-- SECTION:PLAN:END -->
+
+## Implementation Notes
+
+<!-- SECTION:NOTES:BEGIN -->
+- Reviewed codebase structure: project uses cmd/dca/ as entry point with internal packages (dca, form, assets)
+
+- Tests pass: all 4 packages test successfully (go test ./...)
+
+- Build issue identified: root has duplicate dca_entry.go with package main that conflicts with cmd/dca/main.go
+
+- The duplicate root files (dca_entry.go, dca_entry_test.go) appear to be legacy - cmd/dca/main.go properly imports from internal packages
+
+- README should document: cmd/dca/ directory structure, internal packages, Bubble Tea TUI, form data entry, assets view
+<!-- SECTION:NOTES:END -->
 
 ## Definition of Done
 <!-- DOD:BEGIN -->
