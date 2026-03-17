@@ -4,13 +4,13 @@ title: 'Task 2: Create Interactive Table UI Component'
 status: Done
 assignee: []
 created_date: '2026-03-17 00:42'
-updated_date: '2026-03-17 08:23'
+updated_date: '2026-03-17 08:24'
 labels: []
 dependencies: []
 references:
   - 'PRD: DCA Assets List Table View'
 priority: high
-ordinal: 11000
+ordinal: 6500
 ---
 
 ## Description
