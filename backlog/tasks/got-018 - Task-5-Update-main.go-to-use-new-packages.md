@@ -2,10 +2,9 @@
 id: GOT-018
 title: 'Task 5: Update main.go to use new packages'
 status: Done
-assignee:
-  - Thomas
+assignee: []
 created_date: '2026-03-17 11:20'
-updated_date: '2026-03-17 15:36'
+updated_date: '2026-03-17 15:42'
 labels: []
 dependencies:
   - GOT-013
