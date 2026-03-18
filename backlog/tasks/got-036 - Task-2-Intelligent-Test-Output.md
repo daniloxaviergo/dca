@@ -2,7 +2,8 @@
 id: GOT-036
 title: 'Task 2: Intelligent Test Output'
 status: In Progress
-assignee: []
+assignee:
+  - Thomas
 created_date: '2026-03-18 11:19'
 updated_date: '2026-03-18 11:39'
 labels:
