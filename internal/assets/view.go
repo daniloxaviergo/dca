@@ -70,17 +70,21 @@ func (a *AssetsView) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return a, nil
 }
 
-// handleUp moves selection up (with wrap-around to last data row)
+// handleUp moves selection up (with wrap-around from first data row to last visible row)
 func (a *AssetsView) handleUp() (tea.Model, tea.Cmd) {
 	if len(a.Entries) == 0 {
 		return a, nil
 	}
 
-	numDataRows := len(a.Entries)
+	// Total visible rows = 30 (1 header + up to 29 data/empty rows)
+	// Data rows are at indices 1-29 (0 is header)
+	// Selection index ranges from 0 (header) to 29 (last data/empty row)
+	const maxRowIndex = 29 // 30 total rows - 1
 
-	if a.SelectedIndex <= 0 {
-		// Wrap to last data row
-		a.SelectedIndex = numDataRows - 1
+	if a.SelectedIndex <= 1 {
+		// Wrap from first data row (index 1) to last visible row (index 29)
+		// Also handles index 0 (header) wrapping to last row
+		a.SelectedIndex = maxRowIndex
 	} else {
 		a.SelectedIndex--
 	}
@@ -93,11 +97,14 @@ func (a *AssetsView) handleDown() (tea.Model, tea.Cmd) {
 		return a, nil
 	}
 
-	numDataRows := len(a.Entries)
+	// Total visible rows = 30 (1 header + up to 29 data/empty rows)
+	// Data rows are at indices 1-29 (0 is header)
+	// Selection index ranges from 0 (header) to 29 (last data/empty row)
+	const maxRowIndex = 29 // 30 total rows - 1
 
-	if a.SelectedIndex >= numDataRows-1 {
-		// Wrap to first data row
-		a.SelectedIndex = 0
+	if a.SelectedIndex >= maxRowIndex {
+		// Wrap to first data row (index 1, skipping header at 0)
+		a.SelectedIndex = 1
 	} else {
 		a.SelectedIndex++
 	}
@@ -155,29 +162,35 @@ func (a *AssetsView) renderTable() string {
 		return a.renderEmptyState()
 	}
 
+	// Cap displayed rows to maintain exactly 30 total rows (1 header + 29 data)
+	// Only display first maxDataRows entries
+	const maxVisibleRows = 30
+	const maxDataRows = maxVisibleRows - 1 // 29 data rows max
+	dataRowsToRender := len(a.Entries)
+	if dataRowsToRender > maxDataRows {
+		dataRowsToRender = maxDataRows
+	}
+
 	var rows []string
 
 	// Render header row
 	header := a.renderHeaderRow()
 	rows = append(rows, header)
 
-	// Render data rows
-	for i, entry := range a.Entries {
+	// Render data rows (up to maxDataRows)
+	for i := 0; i < dataRowsToRender; i++ {
+		entry := a.Entries[i]
 		row := a.renderDataRow(i, entry)
 		rows = append(rows, row)
 	}
 
 	// Pad with empty rows to maintain exactly 30 rows (including header)
-	// Total table rows = 1 header + 29 data rows max = 30 total visible rows
-	const maxVisibleRows = 30
-
-	// Calculate how many empty rows needed to reach 30 total
 	// 30 = 1 header + data rows + empty rows
-	// empty rows = 30 - 1 - data rows
-	emptyRowsNeeded := maxVisibleRows - 1 - len(a.Entries)
+	// empty rows = 30 - 1 - data rows rendered
+	emptyRowsNeeded := maxVisibleRows - 1 - dataRowsToRender
 	if emptyRowsNeeded > 0 {
 		for i := 0; i < emptyRowsNeeded; i++ {
-			row := a.renderEmptyDataRow(len(a.Entries) + i)
+			row := a.renderEmptyDataRow(dataRowsToRender + i)
 			rows = append(rows, row)
 		}
 	}
