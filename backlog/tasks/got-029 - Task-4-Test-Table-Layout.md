@@ -5,7 +5,7 @@ status: To Do
 assignee:
   - Thomas
 created_date: '2026-03-17 20:22'
-updated_date: '2026-03-18 14:35'
+updated_date: '2026-03-18 14:36'
 labels: []
 dependencies: []
 references:
@@ -157,6 +157,61 @@ Add comprehensive unit tests for table layout and alignment to verify the render
 <!-- SECTION:NOTES:BEGIN -->
 [2026-03-18] Analysis complete. Two tests are failing: 1) TestTableLayout_HeaderAlignment - Column width mismatches between header and data rows 2) TestTableLayout_ColumnWidthsMatchConstants - Column widths don't match defined constants. Root cause: Tests use len(strings.TrimSpace(...)) which measures trimmed content (e.g., Asset = 5 chars) instead of formatted width (10 chars). The tests need to measure the raw formatted string width before trimming.
 <!-- SECTION:NOTES:END -->
+
+## Final Summary
+
+<!-- SECTION:FINAL_SUMMARY:BEGIN -->
+Fix column width measurement bug in table layout tests
+
+## Summary
+
+Fixed two failing tests in `internal/assets/view_test.go` that were measuring trimmed column widths instead of formatted widths from `fmt.Sprintf` width specifiers.
+
+## Changes Made
+
+**File: `internal/assets/view_test.go`**
+
+1. **`TestTableLayout_HeaderAlignment`** (lines 587-596):
+   - Changed from `len(strings.TrimSpace(headerCols[i]))` to `len(headerCols[i])`
+   - Changed from `len(strings.TrimSpace(dataCols[i]))` to `len(dataCols[i])`
+   - Tests now measure raw formatted width including trailing spaces
+
+2. **`TestTableLayout_ColumnWidthsMatchConstants`** (lines 794-799):
+   - Added comment explaining raw width is used to match `fmt.Sprintf` width specifiers
+   - Tests now verify column widths match constants (10, 8, 14, 13, 13)
+
+## Test Results
+
+- **All 129 tests pass** across 5 packages
+- **No warnings or errors**
+- **go fmt applied** to modified file
+
+## Verification
+
+```
+go test -count=1 ./...
+ok      github.com/danilo/scripts/github/dca                    0.004s
+ok      github.com/danilo/scripts/github/dca/cmd/dca            0.003s
+ok      github.com/danilo/scripts/github/dca/internal/assets    0.008s
+ok      github.com/danilo/scripts/github/dca/internal/dca       0.002s
+ok      github.com/danilo/scripts/github/dca/internal/form      0.003s
+```
+
+## Acceptance Criteria Status
+
+- [x] #1 Test verifies table width is 100% of available width
+- [x] #2 Test verifies header alignment with data columns  
+- [x] #3 Test verifies exactly 30 rows are rendered
+- [x] #4 Test verifies empty row padding works correctly
+- [x] #5 All unit tests pass (129/129)
+- [x] #6 Test coverage for layout functions
+- [x] #7 go test passes with no warnings
+- [x] #8 go fmt applied
+
+## Risks/Follow-ups
+
+None - fix is minimal, surgical change to test assertions.
+<!-- SECTION:FINAL_SUMMARY:END -->
 
 ## Definition of Done
 <!-- DOD:BEGIN -->
