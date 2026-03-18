@@ -1,11 +1,11 @@
 ---
 id: GOT-046
 title: 'Task 1: Command Structure - Create /prd:plan command'
-status: To Do
+status: In Progress
 assignee:
   - Catarina
 created_date: '2026-03-18 23:08'
-updated_date: '2026-03-18 23:13'
+updated_date: '2026-03-18 23:14'
 labels: []
 dependencies: []
 references:
