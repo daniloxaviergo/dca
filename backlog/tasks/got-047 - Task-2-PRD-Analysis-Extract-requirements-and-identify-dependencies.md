@@ -2,7 +2,8 @@
 id: GOT-047
 title: 'Task 2: PRD Analysis - Extract requirements and identify dependencies'
 status: In Progress
-assignee: []
+assignee:
+  - Catarina
 created_date: '2026-03-18 23:08'
 updated_date: '2026-03-18 23:25'
 labels: []
