@@ -1,17 +1,17 @@
 ---
 id: GOT-030
 title: 'Task 1: Intelligent Test Selection'
-status: In Progress
+status: To Do
 assignee:
   - Thomas
 created_date: '2026-03-18 00:27'
-updated_date: '2026-03-18 11:21'
+updated_date: '2026-03-18 14:56'
 labels: []
 dependencies: []
 references:
   - backlog/docs/doc-007.md
 priority: high
-ordinal: 2000
+ordinal: 4000
 ---
 
 ## Description
