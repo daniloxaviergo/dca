@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - Thomas
 created_date: '2026-03-18 11:19'
-updated_date: '2026-03-18 11:40'
+updated_date: '2026-03-18 11:44'
 labels:
   - agent
   - testing
@@ -26,9 +26,9 @@ Implement intelligent test output formatting with timing, cached results, and fa
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
 - [x] #1 Shows test execution time per package
-- [ ] #2 Highlights failing tests with error messages
-- [ ] #3 Indicates which tests used cached results
-- [ ] #4 Provides summary statistics (total/passed/failed/skipped)
+- [x] #2 Highlights failing tests with error messages
+- [x] #3 Indicates which tests used cached results
+- [x] #4 Provides summary statistics (total/passed/failed/skipped)
 <!-- AC:END -->
 
 ## Implementation Plan
@@ -137,6 +137,18 @@ Examined current testing-expert.md agent configuration
 Analyzed go test output format with timing and cache indicators
 
 Key findings: Cache status shown as (cached) or timing, verbose output shows per-test timing, summary shows PASS/FAIL package duration, failed tests show error context
+
+Updated .qwen/agents/testing-expert.md with intelligent test output formatting
+
+Added output parsing rules for timing, cache status, and failure detection
+
+Added structured output format template with Test Execution Summary, Package Timing, Cache Status, and Failure Analysis sections
+
+Added parsing guidelines for extracting package timing, cache status, failure detection, count statistics, and timing calculation
+
+All tests pass with make check (fmt, build, test)
+
+No compiler warnings introduced
 <!-- SECTION:NOTES:END -->
 
 ## Definition of Done
