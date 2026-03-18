@@ -4,7 +4,7 @@ title: Bug highlight first row table
 status: In Progress
 assignee: []
 created_date: '2026-03-18 15:13'
-updated_date: '2026-03-18 16:05'
+updated_date: '2026-03-18 16:15'
 labels: []
 dependencies: []
 ordinal: 1000
@@ -126,12 +126,44 @@ make test
 Ready for your approval. Should I proceed with the implementation?
 <!-- SECTION:PLAN:END -->
 
+## Implementation Notes
+
+<!-- SECTION:NOTES:BEGIN -->
+## Implementation Summary
+
+**Bug Fixed:** Table navigation `handleUp()` in `internal/assets/view.go` now correctly allows navigation from first data row (index 1) to header (index 0).
+
+**Changes Made:**
+
+1. **Fixed `handleUp()` logic** (`internal/assets/view.go`):
+   - Changed condition from `if a.SelectedIndex <= 1` to `if a.SelectedIndex == 0`
+   - Now only wraps from header (index 0) to last row (index 29)
+   - First data row (index 1) correctly decrements to header (index 0)
+
+2. **Updated Tests** (`internal/assets/view_test.go`):
+   - `TestAssetsView_NavigateUp`: Added test for 1→0 navigation, then 0→29 wrap
+   - `TestAssetsView_NavigateWrapUp`: Updated to test wrap from header (index 0), not first data row
+   - `TestAssetsView_UpdateArrowUp`: Updated to expect 1→0 instead of 1→29
+   - `TestAssetsView_NavigateWithPaddedRows`: Added full navigation path test (29→1→0→29)
+
+**Verification Results:**
+- All 88 tests pass (cached)
+- `make check` passes: fmt, build, test all successful
+- No compiler warnings or regressions
+- Code follows project style (go fmt applied)
+- Build completed successfully
+
+**Files Modified:**
+- `internal/assets/view.go` - Fixed handleUp() condition
+- `internal/assets/view_test.go` - Updated tests to match corrected behavior
+<!-- SECTION:NOTES:END -->
+
 ## Definition of Done
 <!-- DOD:BEGIN -->
-- [ ] #1 All acceptance criteria met
-- [ ] #2 Unit tests pass (go test)
-- [ ] #3 No new compiler warnings
-- [ ] #4 Code follows project style (go fmt)
+- [x] #1 All acceptance criteria met
+- [x] #2 Unit tests pass (go test)
+- [x] #3 No new compiler warnings
+- [x] #4 Code follows project style (go fmt)
 - [ ] #5 PRD referenced in task
-- [ ] #6 Documentation updated (comments)
+- [x] #6 Documentation updated (comments)
 <!-- DOD:END -->
