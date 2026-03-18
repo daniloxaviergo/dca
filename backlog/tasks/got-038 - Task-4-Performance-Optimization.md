@@ -2,10 +2,9 @@
 id: GOT-038
 title: 'Task 4: Performance Optimization'
 status: To Do
-assignee:
-  - Catarina
+assignee: []
 created_date: '2026-03-18 11:20'
-updated_date: '2026-03-18 12:15'
+updated_date: '2026-03-18 12:17'
 labels:
   - agent
   - testing
