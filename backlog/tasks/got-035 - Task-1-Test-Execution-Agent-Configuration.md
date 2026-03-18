@@ -25,10 +25,10 @@ Create the testing-expert agent configuration file with Go testing focus
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 Agent configuration stored at .qwen/agents/testing-expert.md
-- [ ] #2 Agent has access to: read_file, write_file, run_shell_command
-- [ ] #3 Agent system prompt focuses on Go testing, test failure analysis, and performance optimization
-- [ ] #4 Agent can execute go test commands with various flags
+- [x] #1 Agent configuration stored at .qwen/agents/testing-expert.md
+- [x] #2 Agent has access to: read_file, write_file, run_shell_command
+- [x] #3 Agent system prompt focuses on Go testing, test failure analysis, and performance optimization
+- [x] #4 Agent can execute go test commands with various flags
 <!-- AC:END -->
 
 ## Implementation Plan
