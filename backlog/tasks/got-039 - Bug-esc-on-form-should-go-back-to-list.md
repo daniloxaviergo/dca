@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - Thomas
 created_date: '2026-03-18 14:59'
-updated_date: '2026-03-18 15:02'
+updated_date: '2026-03-18 15:46'
 labels: []
 dependencies: []
 ordinal: 1000
@@ -29,7 +29,7 @@ I need go back to list assest
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 When user presses ESC on the form, the application should return to the asset list view
+- [x] #1 When user presses ESC on the form, the application should return to the asset list view
 <!-- AC:END -->
 
 ## Implementation Plan
