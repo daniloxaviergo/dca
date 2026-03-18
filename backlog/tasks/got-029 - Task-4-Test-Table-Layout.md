@@ -5,7 +5,7 @@ status: To Do
 assignee:
   - Thomas
 created_date: '2026-03-17 20:22'
-updated_date: '2026-03-18 13:36'
+updated_date: '2026-03-18 14:25'
 labels: []
 dependencies: []
 references:
@@ -139,6 +139,12 @@ Add comprehensive unit tests for table layout and alignment to verify the render
 
 **Ready to proceed:** Implementation can begin once user approves this plan.
 <!-- SECTION:PLAN:END -->
+
+## Implementation Notes
+
+<!-- SECTION:NOTES:BEGIN -->
+[2026-03-18] Analysis complete. Two tests are failing: 1) TestTableLayout_HeaderAlignment - Column width mismatches between header and data rows 2) TestTableLayout_ColumnWidthsMatchConstants - Column widths don't match defined constants. Root cause: Tests use len(strings.TrimSpace(...)) which measures trimmed content (e.g., Asset = 5 chars) instead of formatted width (10 chars). The tests need to measure the raw formatted string width before trimming.
+<!-- SECTION:NOTES:END -->
 
 ## Definition of Done
 <!-- DOD:BEGIN -->
