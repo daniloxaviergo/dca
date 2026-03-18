@@ -20,13 +20,12 @@ I need go back to list assest
 
 ## Definition of Done
 <!-- DOD:BEGIN -->
-- [ ] #1 All acceptance criteria met
-- [ ] #2 Unit tests pass (go test)
-- [ ] #3 No new compiler warnings
-- [ ] #4 Code follows project style (go fmt)
-- [ ] #5 PRD referenced in task
-- [ ] #6 Documentation updated (comments)
-- [ ] #7 #7 Add implementation plan to task before coding begins
+- [ ] #1 Unit tests pass (go test)
+- [ ] #2 No new compiler warnings
+- [ ] #3 Code follows project style (go fmt)
+- [ ] #4 PRD referenced in task
+- [ ] #5 Documentation updated (comments)
+- [ ] #6 #7 Add implementation plan to task before coding begins
 <!-- DOD:END -->
 
 ## Acceptance Criteria
