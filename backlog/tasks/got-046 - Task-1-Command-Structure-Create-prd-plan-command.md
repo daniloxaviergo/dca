@@ -196,6 +196,23 @@ Requirements:
 ```
 <!-- SECTION:DESCRIPTION:END -->
 
+## Definition of Done
+<!-- DOD:BEGIN -->
+- [ ] #1 All acceptance criteria met
+- [ ] #2 Documentation updated (comments)
+- [ ] #3 #1 All acceptance criteria met
+- [ ] #4 #2 Documentation updated (comments)
+<!-- DOD:END -->
+
+## Acceptance Criteria
+<!-- AC:BEGIN -->
+- [ ] #1 Command accepts task ID as parameter
+- [ ] #2 System correctly retrieves task details
+- [ ] #3 System extracts PRD document reference from task
+- [ ] #4 System retrieves PRD content
+- [ ] #5 System updates task with implementation plan
+<!-- AC:END -->
+
 ## Implementation Plan
 
 <!-- SECTION:PLAN:BEGIN -->
@@ -331,9 +348,3 @@ Command implementation details:
 - Handles edge cases: no PRD reference, invalid task ID, incomplete PRD
 - Follows plan format from `.qwen/commands/plan.md` template
 <!-- SECTION:NOTES:END -->
-
-## Definition of Done
-<!-- DOD:BEGIN -->
-- [ ] #1 All acceptance criteria met
-- [ ] #2 Documentation updated (comments)
-<!-- DOD:END -->
