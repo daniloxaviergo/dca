@@ -5,7 +5,7 @@ status: To Do
 assignee:
   - Thomas
 created_date: '2026-03-17 20:22'
-updated_date: '2026-03-18 14:25'
+updated_date: '2026-03-18 14:31'
 labels: []
 dependencies: []
 references:
@@ -29,6 +29,7 @@ Add unit tests for table layout and alignment to verify the rendering fixes work
 - [ ] #6 Test coverage for layout functions
 - [ ] #7 go test passes with no warnings
 - [ ] #8 go fmt applied
+- [ ] #9 All table layout tests pass with correct column width measurements
 <!-- AC:END -->
 
 ## Implementation Plan
@@ -154,4 +155,7 @@ Add comprehensive unit tests for table layout and alignment to verify the render
 - [ ] #4 Code follows project style (go fmt)
 - [ ] #5 PRD referenced in task
 - [ ] #6 Documentation updated (comments)
+- [ ] #7 All acceptance criteria met - table layout tests now pass
+- [ ] #8 Unit tests pass with no warnings
+- [ ] #9 go fmt applied to view_test.go
 <!-- DOD:END -->
