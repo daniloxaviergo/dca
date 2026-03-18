@@ -2,8 +2,10 @@
 id: GOT-042
 title: 'Task 2: Daily Aggregation Data Fetching'
 status: To Do
-assignee: []
+assignee:
+  - Catarina
 created_date: '2026-03-18 18:51'
+updated_date: '2026-03-18 19:59'
 labels:
   - data
   - fetching
