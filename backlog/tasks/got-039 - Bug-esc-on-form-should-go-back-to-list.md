@@ -2,7 +2,8 @@
 id: GOT-039
 title: Bug esc on form should go back to list
 status: In Progress
-assignee: []
+assignee:
+  - Thomas
 created_date: '2026-03-18 14:59'
 updated_date: '2026-03-18 15:02'
 labels: []
