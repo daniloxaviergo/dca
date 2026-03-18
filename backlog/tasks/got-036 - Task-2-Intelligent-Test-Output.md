@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - Catarina
 created_date: '2026-03-18 11:19'
-updated_date: '2026-03-18 11:34'
+updated_date: '2026-03-18 11:35'
 labels:
   - agent
   - testing
@@ -30,6 +30,102 @@ Implement intelligent test output formatting with timing, cached results, and fa
 - [ ] #3 Indicates which tests used cached results
 - [ ] #4 Provides summary statistics (total/passed/failed/skipped)
 <!-- AC:END -->
+
+## Implementation Plan
+
+<!-- SECTION:PLAN:BEGIN -->
+### 1. Technical Approach
+
+The goal is to enhance the `testing-expert.md` agent configuration to provide intelligent test output formatting with timing, cached results, and failure highlighting. This is a configuration/update task, not a code change task.
+
+**Approach:**
+- Update `.qwen/agents/testing-expert.md` with enhanced output formatting guidance
+- Add logic for parsing Go test output and presenting it in a structured format
+- Include templates for summary reports with package timing, cache status, and failure highlights
+
+**Architecture Decisions:**
+- Keep the agent as a configuration file (no code changes to Go source)
+- Use Go's built-in test flags (`-v`, `-count=1`, `-bench`) for timing data
+- Parse `go test` output to extract timing and cache information
+- Create structured output format for reduced token consumption
+
+### 2. Files to Modify
+
+- `.qwen/agents/testing-expert.md` - Update agent configuration with:
+  - Enhanced test execution commands with timing flags
+  - Output parsing logic for timing and cache detection
+  - Structured summary format template
+  - Failure highlighting and analysis guidance
+
+### 3. Dependencies
+
+- **Existing:** `.qwen/agents/testing-expert.md` (already exists, needs update)
+- **Existing:** `go test` command (standard Go tooling)
+- **Existing:** Makefile targets (`make test`, `make test-quiet`)
+- **No blocking issues** - this is a configuration update
+
+### 4. Code Patterns
+
+Follow existing patterns in the agent file:
+- Use `---` YAML frontmatter for metadata
+- Use `##` headers for sections
+- Include code block examples with backticks
+- List commands with `-` bullet points
+- Use structured output format with `=== Section ===` markers
+
+### 5. Testing Strategy
+
+**Testing Approach:**
+- Run `make test` to verify agent can execute tests
+- Run `make test -count=1` to test timing output
+- Manually verify the agent can parse and summarize output
+- Verify cache detection (cached vs uncached runs)
+
+**What to Verify:**
+- Agent can run all Makefile targets
+- Agent extracts timing per package
+- Agent detects cache status from output
+- Agent identifies failures and highlights them
+- Agent provides summary statistics
+
+### 6. Risks and Considerations
+
+**No significant risks** - this is a configuration-only change.
+
+**Considerations:**
+- Go test output format is stable across versions
+- Cache status is indicated by `(cached)` in output
+- Timing is shown as `package N.NNs` at the end of each package section
+- Test failures show `--- FAIL` with error context on following lines
+- Summary lines show `PASS/FAIL package N.NNs` for timing
+
+**Output Format to Implement:**
+```markdown
+=== Test Execution Summary ===
+Packages: 5
+Tests: 45 (cached: 40, new: 5)
+Duration: 45ms
+Status: PASS
+
+=== Package Timing ===
+- github.com/danilo/scripts/github/dca: 12ms
+- github.com/danilo/scripts/github/dca/cmd/dca: 8ms
+- ... (per-package timing)
+
+=== Cache Status ===
+Cached: 40 tests (89%)
+Uncached: 5 tests (11%)
+
+=== Failure Analysis ===
+If failures: List failing tests with errors
+If pass: No failures detected.
+
+=== Performance Tips ===
+- Suggest parallelization if tests > 100ms
+- Note when cache is effective
+- Recommend -count=1 for fresh runs
+```
+<!-- SECTION:PLAN:END -->
 
 ## Definition of Done
 <!-- DOD:BEGIN -->
