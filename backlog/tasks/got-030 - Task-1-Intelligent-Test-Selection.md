@@ -5,12 +5,13 @@ status: In Progress
 assignee:
   - Thomas
 created_date: '2026-03-18 00:27'
-updated_date: '2026-03-18 01:13'
+updated_date: '2026-03-18 11:21'
 labels: []
 dependencies: []
 references:
   - backlog/docs/doc-007.md
 priority: high
+ordinal: 2000
 ---
 
 ## Description
