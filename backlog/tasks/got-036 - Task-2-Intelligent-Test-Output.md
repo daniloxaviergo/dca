@@ -1,7 +1,7 @@
 ---
 id: GOT-036
 title: 'Task 2: Intelligent Test Output'
-status: To Do
+status: In Progress
 assignee:
   - Catarina
 created_date: '2026-03-18 11:19'
@@ -14,6 +14,7 @@ dependencies: []
 references:
   - backlog/docs/doc-008.md
 priority: high
+ordinal: 4000
 ---
 
 ## Description
