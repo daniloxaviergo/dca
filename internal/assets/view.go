@@ -8,6 +8,17 @@ import (
 	"github.com/charmbracelet/lipgloss"
 )
 
+// Column width constants for the Assets View table
+// Total table width: 10 + 8 + 14 + 13 + 13 + (4 separators × 2) = 74 characters
+const (
+	ColumnAssetWidth      = 10   // Asset: 10 characters, left-aligned
+	ColumnCountWidth      = 8    // Count: 8 characters, right-aligned
+	ColumnSharesWidth     = 14   // Total Shares: 14 characters, right-aligned with 8 decimal places
+	ColumnAvgPriceWidth   = 13   // Avg Price: 13 characters, right-aligned with 2 decimal places
+	ColumnTotalValueWidth = 13   // Total Value: 13 characters, right-aligned with 2 decimal places
+	ColumnSeparator       = "  " // 2 spaces between columns
+)
+
 // ViewTransitionMsg is a custom message for switching between views
 type ViewTransitionMsg struct {
 	View string
@@ -59,27 +70,33 @@ func (a *AssetsView) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return a, nil
 }
 
-// handleUp moves selection up (with wrap-around)
+// handleUp moves selection up (with wrap-around to last data row)
 func (a *AssetsView) handleUp() (tea.Model, tea.Cmd) {
 	if len(a.Entries) == 0 {
 		return a, nil
 	}
+
+	numDataRows := len(a.Entries)
+
 	if a.SelectedIndex <= 0 {
-		// Wrap to last row
-		a.SelectedIndex = len(a.Entries) - 1
+		// Wrap to last data row
+		a.SelectedIndex = numDataRows - 1
 	} else {
 		a.SelectedIndex--
 	}
 	return a, nil
 }
 
-// handleDown moves selection down (with wrap-around)
+// handleDown moves selection down (with wrap-around to first data row)
 func (a *AssetsView) handleDown() (tea.Model, tea.Cmd) {
 	if len(a.Entries) == 0 {
 		return a, nil
 	}
-	if a.SelectedIndex >= len(a.Entries)-1 {
-		// Wrap to first row
+
+	numDataRows := len(a.Entries)
+
+	if a.SelectedIndex >= numDataRows-1 {
+		// Wrap to first data row
 		a.SelectedIndex = 0
 	} else {
 		a.SelectedIndex++
@@ -150,6 +167,21 @@ func (a *AssetsView) renderTable() string {
 		rows = append(rows, row)
 	}
 
+	// Pad with empty rows to maintain exactly 30 rows (including header)
+	// Total table rows = 1 header + 29 data rows max = 30 total visible rows
+	const maxVisibleRows = 30
+
+	// Calculate how many empty rows needed to reach 30 total
+	// 30 = 1 header + data rows + empty rows
+	// empty rows = 30 - 1 - data rows
+	emptyRowsNeeded := maxVisibleRows - 1 - len(a.Entries)
+	if emptyRowsNeeded > 0 {
+		for i := 0; i < emptyRowsNeeded; i++ {
+			row := a.renderEmptyDataRow(len(a.Entries) + i)
+			rows = append(rows, row)
+		}
+	}
+
 	// Create table with border
 	tableStyle := lipgloss.NewStyle().
 		Border(lipgloss.RoundedBorder()).
@@ -161,36 +193,42 @@ func (a *AssetsView) renderTable() string {
 // renderHeaderRow renders the table header with column names
 func (a *AssetsView) renderHeaderRow() string {
 	headers := []string{"Asset", "Count", "Total Shares", "Avg Price", "Total Value"}
-	var formatted []string
-
-	for _, h := range headers {
-		formatted = append(formatted, lipgloss.NewStyle().
-			Foreground(lipgloss.Color("15")).
-			Bold(true).
-			Render(h))
+	formatted := []string{
+		fmt.Sprintf("%-*s", ColumnAssetWidth, headers[0]),
+		fmt.Sprintf("%*s", ColumnCountWidth, headers[1]),
+		fmt.Sprintf("%*s", ColumnSharesWidth, headers[2]),
+		fmt.Sprintf("%*s", ColumnAvgPriceWidth, headers[3]),
+		fmt.Sprintf("%*s", ColumnTotalValueWidth, headers[4]),
 	}
 
-	return strings.Join(formatted, "  ")
+	var styled []string
+	for _, f := range formatted {
+		styled = append(styled, lipgloss.NewStyle().
+			Foreground(lipgloss.Color("15")).
+			Bold(true).
+			Render(f))
+	}
+
+	return strings.Join(styled, ColumnSeparator)
 }
 
 // renderDataRow renders a single data row with the specified index
 func (a *AssetsView) renderDataRow(index int, entry AssetSummary) string {
-	// Format the row data
+	// Format each cell with fixed widths
+	// Asset: left-aligned text
+	// Count: right-aligned integer
+	// Total Shares: right-aligned with 8 decimal places
+	// Avg Price: right-aligned with 2 decimal places
+	// Total Value: right-aligned with 2 decimal places
 	rowData := []string{
-		entry.Ticker,
-		fmt.Sprintf("%d", entry.EntryCount),
-		fmt.Sprintf("%.8f", entry.TotalShares),
-		fmt.Sprintf("%.2f", entry.AvgPrice),
-		fmt.Sprintf("%.2f", entry.TotalValue),
+		fmt.Sprintf("%-*s", ColumnAssetWidth, entry.Ticker),
+		fmt.Sprintf("%*d", ColumnCountWidth, entry.EntryCount),
+		fmt.Sprintf("%*.8f", ColumnSharesWidth, entry.TotalShares),
+		fmt.Sprintf("%*.2f", ColumnAvgPriceWidth, entry.AvgPrice),
+		fmt.Sprintf("%*.2f", ColumnTotalValueWidth, entry.TotalValue),
 	}
 
-	// Format each cell
-	var formatted []string
-	for _, cell := range rowData {
-		formatted = append(formatted, cell)
-	}
-
-	rowStr := strings.Join(formatted, "  ")
+	rowStr := strings.Join(rowData, ColumnSeparator)
 
 	// Apply active row styling
 	if index == a.SelectedIndex {
@@ -214,6 +252,34 @@ func (a *AssetsView) renderEmptyState() string {
 		Foreground(lipgloss.Color("240")).
 		Padding(1).
 		Render(msg)
+}
+
+// renderEmptyDataRow renders an empty row for padding (when data rows < 30)
+func (a *AssetsView) renderEmptyDataRow(index int) string {
+	// Format each cell with fixed widths using empty/zeros
+	rowData := []string{
+		fmt.Sprintf("%-*s", ColumnAssetWidth, ""),
+		fmt.Sprintf("%*s", ColumnCountWidth, ""),
+		fmt.Sprintf("%*.8f", ColumnSharesWidth, 0.0),
+		fmt.Sprintf("%*.2f", ColumnAvgPriceWidth, 0.0),
+		fmt.Sprintf("%*.2f", ColumnTotalValueWidth, 0.0),
+	}
+
+	rowStr := strings.Join(rowData, ColumnSeparator)
+
+	// Apply active row styling
+	if index == a.SelectedIndex {
+		return lipgloss.NewStyle().
+			Background(lipgloss.Color("63")).
+			Foreground(lipgloss.Color("15")).
+			Bold(true).
+			Padding(0, 1).
+			Render(rowStr)
+	}
+
+	return lipgloss.NewStyle().
+		Padding(0, 1).
+		Render(rowStr)
 }
 
 // renderFooter displays navigation help text
