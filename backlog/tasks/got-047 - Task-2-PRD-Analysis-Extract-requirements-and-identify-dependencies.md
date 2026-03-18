@@ -9,6 +9,7 @@ labels: []
 dependencies: []
 references:
   - 'backlog/docs/doc-010 - PRD: Task Implementation Plan Generator.md'
+  - .qwen/commands/prd/plan.md
 ---
 
 ## Description
