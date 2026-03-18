@@ -2,7 +2,8 @@
 id: GOT-040
 title: Bug highlight first row table
 status: In Progress
-assignee: []
+assignee:
+  - Catarina
 created_date: '2026-03-18 15:13'
 updated_date: '2026-03-18 15:51'
 labels: []
