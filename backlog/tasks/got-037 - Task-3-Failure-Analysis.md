@@ -2,10 +2,9 @@
 id: GOT-037
 title: 'Task 3: Failure Analysis'
 status: In Progress
-assignee:
-  - Catarina
+assignee: []
 created_date: '2026-03-18 11:20'
-updated_date: '2026-03-18 11:58'
+updated_date: '2026-03-18 12:01'
 labels:
   - agent
   - testing
