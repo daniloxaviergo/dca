@@ -5,7 +5,7 @@ status: To Do
 assignee:
   - Thomas
 created_date: '2026-03-17 20:22'
-updated_date: '2026-03-18 14:32'
+updated_date: '2026-03-18 14:33'
 labels: []
 dependencies: []
 references:
@@ -33,6 +33,14 @@ Add unit tests for table layout and alignment to verify the rendering fixes work
 - [ ] #10 All table layout tests now pass - verified 129 tests pass across all packages
 - [ ] #11 go test passes with no warnings (cached and uncached runs)
 - [ ] #12 go fmt applied to view_test.go
+- [ ] #13 #1 Test verifies table width is 100% of available width - PASS: TestTableLayout_WidthIs100Percent (3 subtests)
+- [ ] #14 #2 Test verifies header alignment with data columns - PASS: TestTableLayout_HeaderAlignment
+- [ ] #15 #3 Test verifies exactly 30 rows are rendered - PASS: TestTableLayout_Exactly30Rows (5 subtests)
+- [ ] #16 #4 Test verifies empty row padding works correctly - PASS: TestTableLayout_EmptyRowPadding (4 subtests)
+- [ ] #17 #5 All unit tests pass - PASS: 129 tests across 5 packages
+- [ ] #18 #6 Test coverage for layout functions - PASS: 11 layout-related tests
+- [ ] #19 #7 go test passes with no warnings - PASS: no warnings
+- [ ] #20 #8 go fmt applied - PASS: view_test.go formatted
 <!-- AC:END -->
 
 ## Implementation Plan
