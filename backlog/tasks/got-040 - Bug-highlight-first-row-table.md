@@ -1,11 +1,13 @@
 ---
 id: GOT-040
 title: Bug highlight first row table
-status: To Do
+status: In Progress
 assignee: []
 created_date: '2026-03-18 15:13'
+updated_date: '2026-03-18 15:51'
 labels: []
 dependencies: []
+ordinal: 1000
 ---
 
 ## Description
