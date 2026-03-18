@@ -1,11 +1,13 @@
 ---
 id: GOT-039
 title: Bug esc on form should go back to list
-status: To Do
+status: In Progress
 assignee: []
 created_date: '2026-03-18 14:59'
+updated_date: '2026-03-18 14:59'
 labels: []
 dependencies: []
+ordinal: 1000
 ---
 
 ## Description
