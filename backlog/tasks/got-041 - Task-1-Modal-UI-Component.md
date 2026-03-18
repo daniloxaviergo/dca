@@ -4,7 +4,7 @@ title: 'Task 1: Modal UI Component'
 status: In Progress
 assignee: []
 created_date: '2026-03-18 18:51'
-updated_date: '2026-03-18 19:58'
+updated_date: '2026-03-18 20:00'
 labels:
   - ui
   - modal
@@ -23,11 +23,11 @@ Create centered modal component for displaying asset history with proper UI cont
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 Modal appears centered on screen when Enter is pressed on asset row
-- [ ] #2 Modal includes a title showing the asset ticker symbol
-- [ ] #3 Modal includes a header row: Date | Avg Price | Total Invested | Entry Count
-- [ ] #4 Modal closes when Escape key is pressed
-- [ ] #5 Modal includes visual indication of active state (borders, focus)
+- [x] #1 Modal appears centered on screen when Enter is pressed on asset row
+- [x] #2 Modal includes a title showing the asset ticker symbol
+- [x] #3 Modal includes a header row: Date | Avg Price | Total Invested | Entry Count
+- [x] #4 Modal closes when Escape key is pressed
+- [x] #5 Modal includes visual indication of active state (borders, focus)
 <!-- AC:END -->
 
 ## Implementation Plan
@@ -165,14 +165,14 @@ Code formatted with `go fmt`
 
 ## Definition of Done
 <!-- DOD:BEGIN -->
-- [ ] #1 All acceptance criteria met
-- [ ] #2 Unit tests pass (go test)
-- [ ] #3 No new compiler warnings
-- [ ] #4 Code follows project style (go fmt)
-- [ ] #5 PRD referenced in task
-- [ ] #6 Documentation updated (comments)
-- [ ] #7 All acceptance criteria met
-- [ ] #8 Unit tests pass
-- [ ] #9 No new compiler warnings
-- [ ] #10 Code follows project style (go fmt)
+- [x] #1 All acceptance criteria met
+- [x] #2 Unit tests pass (go test)
+- [x] #3 No new compiler warnings
+- [x] #4 Code follows project style (go fmt)
+- [x] #5 PRD referenced in task
+- [x] #6 Documentation updated (comments)
+- [x] #7 All acceptance criteria met
+- [x] #8 Unit tests pass
+- [x] #9 No new compiler warnings
+- [x] #10 Code follows project style (go fmt)
 <!-- DOD:END -->
