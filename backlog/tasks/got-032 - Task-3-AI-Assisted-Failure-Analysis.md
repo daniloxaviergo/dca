@@ -4,6 +4,7 @@ title: 'Task 3: AI-Assisted Failure Analysis'
 status: To Do
 assignee: []
 created_date: '2026-03-18 00:27'
+updated_date: '2026-03-18 00:28'
 labels: []
 dependencies: []
 references:
@@ -42,3 +43,14 @@ References:
 - [ ] #5 PRD referenced in task
 - [ ] #6 Documentation updated (comments)
 <!-- DOD:END -->
+
+
+
+## Acceptance Criteria
+<!-- AC:BEGIN -->
+- [ ] #1 Agent captures complete failure context (test name, error, code)
+- [ ] #2 Agent sends focused context to LLM (not full file contents)
+- [ ] #3 Agent displays analysis with source code references
+- [ ] #4 Agent suggests specific code changes when possible
+- [ ] #5 Agent can explain why a test is flaky
+<!-- AC:END -->
