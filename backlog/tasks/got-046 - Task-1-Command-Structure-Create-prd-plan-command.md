@@ -2,7 +2,8 @@
 id: GOT-046
 title: 'Task 1: Command Structure - Create /prd:plan command'
 status: To Do
-assignee: []
+assignee:
+  - Catarina
 created_date: '2026-03-18 23:08'
 updated_date: '2026-03-18 23:11'
 labels: []
