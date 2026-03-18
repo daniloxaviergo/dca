@@ -4,6 +4,7 @@ title: 'Task 4: Command Integration'
 status: To Do
 assignee: []
 created_date: '2026-03-18 00:27'
+updated_date: '2026-03-18 00:28'
 labels: []
 dependencies: []
 references:
@@ -42,3 +43,14 @@ References:
 - [ ] #5 PRD referenced in task
 - [ ] #6 Documentation updated (comments)
 <!-- DOD:END -->
+
+
+
+## Acceptance Criteria
+<!-- AC:BEGIN -->
+- [ ] #1 Agent works with make test (verbose mode)
+- [ ] #2 Agent works with make test-quiet (minimal output)
+- [ ] #3 Agent works with make test-cover (coverage reports)
+- [ ] #4 Agent preserves all original command flags and arguments
+- [ ] #5 Agent provides status for each test command
+<!-- AC:END -->
