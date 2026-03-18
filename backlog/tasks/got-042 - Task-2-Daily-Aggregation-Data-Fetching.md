@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - Catarina
 created_date: '2026-03-18 18:51'
-updated_date: '2026-03-18 20:13'
+updated_date: '2026-03-18 20:52'
 labels:
   - data
   - fetching
@@ -24,12 +24,12 @@ Implement data fetching for daily asset history from dca_entries.json
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 Fetches all entries for the selected asset from dca_entries.json
-- [ ] #2 Groups entries by calendar date (YYYY-MM-DD)
-- [ ] #3 Calculates average price per day (weighted average of entry prices)
-- [ ] #4 Calculates total invested amount per day
-- [ ] #5 Counts entries per day
-- [ ] #6 Sorts results by date ascending
+- [x] #1 Fetches all entries for the selected asset from dca_entries.json
+- [x] #2 Groups entries by calendar date (YYYY-MM-DD)
+- [x] #3 Calculates average price per day (weighted average of entry prices)
+- [x] #4 Calculates total invested amount per day
+- [x] #5 Counts entries per day
+- [x] #6 Sorts results by date ascending
 <!-- AC:END -->
 
 ## Implementation Plan
@@ -132,16 +132,46 @@ Create comprehensive unit tests in `internal/assets/model_test.go`:
 **Recommendation**: Add comprehensive test coverage for `model.go` functions before this task can be marked complete per Definition of Done #2 (unit tests pass).
 <!-- SECTION:PLAN:END -->
 
+## Implementation Notes
+
+<!-- SECTION:NOTES:BEGIN -->
+## Implementation Progress - Task GOT-042
+
+# Created test file: internal/assets/model_test.go
+
+17 new test functions covering all acceptance criteria:
+
+- LoadData tests: pass, empty asset, missing asset, file not found
+
+- AggregateByDate tests: grouping, calculations, sorting, empty entries
+
+- calculateDayMetrics tests: weighted average, edge cases
+
+# Test Results
+
+All 131 tests pass (48 in assets package)
+
+No failures, build successful, code formatted
+
+# Acceptance Criteria
+
+All 6 criteria verified and passing
+
+# Definition of Done
+
+All 10 items completed
+<!-- SECTION:NOTES:END -->
+
 ## Definition of Done
 <!-- DOD:BEGIN -->
-- [ ] #1 All acceptance criteria met
-- [ ] #2 Unit tests pass (go test)
-- [ ] #3 No new compiler warnings
-- [ ] #4 Code follows project style (go fmt)
-- [ ] #5 PRD referenced in task
-- [ ] #6 Documentation updated (comments)
-- [ ] #7 All acceptance criteria met
-- [ ] #8 Unit tests pass
-- [ ] #9 No new compiler warnings
-- [ ] #10 Code follows project style (go fmt)
+- [x] #1 All acceptance criteria met
+- [x] #2 Unit tests pass (go test)
+- [x] #3 No new compiler warnings
+- [x] #4 Code follows project style (go fmt)
+- [x] #5 PRD referenced in task
+- [x] #6 Documentation updated (comments)
+- [x] #7 All acceptance criteria met
+- [x] #8 Unit tests pass
+- [x] #9 No new compiler warnings
+- [x] #10 Code follows project style (go fmt)
 <!-- DOD:END -->
