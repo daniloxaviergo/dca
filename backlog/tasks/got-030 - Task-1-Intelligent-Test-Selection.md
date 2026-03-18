@@ -4,7 +4,7 @@ title: 'Task 1: Intelligent Test Selection'
 status: To Do
 assignee: []
 created_date: '2026-03-18 00:27'
-updated_date: '2026-03-18 00:28'
+updated_date: '2026-03-18 00:29'
 labels: []
 dependencies: []
 references:
@@ -42,6 +42,10 @@ References:
 - [ ] #4 Code follows project style (go fmt)
 - [ ] #5 PRD referenced in task
 - [ ] #6 Documentation updated (comments)
+- [ ] #7 Implementation includes test selection algorithm based on file dependencies
+- [ ] #8 Implementation includes test result caching with invalidation logic
+- [ ] #9 Implementation includes LLM-based failure analysis with fix suggestions
+- [ ] #10 Implementation includes integration with existing Makefile commands
 <!-- DOD:END -->
 
 
