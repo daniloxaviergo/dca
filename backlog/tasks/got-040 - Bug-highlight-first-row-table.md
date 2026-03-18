@@ -1,10 +1,10 @@
 ---
 id: GOT-040
 title: Bug highlight first row table
-status: In Progress
+status: Done
 assignee: []
 created_date: '2026-03-18 15:13'
-updated_date: '2026-03-18 16:15'
+updated_date: '2026-03-18 16:16'
 labels: []
 dependencies: []
 ordinal: 1000
@@ -157,6 +157,33 @@ Ready for your approval. Should I proceed with the implementation?
 - `internal/assets/view.go` - Fixed handleUp() condition
 - `internal/assets/view_test.go` - Updated tests to match corrected behavior
 <!-- SECTION:NOTES:END -->
+
+## Final Summary
+
+<!-- SECTION:FINAL_SUMMARY:BEGIN -->
+## Bug Fix: Table Navigation - Header Access from First Data Row
+
+**Summary:** Fixed a bug where pressing Up arrow from the first data row (index 1) could not navigate to the header row (index 0). The navigation would incorrectly wrap to the last visible row (index 29).
+
+**Changes:**
+- `internal/assets/view.go`: Modified `handleUp()` condition from `a.SelectedIndex <= 1` to `a.SelectedIndex == 0`
+  - Now correctly decrements from index 1 to index 0 (header)
+  - Only wraps from header (index 0) to last row (index 29)
+
+- `internal/assets/view_test.go`: Updated 4 tests to match corrected behavior:
+  - `TestAssetsView_NavigateUp`: Added verification for 1→0 navigation
+  - `TestAssetsView_NavigateWrapUp`: Now tests header wrap (0→29)
+  - `TestAssetsView_UpdateArrowUp`: Expects 1→0 instead of 1→29
+  - `TestAssetsView_NavigateWithPaddedRows`: Full navigation path test
+
+**Testing:**
+- All 88 tests pass ✓
+- `make check` passes (fmt, build, test) ✓
+- No compiler warnings ✓
+- Code follows project style ✓
+
+**Impact:** Users can now properly navigate from any data row to the header using the Up arrow key.
+<!-- SECTION:FINAL_SUMMARY:END -->
 
 ## Definition of Done
 <!-- DOD:BEGIN -->
