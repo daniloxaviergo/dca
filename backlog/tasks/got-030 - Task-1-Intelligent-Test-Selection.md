@@ -1,0 +1,44 @@
+---
+id: GOT-030
+title: 'Task 1: Intelligent Test Selection'
+status: To Do
+assignee: []
+created_date: '2026-03-18 00:27'
+labels: []
+dependencies: []
+references:
+  - backlog/docs/doc-007.md
+priority: high
+---
+
+## Description
+
+<!-- SECTION:DESCRIPTION:BEGIN -->
+Implement intelligent test selection based on file dependencies, test history caching, and modified files analysis. The agent should select only relevant tests to run, cache results, and invalidate cache when source changes.
+
+Acceptance Criteria:
+- Agent can identify test files that depend on modified source files
+- Agent caches test results (pass/fail/skip) with metadata (timestamp, git commit)
+- Agent respects test flags (e.g., -run, -short, -race)
+- Cache is invalidated when source files change
+- Agent can fallback to full test run if no cache found
+
+Technical Notes:
+- Create internal/testagent/selector.go for test selection logic
+- Implement dependency analysis using go list or parsing imports
+- Use JSON cache format for portability
+- Integrate with git for modified files detection
+
+References:
+- PRD doc-007, Task 1
+<!-- SECTION:DESCRIPTION:END -->
+
+## Definition of Done
+<!-- DOD:BEGIN -->
+- [ ] #1 All acceptance criteria met
+- [ ] #2 Unit tests pass (go test)
+- [ ] #3 No new compiler warnings
+- [ ] #4 Code follows project style (go fmt)
+- [ ] #5 PRD referenced in task
+- [ ] #6 Documentation updated (comments)
+<!-- DOD:END -->
