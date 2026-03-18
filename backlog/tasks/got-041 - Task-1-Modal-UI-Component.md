@@ -2,7 +2,8 @@
 id: GOT-041
 title: 'Task 1: Modal UI Component'
 status: In Progress
-assignee: []
+assignee:
+  - Catarina
 created_date: '2026-03-18 18:51'
 updated_date: '2026-03-18 18:52'
 labels:
