@@ -12,6 +12,9 @@ This is a **Go command-line application** for tracking Dollar-Cost Averaging (DC
 
 **Project Type:** Personal investment tracking tool with atomic, file-based data persistence.
 
+Is MANDATORY execute all/each test using the agent `testing-expert` @.qwen/agents/testing-expert.md
+Pass the command `go test -v` to **testing-expert**
+
 ## Directory Structure
 
 ```
@@ -94,6 +97,8 @@ go run main.go
 ```
 
 ### Test
+
+Use the agent @.qwen/agents/testing-expert.md
 ```bash
 go test ./...
 ```
@@ -200,6 +205,7 @@ This project uses **Backlog.md** for task management via MCP:
 
 ## Notes for AI Agents
 
+- Is MANDATORY execute all/each test using the agent `testing-expert` @.qwen/agents/testing-expert.md
 - **This is a CLI app** - no web server, no network calls
 - **Test rigorously** - validation functions need exact error message tests
 - **Follow existing patterns** - match function naming and test structure
