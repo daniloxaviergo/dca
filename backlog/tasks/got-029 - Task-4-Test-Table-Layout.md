@@ -2,8 +2,10 @@
 id: GOT-029
 title: 'Task 4: Test Table Layout'
 status: To Do
-assignee: []
+assignee:
+  - Catarina
 created_date: '2026-03-17 20:22'
+updated_date: '2026-03-18 13:32'
 labels: []
 dependencies: []
 references:
