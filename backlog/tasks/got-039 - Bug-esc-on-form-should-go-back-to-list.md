@@ -1,7 +1,7 @@
 ---
 id: GOT-039
 title: Bug esc on form should go back to list
-status: In Progress
+status: Done
 assignee:
   - Thomas
 created_date: '2026-03-18 14:59'
@@ -173,3 +173,37 @@ Add tests in `cmd/dca/main_test.go`:
 
 - 94 tests pass (100% pass rate)
 <!-- SECTION:NOTES:END -->
+
+## Final Summary
+
+<!-- SECTION:FINAL_SUMMARY:BEGIN -->
+## Summary
+
+This task was a bug fix to ensure ESC on the form returns to the asset list view instead of quitting the application.
+
+## Analysis
+
+Upon code review, the implementation was already complete in the codebase:
+
+1. **Form Model** (`internal/form/model.go`): ESC key handler sends `FormCancelledMsg` instead of `tea.Quit`
+2. **Main Model** (`cmd/dca/main.go`): Handles `FormCancelledMsg` to switch state back to `StateAssetsView`
+3. **Footer help text**: Already shows `[Esc] Back to list`
+
+## Changes Made
+
+None - the fix was already in place.
+
+## Testing Results
+
+- All 94 tests pass (100% pass rate)
+- Form cancellation tests verified:
+  - `TestFormCancelledMsg_ReturnsToAssetsView` ✅
+  - `TestFormCancelledMsg_DoesNotSaveData` ✅
+  - `TestCtrlCStillQuits` ✅
+- `go fmt`: No formatting changes needed
+- `go build`: Compiles without warnings
+
+## Risk Assessment
+
+Low risk - this is a bug fix where the correct behavior was already implemented. The tests validate the expected behavior.
+<!-- SECTION:FINAL_SUMMARY:END -->
