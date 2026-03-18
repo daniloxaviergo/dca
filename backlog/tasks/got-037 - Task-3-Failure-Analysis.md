@@ -1,9 +1,10 @@
 ---
 id: GOT-037
 title: 'Task 3: Failure Analysis'
-status: To Do
+status: In Progress
 assignee: []
 created_date: '2026-03-18 11:20'
+updated_date: '2026-03-18 11:55'
 labels:
   - agent
   - testing
@@ -12,6 +13,7 @@ dependencies: []
 references:
   - backlog/docs/doc-008.md
 priority: medium
+ordinal: 4000
 ---
 
 ## Description
