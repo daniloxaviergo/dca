@@ -2,8 +2,10 @@
 id: GOT-036
 title: 'Task 2: Intelligent Test Output'
 status: To Do
-assignee: []
+assignee:
+  - Catarina
 created_date: '2026-03-18 11:19'
+updated_date: '2026-03-18 11:34'
 labels:
   - agent
   - testing
