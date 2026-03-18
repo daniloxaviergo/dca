@@ -1,11 +1,11 @@
 ---
 id: GOT-029
 title: 'Task 4: Test Table Layout'
-status: To Do
+status: Done
 assignee:
   - Thomas
 created_date: '2026-03-17 20:22'
-updated_date: '2026-03-18 14:37'
+updated_date: '2026-03-18 14:42'
 labels: []
 dependencies: []
 references:
