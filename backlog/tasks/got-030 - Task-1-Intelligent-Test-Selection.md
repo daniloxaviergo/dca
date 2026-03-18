@@ -4,6 +4,7 @@ title: 'Task 1: Intelligent Test Selection'
 status: To Do
 assignee: []
 created_date: '2026-03-18 00:27'
+updated_date: '2026-03-18 00:28'
 labels: []
 dependencies: []
 references:
@@ -42,3 +43,14 @@ References:
 - [ ] #5 PRD referenced in task
 - [ ] #6 Documentation updated (comments)
 <!-- DOD:END -->
+
+
+
+## Acceptance Criteria
+<!-- AC:BEGIN -->
+- [ ] #1 Agent can identify test files that depend on modified source files
+- [ ] #2 Agent caches test results (pass/fail/skip) with metadata (timestamp, git commit)
+- [ ] #3 Agent respects test flags (e.g., -run, -short, -race)
+- [ ] #4 Cache is invalidated when source files change
+- [ ] #5 Agent can fallback to full test run if no cache found
+<!-- AC:END -->
