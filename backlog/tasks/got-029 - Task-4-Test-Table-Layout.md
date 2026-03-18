@@ -5,7 +5,7 @@ status: To Do
 assignee:
   - Thomas
 created_date: '2026-03-17 20:22'
-updated_date: '2026-03-18 14:33'
+updated_date: '2026-03-18 14:35'
 labels: []
 dependencies: []
 references:
@@ -21,14 +21,14 @@ Add unit tests for table layout and alignment to verify the rendering fixes work
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 Test verifies table width is 100% of available width
-- [ ] #2 Test verifies header alignment with data columns
-- [ ] #3 Test verifies exactly 30 rows are rendered
-- [ ] #4 Test verifies empty row padding works correctly
-- [ ] #5 All unit tests pass
-- [ ] #6 Test coverage for layout functions
-- [ ] #7 go test passes with no warnings
-- [ ] #8 go fmt applied
+- [x] #1 Test verifies table width is 100% of available width
+- [x] #2 Test verifies header alignment with data columns
+- [x] #3 Test verifies exactly 30 rows are rendered
+- [x] #4 Test verifies empty row padding works correctly
+- [x] #5 All unit tests pass
+- [x] #6 Test coverage for layout functions
+- [x] #7 go test passes with no warnings
+- [x] #8 go fmt applied
 - [ ] #9 All table layout tests pass with correct column width measurements
 - [ ] #10 All table layout tests now pass - verified 129 tests pass across all packages
 - [ ] #11 go test passes with no warnings (cached and uncached runs)
