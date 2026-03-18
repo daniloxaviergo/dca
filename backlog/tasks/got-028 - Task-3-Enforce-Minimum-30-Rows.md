@@ -1,10 +1,10 @@
 ---
 id: GOT-028
 title: 'Task 3: Enforce Minimum 30 Rows'
-status: In Progress
+status: Done
 assignee: []
 created_date: '2026-03-17 20:22'
-updated_date: '2026-03-18 13:24'
+updated_date: '2026-03-18 13:25'
 labels: []
 dependencies: []
 references:
