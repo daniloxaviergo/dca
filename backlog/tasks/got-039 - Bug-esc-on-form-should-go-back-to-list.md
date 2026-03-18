@@ -18,6 +18,21 @@ When i open 'c' the form if cancel the application exit
 I need go back to list assest
 <!-- SECTION:DESCRIPTION:END -->
 
+## Definition of Done
+<!-- DOD:BEGIN -->
+- [ ] #1 All acceptance criteria met
+- [ ] #2 Unit tests pass (go test)
+- [ ] #3 No new compiler warnings
+- [ ] #4 Code follows project style (go fmt)
+- [ ] #5 PRD referenced in task
+- [ ] #6 Documentation updated (comments)
+<!-- DOD:END -->
+
+## Acceptance Criteria
+<!-- AC:BEGIN -->
+- [ ] #1 When user presses ESC on the form, the application should return to the asset list view
+<!-- AC:END -->
+
 ## Implementation Plan
 
 <!-- SECTION:PLAN:BEGIN -->
@@ -149,13 +164,3 @@ Add tests in `cmd/dca/main_test.go`:
 - **Backward compatibility**: This is a bug fix, no breaking changes
 - **User experience**: ESC should feel like "back" not "exit"
 <!-- SECTION:NOTES:END -->
-
-## Definition of Done
-<!-- DOD:BEGIN -->
-- [ ] #1 All acceptance criteria met
-- [ ] #2 Unit tests pass (go test)
-- [ ] #3 No new compiler warnings
-- [ ] #4 Code follows project style (go fmt)
-- [ ] #5 PRD referenced in task
-- [ ] #6 Documentation updated (comments)
-<!-- DOD:END -->
