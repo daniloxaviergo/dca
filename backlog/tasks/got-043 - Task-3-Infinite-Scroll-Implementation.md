@@ -2,8 +2,10 @@
 id: GOT-043
 title: 'Task 3: Infinite Scroll Implementation'
 status: To Do
-assignee: []
+assignee:
+  - Catarina
 created_date: '2026-03-18 18:51'
+updated_date: '2026-03-18 21:17'
 labels:
   - ui
   - infinite-scroll
