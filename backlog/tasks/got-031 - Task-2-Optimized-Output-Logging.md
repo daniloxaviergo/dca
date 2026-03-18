@@ -2,9 +2,10 @@
 id: GOT-031
 title: 'Task 2: Optimized Output Logging'
 status: To Do
-assignee: []
+assignee:
+  - Catarina
 created_date: '2026-03-18 00:27'
-updated_date: '2026-03-18 00:29'
+updated_date: '2026-03-18 01:33'
 labels: []
 dependencies: []
 references:
