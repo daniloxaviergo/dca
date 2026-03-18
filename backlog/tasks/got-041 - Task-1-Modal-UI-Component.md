@@ -1,9 +1,10 @@
 ---
 id: GOT-041
 title: 'Task 1: Modal UI Component'
-status: To Do
+status: In Progress
 assignee: []
 created_date: '2026-03-18 18:51'
+updated_date: '2026-03-18 18:52'
 labels:
   - ui
   - modal
@@ -11,6 +12,7 @@ dependencies: []
 references:
   - backlog/docs/PRD-001-asset-history-modal.md
 priority: high
+ordinal: 1000
 ---
 
 ## Description
