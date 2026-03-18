@@ -1,11 +1,11 @@
 ---
 id: GOT-042
 title: 'Task 2: Daily Aggregation Data Fetching'
-status: To Do
+status: In Progress
 assignee:
   - Catarina
 created_date: '2026-03-18 18:51'
-updated_date: '2026-03-18 19:59'
+updated_date: '2026-03-18 20:09'
 labels:
   - data
   - fetching
@@ -13,6 +13,7 @@ dependencies: []
 references:
   - backlog/docs/PRD-001-asset-history-modal.md
 priority: high
+ordinal: 2000
 ---
 
 ## Description
