@@ -2,10 +2,9 @@
 id: GOT-035
 title: 'Task 1: Test Execution Agent Configuration'
 status: In Progress
-assignee:
-  - Catarina
+assignee: []
 created_date: '2026-03-18 11:19'
-updated_date: '2026-03-18 11:24'
+updated_date: '2026-03-18 11:25'
 labels:
   - agent
   - testing
