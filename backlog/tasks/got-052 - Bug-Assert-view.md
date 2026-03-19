@@ -2,10 +2,9 @@
 id: GOT-052
 title: Bug Assert view
 status: In Progress
-assignee:
-  - Catarina
+assignee: []
 created_date: '2026-03-19 16:45'
-updated_date: '2026-03-19 17:07'
+updated_date: '2026-03-19 17:14'
 labels: []
 dependencies: []
 ordinal: 6000
