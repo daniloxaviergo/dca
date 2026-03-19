@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - Catarina
 created_date: '2026-03-19 16:45'
-updated_date: '2026-03-19 17:06'
+updated_date: '2026-03-19 17:07'
 labels: []
 dependencies: []
 ordinal: 6000
@@ -33,6 +33,7 @@ The sum should be the sum of previues days
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
 - [ ] #1 Entries in asset history modal are sorted in descending order (newest first)
+- [ ] #2 - [ ] Total Invested shows cumulative sum of all previous days (running total)
 <!-- AC:END -->
 
 ## Implementation Plan
