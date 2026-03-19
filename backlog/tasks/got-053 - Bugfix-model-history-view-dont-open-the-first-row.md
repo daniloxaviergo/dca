@@ -4,7 +4,7 @@ title: Bugfix model history view dont open the first row
 status: In Progress
 assignee: []
 created_date: '2026-03-19 17:59'
-updated_date: '2026-03-19 19:35'
+updated_date: '2026-03-19 19:36'
 labels: []
 dependencies: []
 ordinal: 6000
@@ -24,18 +24,6 @@ When select the first row dont open model history assets
 - [ ] #4 Code follows project style (go fmt)
 - [ ] #5 PRD referenced in task
 - [ ] #6 Documentation updated (comments)
-- [ ] #7 #1 All acceptance criteria met
-- [ ] #8 #2 Unit tests pass (go test)
-- [ ] #9 #3 No new compiler warnings
-- [ ] #10 #4 Code follows project style (go fmt)
-- [ ] #11 #5 PRD referenced in task
-- [ ] #12 #6 Documentation updated (comments)
-- [ ] #13 All acceptance criteria met
-- [ ] #14 Unit tests pass (go test)
-- [ ] #15 No new compiler warnings
-- [ ] #16 Code follows project style (go fmt)
-- [ ] #17 PRD referenced in task
-- [ ] #18 Documentation updated (comments)
 <!-- DOD:END -->
 
 ## Acceptance Criteria
@@ -46,7 +34,6 @@ When select the first row dont open model history assets
 - [ ] #4 Modal does NOT open when list is empty
 - [ ] #5 Modal does NOT open when selection is out of bounds
 - [ ] #6 Modal AssetTicker is correctly set for selected asset
-- [ ] #7 Filename is configurable via AssetsView.Filename field
 <!-- AC:END -->
 
 ## Implementation Notes
