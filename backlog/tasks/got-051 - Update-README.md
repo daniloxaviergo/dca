@@ -26,6 +26,88 @@ Check if README cover all aspects of application
 - [ ] Verify all technical details (file paths, struct names, commands) are accurate
 - [ ] Ensure project structure documentation matches actual folder layout
 - [ ] Confirm build/run commands work as documented
+
+### 1. Technical Approach
+
+The README update will be a documentation review and enhancement task. The approach is:
+
+- **Review Phase**: Systematically compare each README section against the actual Go source code to identify discrepancies, missing information, or outdated content
+- **Enhancement Phase**: Add or update content based on findings
+- **Validation Phase**: Ensure all documented commands and examples are accurate
+
+**Key areas to review:**
+- Build and run commands match actual implementation
+- Project structure documentation matches actual folder layout
+- All features mentioned in README are implemented
+- Code examples in README match actual struct/function names
+- Usage instructions reflect actual user flow
+- Makefile commands should be added as alternatives
+
+**Why this approach:**
+This is a documentation task, not a code change task. The README is largely accurate but can be enhanced with:
+1. Makefile command references for common tasks
+2. Documentation of the modal functionality (enter on asset row to view history)
+3. Clarification of ESC key behavior differences between views
+
+### 2. Files to Modify
+
+| File | Action | Reason |
+|------|--------|--------|
+| `README.md` | Modify | Add Makefile section, modal documentation, clarify ESC behavior |
+| None | None | This is documentation-only, no Go code changes needed |
+
+### 3. Dependencies
+
+- **Prerequisites**: None - this task can be completed independently
+- **Blocking issues**: None identified
+- **Setup steps**: None required
+
+### 4. Code Patterns
+
+Since this is a documentation task, no Go code patterns apply. However, the README should follow:
+- Consistent Markdown formatting
+- Accurate code snippets that match actual implementation
+- Clear section headers and lists
+- Proper use of code blocks for commands
+
+### 5. Testing Strategy
+
+This task is documentation-only. Testing will focus on:
+
+- **Command verification**: Ensure all documented commands (`go build`, `go run`, `make <target>`) work as expected
+- **No new compiler warnings**: Run `make check` to verify no Go files need changes
+- **No syntax errors**: README should not introduce any build issues
+
+**Test commands:**
+```bash
+# Verify all build commands work
+go build -o dca ./cmd/dca
+make build
+
+# Verify no Go syntax issues
+make check
+```
+
+### 6. Risks and Considerations
+
+**Risk**: README may have more issues than anticipated
+- **Mitigation**: Thorough review in Step 1 before making changes
+
+**Risk**: Documentation changes may introduce inaccuracies
+- **Mitigation**: Cross-check every change against actual code
+
+**No deployment considerations**: This is a documentation-only change with no runtime impact.
+
+---
+
+## Summary
+
+This is a **documentation-only task** to review and enhance the README. After research:
+
+1. The README is already well-structured and mostly accurate
+2. Minor enhancements are needed for Makefile references and modal functionality
+3. No code changes are required
+4. All existing commands and examples should work as documented
 <!-- SECTION:PLAN:END -->
 
 ## Implementation Notes
