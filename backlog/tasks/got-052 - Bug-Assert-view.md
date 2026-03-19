@@ -1,11 +1,11 @@
 ---
 id: GOT-052
 title: Bug Assert view
-status: In Progress
+status: Done
 assignee:
   - Thomas
 created_date: '2026-03-19 16:45'
-updated_date: '2026-03-19 17:42'
+updated_date: '2026-03-19 17:45'
 labels: []
 dependencies: []
 references:
