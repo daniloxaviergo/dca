@@ -2,7 +2,8 @@
 id: GOT-053
 title: Bugfix model history view dont open the first row
 status: In Progress
-assignee: []
+assignee:
+  - Catarina
 created_date: '2026-03-19 17:59'
 updated_date: '2026-03-19 17:59'
 labels: []
