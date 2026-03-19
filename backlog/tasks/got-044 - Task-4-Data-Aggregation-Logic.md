@@ -2,9 +2,10 @@
 id: GOT-044
 title: 'Task 4: Data Aggregation Logic'
 status: In Progress
-assignee: []
+assignee:
+  - Catarina
 created_date: '2026-03-18 18:51'
-updated_date: '2026-03-19 11:36'
+updated_date: '2026-03-19 11:37'
 labels:
   - logic
   - calculation
