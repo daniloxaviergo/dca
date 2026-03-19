@@ -1,11 +1,13 @@
 ---
 id: GOT-051
 title: Update README
-status: To Do
+status: In Progress
 assignee: []
 created_date: '2026-03-19 12:09'
+updated_date: '2026-03-19 12:09'
 labels: []
 dependencies: []
+ordinal: 6000
 ---
 
 ## Description
