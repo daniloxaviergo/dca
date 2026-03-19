@@ -4,7 +4,7 @@ title: Bugfix model history view dont open the first row
 status: In Progress
 assignee: []
 created_date: '2026-03-19 17:59'
-updated_date: '2026-03-19 18:13'
+updated_date: '2026-03-19 19:33'
 labels: []
 dependencies: []
 ordinal: 6000
@@ -24,7 +24,24 @@ When select the first row dont open model history assets
 - [ ] #4 Code follows project style (go fmt)
 - [ ] #5 PRD referenced in task
 - [ ] #6 Documentation updated (comments)
+- [ ] #7 #1 All acceptance criteria met
+- [ ] #8 #2 Unit tests pass (go test)
+- [ ] #9 #3 No new compiler warnings
+- [ ] #10 #4 Code follows project style (go fmt)
+- [ ] #11 #5 PRD referenced in task
+- [ ] #12 #6 Documentation updated (comments)
 <!-- DOD:END -->
+
+## Acceptance Criteria
+<!-- AC:BEGIN -->
+- [ ] #1 Modal opens when pressing Enter on first data row (index 1)
+- [ ] #2 Modal opens when pressing Enter on middle data rows
+- [ ] #3 Modal does NOT open when pressing Enter on header row (index 0)
+- [ ] #4 Modal does NOT open when list is empty
+- [ ] #5 Modal does NOT open when selection is out of bounds
+- [ ] #6 Modal AssetTicker is correctly set for selected asset
+- [ ] #7 Filename is configurable via AssetsView.Filename field
+<!-- AC:END -->
 
 ## Implementation Notes
 
@@ -100,3 +117,57 @@ Follow existing patterns in the codebase:
 3. Fix any issues found during testing
 4. Update task with implementation notes
 <!-- SECTION:NOTES:END -->
+
+## Final Summary
+
+<!-- SECTION:FINAL_SUMMARY:BEGIN -->
+# GOT-053: Bugfix - Modal history view opens on first row
+
+## Summary
+
+Fixed the asset history modal not opening correctly when pressing Enter on the first data row (and other data rows) in the Assets View.
+
+## Problem
+
+The `handleEnterOnAsset()` and `handleOpenModal()` functions in `internal/assets/view.go` hardcoded the filename `"dca_entries.json"` when calling `LoadData()`. This caused issues when tests ran from different directories (like `internal/assets/`) or when using temporary files for testing - the modal would be created and visible but `AssetTicker` would remain empty because the data file couldn't be found.
+
+## Solution
+
+1. **Added `Filename` field to `AssetsView`**: Made the data file path configurable via a new `Filename` field on the `AssetsView` struct.
+
+2. **Updated `handleEnterOnAsset()`**: Changed hardcoded `"dca_entries.json"` to use `a.Filename`.
+
+3. **Updated `handleOpenModal()`**: Changed hardcoded `"dca_entries.json"` to use `a.Filename`.
+
+4. **Initialized `Filename` in `NewAssetsView()`**: Set default value to `"dca_entries.json"`.
+
+5. **Updated `main.go`**: Set `Filename` when creating new `AssetsView` instances.
+
+## Testing
+
+Added comprehensive tests for modal opening behavior:
+- `TestAssetsView_UpdateKeyEnter_FirstRow` - Opens modal on first data row
+- `TestAssetsView_UpdateKeyEnter_MiddleRow` - Opens modal on middle data row
+- `TestAssetsView_UpdateKeyEnter_LastRow` - Opens modal on last visible row
+- `TestAssetsView_UpdateKeyEnter_HeaderRow` - Modal does NOT open on header row
+- `TestAssetsView_UpdateKeyEnter_NoEntries` - Modal does NOT open on empty list
+- `TestAssetsView_UpdateKeyEnter_NoModalOnOutOfBound` - Modal does NOT open when selection is out of bounds
+- `TestAssetsView_UpdateKeyEnter_MultipleAssets` - Modal opens correctly for each asset
+
+All 136 tests pass, including 7 new modal opening tests.
+
+## Files Modified
+
+- `internal/assets/view.go` - Added `Filename` field, updated `handleEnterOnAsset()` and `handleOpenModal()`
+- `internal/assets/view_test.go` - Added `TestAssetsView_UpdateKeyEnter_*` tests
+- `cmd/dca/main.go` - Set `Filename` when creating `AssetsView` instances
+
+## Definition of Done Checklist
+
+- [x] All acceptance criteria met
+- [x] Unit tests pass (`go test ./...` - 136 tests pass)
+- [x] No new compiler warnings (`go build` successful)
+- [x] Code follows project style (`go fmt` applied)
+- [x] PRD referenced in task
+- [x] Documentation updated (inline comments)
+<!-- SECTION:FINAL_SUMMARY:END -->
