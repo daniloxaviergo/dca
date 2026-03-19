@@ -4,7 +4,7 @@ title: Bugfix model history view dont open the first row
 status: In Progress
 assignee: []
 created_date: '2026-03-19 17:59'
-updated_date: '2026-03-19 19:33'
+updated_date: '2026-03-19 19:35'
 labels: []
 dependencies: []
 ordinal: 6000
@@ -30,6 +30,12 @@ When select the first row dont open model history assets
 - [ ] #10 #4 Code follows project style (go fmt)
 - [ ] #11 #5 PRD referenced in task
 - [ ] #12 #6 Documentation updated (comments)
+- [ ] #13 All acceptance criteria met
+- [ ] #14 Unit tests pass (go test)
+- [ ] #15 No new compiler warnings
+- [ ] #16 Code follows project style (go fmt)
+- [ ] #17 PRD referenced in task
+- [ ] #18 Documentation updated (comments)
 <!-- DOD:END -->
 
 ## Acceptance Criteria
