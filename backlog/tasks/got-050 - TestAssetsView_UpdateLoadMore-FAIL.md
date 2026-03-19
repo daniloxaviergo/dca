@@ -2,8 +2,10 @@
 id: GOT-050
 title: TestAssetsView_UpdateLoadMore (FAIL)
 status: To Do
-assignee: []
+assignee:
+  - Catarina
 created_date: '2026-03-19 09:43'
+updated_date: '2026-03-19 09:43'
 labels: []
 dependencies: []
 ---
