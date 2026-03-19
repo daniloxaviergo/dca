@@ -18,6 +18,23 @@ The sort of entries on modal assets history should be desc
 The sum should be the sum of previues days
 <!-- SECTION:DESCRIPTION:END -->
 
+## Definition of Done
+<!-- DOD:BEGIN -->
+- [ ] #1 All acceptance criteria met
+- [ ] #2 Unit tests pass (go test)
+- [ ] #3 No new compiler warnings
+- [ ] #4 Code follows project style (go fmt)
+- [ ] #5 PRD referenced in task
+- [ ] #6 Documentation updated (comments)
+- [ ] #7 - [ ] Entries sorted descending (newest first)
+- [ ] #8 - [ ] Total Invested is cumulative sum of previous days
+<!-- DOD:END -->
+
+## Acceptance Criteria
+<!-- AC:BEGIN -->
+- [ ] #1 Entries in asset history modal are sorted in descending order (newest first)
+<!-- AC:END -->
+
 ## Implementation Plan
 
 <!-- SECTION:PLAN:BEGIN -->
@@ -100,13 +117,3 @@ The task identifies two bugs in the asset history modal:
 5. Run full test suite
 6. Verify with manual testing
 <!-- SECTION:PLAN:END -->
-
-## Definition of Done
-<!-- DOD:BEGIN -->
-- [ ] #1 All acceptance criteria met
-- [ ] #2 Unit tests pass (go test)
-- [ ] #3 No new compiler warnings
-- [ ] #4 Code follows project style (go fmt)
-- [ ] #5 PRD referenced in task
-- [ ] #6 Documentation updated (comments)
-<!-- DOD:END -->
