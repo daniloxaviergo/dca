@@ -27,7 +27,7 @@ Execute the task {{args}}. Research the codebase to execute the task.
 
 ## Working Process
 
-1. **Implement in short loops**: code → run tests → immediately check off acceptance criteria
+1. **Implement in short loops**: code → run tests(testing-expert) → immediately check off acceptance criteria
 2. **Check acceptance criteria** using `task_edit` with `acceptanceCriteriaCheck` field when criteria are met
 3. **Log progress** using `task_edit` with `notesAppend` to document decisions, blockers, or learnings
 4. **Keep task status aligned** with reality via `task_edit`
@@ -52,7 +52,7 @@ Before marking a task as Done, ensure:
 - [ ] Definition of Done checklist items are all satisfied
 - [ ] Implementation plan reflects the final solution (update if deviated)
 - [ ] Final Summary written (PR-style, include what changed, why, tests run, risks/follow-ups)
-- [ ] All tests pass (`go test ./...` for Go projects)
+- [ ] All tests pass (`go test ./...` for Go projects) using `testing-expert`
 - [ ] Build the application
 - [ ] No new warnings or regressions introduced
 - [ ] Documentation or configuration updates completed when required
@@ -79,7 +79,7 @@ Before marking a task as Done, ensure:
 - `task_view` - Review task details and current status
 - `task_edit` - Update plan, notes, acceptance criteria, and status
 - `task_complete` - Move task to completed folder (batch operation, not for individual tasks)
-- Shell commands - Run tests, builds, and other verification commands
+- Shell commands - Run tests(testing-expert), builds, and other verification commands
 
 ## Remember
 
