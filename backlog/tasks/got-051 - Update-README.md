@@ -1,11 +1,11 @@
 ---
 id: GOT-051
 title: Update README
-status: In Progress
+status: Done
 assignee:
   - Catarina
 created_date: '2026-03-19 12:09'
-updated_date: '2026-03-19 13:01'
+updated_date: '2026-03-19 13:03'
 labels: []
 dependencies: []
 ordinal: 6000
@@ -164,6 +164,43 @@ All 5 packages pass with 94 total tests:
 - [x] #5 PRD referenced in task (README.md)
 - [x] #6 Documentation updated (comments)
 <!-- SECTION:NOTES:END -->
+
+## Final Summary
+
+<!-- SECTION:FINAL_SUMMARY:BEGIN -->
+## Summary
+
+Task completed: README.md updated with missing documentation
+
+## Changes Made
+
+### 1. Added Makefile Section
+- Documented all 11 available make commands
+- Added reference table for quick command lookup
+
+### 2. Updated Usage Section
+- Clarified app starts in **Assets View** (not form view)
+- Added `c` key documentation to switch between views
+- Documented ESC behavior differences (returns to list from form, exits from list)
+- Added **Asset History Modal** section with:
+  - Modal opening (Enter on asset row)
+  - Modal columns (Date, Avg Price, Total Invested, Entry Count)
+  - Modal navigation (Up/Down, Enter to load more, Esc to close)
+
+## Testing Results
+- All 94 tests pass across 5 packages
+- Build commands verified working (`make build`, `make run`)
+- No new compiler warnings
+- Code follows project style (`go fmt` passes)
+
+## Files Modified
+- `README.md` - Enhanced documentation
+
+## Next Steps
+This task is complete. Consider creating a follow-up task to:
+- Review backlog for any additional documentation needs
+- Add more detailed usage examples or troubleshooting section if needed
+<!-- SECTION:FINAL_SUMMARY:END -->
 
 ## Definition of Done
 <!-- DOD:BEGIN -->
