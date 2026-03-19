@@ -1,10 +1,10 @@
 ---
 id: GOT-053
 title: Bugfix model history view dont open the first row
-status: In Progress
+status: Done
 assignee: []
 created_date: '2026-03-19 17:59'
-updated_date: '2026-03-19 19:36'
+updated_date: '2026-03-19 19:49'
 labels: []
 dependencies: []
 ordinal: 6000
