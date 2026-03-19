@@ -4,7 +4,7 @@ title: 'Task 3: Infinite Scroll Implementation'
 status: In Progress
 assignee: []
 created_date: '2026-03-18 18:51'
-updated_date: '2026-03-18 23:25'
+updated_date: '2026-03-19 01:32'
 labels:
   - ui
   - infinite-scroll
@@ -127,6 +127,65 @@ Add infinite scroll to the asset history modal by:
 - Modal scroll navigation not yet implemented (table rows don't support scrolling)
 - Need to determine scroll trigger mechanism (Enter key? Down arrow at bottom?)
 <!-- SECTION:PLAN:END -->
+
+## Implementation Notes
+
+<!-- SECTION:NOTES:BEGIN -->
+## Test Results Analysis
+
+Ran `go test -v ./...` on 2026-03-18.
+
+### Overall Status: PASS with 2 failures in internal/assets
+
+### Test Summary:
+- **Total packages:** 6
+- **Total tests:** 114
+- **Passing:** 112
+- **Failing:** 2
+- **Duration:** ~10ms uncached
+
+### Failing Tests in `internal/assets`:
+
+#### TestAssetsView_UpdateLoadMore (FAIL)
+**Error:** `view_test.go:1128: Expected 20 entries after LoadMore, got 10`
+
+**Analysis:** The test expects `LoadMore` to load the next batch of 10 days (from 10 to 20), but it's not loading any additional data. The issue is likely in the `handleLoadMore` method which uses a hardcoded filename `dca_entries.json`, but the test scenario uses a modal that was pre-populated with 10 entries. The test doesn't actually have a file with more data for the "BTC" asset.
+
+**Root Cause:** The test creates a modal with 10 entries in memory, then calls `Update(LoadMoreMsg{})` which triggers `handleLoadMore()` using `dca_entries.json`. However, `dca_entries.json` may not have additional BTC entries beyond what's already in the modal, OR the modal's state isn't properly initialized with all the data that should be in the file.
+
+#### TestAssetsView_UpdateLoadMore_Error (FAIL)
+**Error:** `view_test.go:1172: Expected error from non-existent file`
+
+**Analysis:** The test expects an error when calling `LoadMore` on a modal with a non-existent file, but no error is returned. Looking at the `LoadMore` implementation, it should return an error from `dca.LoadEntries`, but the test calls `LoadMore` directly with a non-existent filename.
+
+**Root Cause:** The `LoadMore` method does return an error from `dca.LoadEntries`, but the test calls it directly with `av.Modal.LoadMore("non_existent_file.json")`. However, the error handling in `handleLoadMore` sets `a.Modal.Error = err` and returns `nil` (no command). The test checks for the error but it's set on the modal's Error field, not returned as a method error.
+
+### Implementation Plan Status:
+
+| Task | Status | Notes |
+|------|--|--|
+| Add pagination fields to model | ✅ Done | Offset, AllLoaded, Loading already added |
+| Add LoadMore function | ✅ Done | Implemented in model.go |
+| Add scroll detection | ✅ Done | Enter key triggers LoadMore |
+| Add loading state UI | ✅ Done | "Loading more..." footer displayed |
+| Disable trigger when all loaded | ✅ Done | AllLoaded flag checked |
+| Handle empty history | ✅ Done | Returns empty slice gracefully |
+| Unit tests for infinite scroll | ⚠️ Partial | 5/7 tests passing |
+
+### Code Review Findings:
+
+1. **handleLoadMore in view.go (line 273-281):** The function correctly calls `LoadMore` and sets error on modal if present.
+
+2. **LoadMore in model.go (line 91-127):** The function properly checks if already loaded or loading, sets Loading flag during fetch, returns error from LoadEntries, and appends new batch to existing entries.
+
+### Blocking Issues:
+1. Test `TestAssetsView_UpdateLoadMore` fails because the test setup doesn't match what the function expects - modal has partial data but file doesn't have more.
+2. Test `TestAssetsView_UpdateLoadMore_Error` may have incorrect assertions about error handling.
+
+### Next Steps:
+- Investigate test setup to understand why LoadMore isn't loading more data
+- Review error handling flow for non-existent file scenario
+<!-- SECTION:NOTES:END -->
 
 ## Definition of Done
 <!-- DOD:BEGIN -->
