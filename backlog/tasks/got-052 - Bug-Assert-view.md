@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - Thomas
 created_date: '2026-03-19 16:45'
-updated_date: '2026-03-19 17:14'
+updated_date: '2026-03-19 17:32'
 labels: []
 dependencies: []
 ordinal: 6000
@@ -20,20 +20,20 @@ The sum should be the sum of previues days
 
 ## Definition of Done
 <!-- DOD:BEGIN -->
-- [ ] #1 All acceptance criteria met
-- [ ] #2 Unit tests pass (go test)
-- [ ] #3 No new compiler warnings
-- [ ] #4 Code follows project style (go fmt)
+- [x] #1 All acceptance criteria met
+- [x] #2 Unit tests pass (go test)
+- [x] #3 No new compiler warnings
+- [x] #4 Code follows project style (go fmt)
 - [ ] #5 PRD referenced in task
 - [ ] #6 Documentation updated (comments)
-- [ ] #7 - [ ] Entries sorted descending (newest first)
-- [ ] #8 - [ ] Total Invested is cumulative sum of previous days
+- [x] #7 - [ ] Entries sorted descending (newest first)
+- [x] #8 - [ ] Total Invested is cumulative sum of previous days
 <!-- DOD:END -->
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 Entries in asset history modal are sorted in descending order (newest first)
-- [ ] #2 - [ ] Total Invested shows cumulative sum of all previous days (running total)
+- [x] #1 Entries in asset history modal are sorted in descending order (newest first)
+- [x] #2 - [ ] Total Invested shows cumulative sum of all previous days (running total)
 <!-- AC:END -->
 
 ## Implementation Plan
@@ -118,3 +118,38 @@ The task identifies two bugs in the asset history modal:
 5. Run full test suite
 6. Verify with manual testing
 <!-- SECTION:PLAN:END -->
+
+## Final Summary
+
+<!-- SECTION:FINAL_SUMMARY:BEGIN -->
+## Summary
+
+Fixed two bugs in the asset history modal:
+
+### Bug #1: Entries sorted ascending instead of descending
+**Change:** Modified `AggregateByDate()` in `internal/assets/model.go` to sort entries by date in descending order (newest first).
+
+**Implementation:** Changed the comparison from `result[i].Date > result[j].Date` to `result[i].Date < result[j].Date` in the sorting algorithm.
+
+### Bug #2: Total Invested showed daily sum instead of cumulative total
+**Change:** Added cumulative total calculation to `AggregateByDate()` that tracks a running sum across all previous days.
+
+**Implementation:** After sorting, iterate through results and accumulate totals:
+```go
+var cumulativeTotal float64
+for i := range result {
+    cumulativeTotal += result[i].TotalInvested
+    result[i].TotalInvested = RoundTo8Decimals(cumulativeTotal)
+}
+```
+
+### Tests Updated
+- Updated `TestAggregateByDate_Sorting` to expect descending order
+- Added `TestAggregateByDate_CumulativeTotal` to verify cumulative totals
+- Added `TestAggregateByDate_DescendingSortAndCumulative` to test both features together
+
+### Verification
+- All 43 tests pass (go test -v ./...)
+- Build succeeds without warnings
+- Code formatted with go fmt
+<!-- SECTION:FINAL_SUMMARY:END -->
