@@ -5,9 +5,11 @@ status: In Progress
 assignee:
   - Thomas
 created_date: '2026-03-19 16:45'
-updated_date: '2026-03-19 17:32'
+updated_date: '2026-03-19 17:38'
 labels: []
 dependencies: []
+references:
+  - doc-009
 ordinal: 6000
 ---
 
@@ -24,8 +26,8 @@ The sum should be the sum of previues days
 - [x] #2 Unit tests pass (go test)
 - [x] #3 No new compiler warnings
 - [x] #4 Code follows project style (go fmt)
-- [ ] #5 PRD referenced in task
-- [ ] #6 Documentation updated (comments)
+- [x] #5 PRD referenced in task
+- [x] #6 Documentation updated (comments)
 - [x] #7 - [ ] Entries sorted descending (newest first)
 - [x] #8 - [ ] Total Invested is cumulative sum of previous days
 <!-- DOD:END -->
