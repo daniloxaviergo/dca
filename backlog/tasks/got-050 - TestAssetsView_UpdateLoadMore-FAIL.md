@@ -2,10 +2,9 @@
 id: GOT-050
 title: TestAssetsView_UpdateLoadMore (FAIL)
 status: Done
-assignee:
-  - Catarina
+assignee: []
 created_date: '2026-03-19 09:43'
-updated_date: '2026-03-19 11:04'
+updated_date: '2026-03-19 11:10'
 labels: []
 dependencies: []
 ---
