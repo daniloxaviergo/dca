@@ -48,10 +48,32 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		if m.form != nil {
 			newForm, cmd := m.form.Update(msg)
 			m.form = newForm.(*form.FormModel)
+
+			// Execute the command to produce any messages (for testing purposes)
+			var producedMsg tea.Msg
+			if cmd != nil {
+				producedMsg = cmd()
+			}
+
 			// Check for form submission or view transition from form
 			if _, ok := msg.(form.FormSubmittedMsg); ok {
 				// After form submission, switch to assets view
 				m.currentState = StateAssetsView
+				m.assetsView = assets.NewAssetsView()
+				// Load data into assets view
+				vm, err := assets.LoadAndAggregateEntries(defaultEntriesPath)
+				if err != nil {
+					m.assetsView.Error = err
+				} else {
+					m.assetsView.Entries = vm.Entries
+					m.assetsView.Loaded = true
+				}
+				return m, nil
+			}
+			if _, ok := producedMsg.(form.FormCancelledMsg); ok {
+				// When form is cancelled, return to assets view
+				m.currentState = StateAssetsView
+				m.form = nil
 				m.assetsView = assets.NewAssetsView()
 				// Load data into assets view
 				vm, err := assets.LoadAndAggregateEntries(defaultEntriesPath)

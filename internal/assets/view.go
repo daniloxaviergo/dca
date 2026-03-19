@@ -19,10 +19,31 @@ const (
 	ColumnSeparator       = "  " // 2 spaces between columns
 )
 
+// Modal width constants
+const (
+	ModalWidth              = 60
+	ModalDateWidth          = 12 // YYYY-MM-DD
+	ModalAvgPriceWidth      = 12 // Right-aligned with 2 decimals
+	ModalTotalInvestedWidth = 14 // Right-aligned with 2 decimals
+	ModalEntryCountWidth    = 10 // Right-aligned
+	ModalDateSeparator      = "  "
+)
+
 // ViewTransitionMsg is a custom message for switching between views
 type ViewTransitionMsg struct {
 	View string
 }
+
+// OpenModalMsg is a message to open the asset history modal
+type OpenModalMsg struct {
+	AssetTicker string
+}
+
+// CloseModalMsg is a message to close the asset history modal
+type CloseModalMsg struct{}
+
+// LoadMoreMsg is a message to load the next batch of data for the modal
+type LoadMoreMsg struct{}
 
 // AssetsView is a Bubble Tea component for displaying asset data in an interactive table
 type AssetsView struct {
@@ -33,6 +54,7 @@ type AssetsView struct {
 	TableHeaderStyle lipgloss.Style
 	TableRowStyle    lipgloss.Style
 	ActiveRowStyle   lipgloss.Style
+	Modal            *AssetHistoryModal
 }
 
 // Init initializes the AssetsView component
@@ -45,7 +67,15 @@ func (a *AssetsView) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.Type {
-		case tea.KeyCtrlC, tea.KeyEsc:
+		case tea.KeyCtrlC:
+			return a, tea.Quit
+		case tea.KeyEsc:
+			// Handle Escape key differently based on modal state
+			if a.Modal != nil && a.Modal.Visible {
+				// Close modal when Escape pressed in modal view
+				return a.handleCloseModal()
+			}
+			// Quit app when Escape pressed in list view
 			return a, tea.Quit
 		case tea.KeyRunes:
 			if string(msg.Runes) == "c" {
@@ -57,6 +87,17 @@ func (a *AssetsView) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return a.handleUp()
 		case tea.KeyDown:
 			return a.handleDown()
+		case tea.KeyEnter:
+			// Handle Enter differently based on modal state
+			if a.Modal != nil && a.Modal.Visible {
+				// Load more when Enter is pressed in modal view
+				return a.handleLoadMore()
+			}
+			// Open modal when Enter is pressed on a data row
+			// Skip header row (index 0)
+			if a.SelectedIndex > 0 && a.SelectedIndex <= len(a.Entries) {
+				return a.handleEnterOnAsset()
+			}
 		}
 	case tea.QuitMsg:
 		return a, tea.Quit
@@ -66,11 +107,17 @@ func (a *AssetsView) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				return ViewTransitionMsg{View: "form"}
 			}
 		}
+	case OpenModalMsg:
+		return a.handleOpenModal(msg.AssetTicker)
+	case CloseModalMsg:
+		return a.handleCloseModal()
+	case LoadMoreMsg:
+		return a.handleLoadMore()
 	}
 	return a, nil
 }
 
-// handleUp moves selection up (with wrap-around from first data row to last visible row)
+// handleUp moves selection up (with wrap-around from header to last visible row)
 func (a *AssetsView) handleUp() (tea.Model, tea.Cmd) {
 	if len(a.Entries) == 0 {
 		return a, nil
@@ -81,9 +128,8 @@ func (a *AssetsView) handleUp() (tea.Model, tea.Cmd) {
 	// Selection index ranges from 0 (header) to 29 (last data/empty row)
 	const maxRowIndex = 29 // 30 total rows - 1
 
-	if a.SelectedIndex <= 1 {
-		// Wrap from first data row (index 1) to last visible row (index 29)
-		// Also handles index 0 (header) wrapping to last row
+	if a.SelectedIndex == 0 {
+		// Wrap from header (index 0) to last visible row (index 29)
 		a.SelectedIndex = maxRowIndex
 	} else {
 		a.SelectedIndex--
@@ -111,8 +157,80 @@ func (a *AssetsView) handleDown() (tea.Model, tea.Cmd) {
 	return a, nil
 }
 
+// handleEnterOnAsset opens the modal for the selected asset
+func (a *AssetsView) handleEnterOnAsset() (tea.Model, tea.Cmd) {
+	if a.SelectedIndex <= 0 || a.SelectedIndex > len(a.Entries) {
+		return a, nil
+	}
+
+	asset := a.Entries[a.SelectedIndex-1] // Adjust for header row at index 0
+
+	// Initialize modal if nil
+	if a.Modal == nil {
+		a.Modal = NewAssetHistoryModal()
+	}
+
+	// Load data into modal for the selected asset
+	err := a.Modal.LoadData("dca_entries.json", asset.Ticker)
+	if err != nil {
+		a.Modal.Error = err
+		a.Modal.Loaded = true
+	} else {
+		a.Modal.Loaded = true
+	}
+
+	a.Modal.Visible = true
+	return a, nil
+}
+
+// handleCloseModal closes the modal and returns to list view
+func (a *AssetsView) handleCloseModal() (tea.Model, tea.Cmd) {
+	a.Modal.Visible = false
+	return a, nil
+}
+
+// handleLoadMore loads the next batch of data for the modal
+func (a *AssetsView) handleLoadMore() (tea.Model, tea.Cmd) {
+	if a.Modal == nil || !a.Modal.Visible {
+		return a, nil
+	}
+
+	// Load more data using the modal's stored filename
+	err := a.Modal.LoadMore(a.Modal.Filename)
+	if err != nil {
+		a.Modal.Error = err
+	}
+
+	return a, nil
+}
+
+// handleOpenModal opens the modal for the specified asset
+func (a *AssetsView) handleOpenModal(assetTicker string) (tea.Model, tea.Cmd) {
+	// Initialize modal if nil
+	if a.Modal == nil {
+		a.Modal = NewAssetHistoryModal()
+	}
+
+	// Load data into modal
+	err := a.Modal.LoadData("dca_entries.json", assetTicker)
+	if err != nil {
+		a.Modal.Error = err
+		a.Modal.Loaded = true
+	} else {
+		a.Modal.Loaded = true
+	}
+
+	a.Modal.Visible = true
+	return a, nil
+}
+
 // View renders the AssetsView component
 func (a *AssetsView) View() string {
+	// If modal is visible, render the modal instead of the list
+	if a.Modal != nil && a.Modal.Visible {
+		return a.renderModal()
+	}
+
 	var sb strings.Builder
 
 	sb.WriteString(a.renderHeader())
@@ -122,6 +240,123 @@ func (a *AssetsView) View() string {
 	sb.WriteString(a.renderFooter())
 
 	return sb.String()
+}
+
+// renderModal renders the asset history modal
+func (a *AssetsView) renderModal() string {
+	if a.Modal == nil || !a.Modal.Visible {
+		return ""
+	}
+
+	// Modal container with centered styling
+	modalStyle := lipgloss.NewStyle().
+		Width(ModalWidth).
+		Border(lipgloss.RoundedBorder()).
+		BorderForeground(lipgloss.Color("63")).
+		Align(lipgloss.Center).
+		Padding(1, 2)
+
+	// Title
+	title := lipgloss.NewStyle().
+		Foreground(lipgloss.Color("159")).
+		Bold(true).
+		Render(fmt.Sprintf("Asset History: %s", a.Modal.AssetTicker))
+
+	var content string
+	if !a.Modal.Loaded {
+		content = lipgloss.NewStyle().
+			Foreground(lipgloss.Color("240")).
+			Render("Loading history...")
+	} else if a.Modal.Error != nil {
+		content = lipgloss.NewStyle().
+			Foreground(lipgloss.Color("196")).
+			Render(fmt.Sprintf("❌ Error loading history: %v", a.Modal.Error))
+	} else if len(a.Modal.EntriesByDate) == 0 {
+		content = lipgloss.NewStyle().
+			Foreground(lipgloss.Color("240")).
+			Render("No history for this asset")
+	} else {
+		content = a.renderModalContent()
+	}
+
+	// Combine title and content
+	body := lipgloss.JoinVertical(lipgloss.Center, title, content)
+
+	// Add footer instructions based on state
+	var footerText []string
+	if a.Modal.AllLoaded {
+		footerText = append(footerText, "All data loaded")
+	} else if a.Modal.Loading {
+		footerText = append(footerText, "Loading more...")
+	} else {
+		footerText = append(footerText, "[Esc] Close Modal")
+		footerText = append(footerText, "[Enter] Load More")
+	}
+
+	footer := lipgloss.NewStyle().
+		Foreground(lipgloss.Color("240")).
+		Render(strings.Join(footerText, "  "))
+
+	return modalStyle.Render(lipgloss.JoinVertical(lipgloss.Center, body, footer))
+}
+
+// renderModalContent renders the modal data table
+func (a *AssetsView) renderModalContent() string {
+	var rows []string
+
+	// Header row
+	header := a.renderModalHeaderRow()
+	rows = append(rows, header)
+
+	// Data rows
+	for i, entry := range a.Modal.EntriesByDate {
+		row := a.renderModalDataRow(i, entry)
+		rows = append(rows, row)
+	}
+
+	// Create table with border
+	tableStyle := lipgloss.NewStyle().
+		Border(lipgloss.RoundedBorder()).
+		BorderForeground(lipgloss.Color("240"))
+
+	return tableStyle.Render(lipgloss.JoinVertical(lipgloss.Left, rows...))
+}
+
+// renderModalHeaderRow renders the modal header row
+func (a *AssetsView) renderModalHeaderRow() string {
+	headers := []string{"Date", "Avg Price", "Total Invested", "Entry Count"}
+	formatted := []string{
+		fmt.Sprintf("%-*s", ModalDateWidth, headers[0]),
+		fmt.Sprintf("%*s", ModalAvgPriceWidth, headers[1]),
+		fmt.Sprintf("%*s", ModalTotalInvestedWidth, headers[2]),
+		fmt.Sprintf("%*s", ModalEntryCountWidth, headers[3]),
+	}
+
+	var styled []string
+	for _, f := range formatted {
+		styled = append(styled, lipgloss.NewStyle().
+			Foreground(lipgloss.Color("15")).
+			Bold(true).
+			Render(f))
+	}
+
+	return strings.Join(styled, ModalDateSeparator)
+}
+
+// renderModalDataRow renders a single modal data row
+func (a *AssetsView) renderModalDataRow(index int, entry EntryByDate) string {
+	rowData := []string{
+		fmt.Sprintf("%-*s", ModalDateWidth, entry.Date),
+		fmt.Sprintf("%*.2f", ModalAvgPriceWidth, entry.WeightedAvgPrice),
+		fmt.Sprintf("%*.2f", ModalTotalInvestedWidth, entry.TotalInvested),
+		fmt.Sprintf("%*d", ModalEntryCountWidth, entry.EntryCount),
+	}
+
+	rowStr := strings.Join(rowData, ModalDateSeparator)
+
+	return lipgloss.NewStyle().
+		Padding(0, 1).
+		Render(rowStr)
 }
 
 // renderHeader displays the view title
@@ -309,6 +544,7 @@ func NewAssetsView() *AssetsView {
 		SelectedIndex: 0,
 		Loaded:        false,
 		Error:         nil,
+		Modal:         NewAssetHistoryModal(),
 		TableHeaderStyle: lipgloss.NewStyle().
 			Foreground(lipgloss.Color("15")).
 			Bold(true),

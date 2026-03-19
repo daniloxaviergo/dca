@@ -54,9 +54,14 @@ func (m *FormModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.Type {
-		case tea.KeyCtrlC, tea.KeyEsc:
+		case tea.KeyCtrlC:
 			// Cancel without saving
 			return m, tea.Quit
+		case tea.KeyEsc:
+			// Cancel form and return to assets view
+			return m, func() tea.Msg {
+				return FormCancelledMsg{}
+			}
 		case tea.KeyEnter:
 			return m.handleEnter()
 		case tea.KeyBackspace:
@@ -401,7 +406,7 @@ func (m *FormModel) renderFooter() string {
 	if m.CurrentField < 5 && m.Step < StepConfirm {
 		help = append(help, "[→] Next field")
 	}
-	help = append(help, "[Ctrl+C] Cancel")
+	help = append(help, "[Esc] Back to list", "[Ctrl+C] Exit")
 
 	return lipgloss.NewStyle().
 		Foreground(lipgloss.Color("240")).
@@ -428,6 +433,9 @@ func NewFormModel(entries *dca.DCAData, filePath string) *FormModel {
 		},
 	}
 }
+
+// FormCancelledMsg is sent when the form is cancelled without saving
+type FormCancelledMsg struct{}
 
 // FormSubmittedMsg is sent when the form is successfully submitted
 type FormSubmittedMsg struct{}

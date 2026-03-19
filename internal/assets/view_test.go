@@ -2,10 +2,13 @@ package assets
 
 import (
 	"fmt"
+	"os"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/charmbracelet/bubbletea"
+	"github.com/danilo/scripts/github/dca/internal/dca"
 )
 
 // TestAssetsView_RenderEmpty shows "No assets yet" when list is empty
@@ -87,11 +90,18 @@ func TestAssetsView_NavigateUp(t *testing.T) {
 		t.Errorf("Expected selectedIndex to be 1 after up, got %d", av.SelectedIndex)
 	}
 
-	// Wrapping from first data row (index 1) to last visible row (index 29)
+	// Navigate to header (index 0) from first data row (index 1)
+	newAv, _ = av.handleUp()
+	av = newAv.(*AssetsView)
+	if av.SelectedIndex != 0 {
+		t.Errorf("Expected selectedIndex to be 0 (header) after up, got %d", av.SelectedIndex)
+	}
+
+	// Wrapping from header (index 0) to last visible row (index 29)
 	newAv, _ = av.handleUp()
 	av = newAv.(*AssetsView)
 	if av.SelectedIndex != 29 {
-		t.Errorf("Expected selectedIndex to be 29 (wrapped) after up, got %d", av.SelectedIndex)
+		t.Errorf("Expected selectedIndex to be 29 (wrapped) after up from header, got %d", av.SelectedIndex)
 	}
 }
 
@@ -112,7 +122,7 @@ func TestAssetsView_NavigateWrapDown(t *testing.T) {
 	}
 }
 
-// TestAssetsView_NavigateWrapUp wraps from first data row to last visible row
+// TestAssetsView_NavigateWrapUp wraps from header to last visible row
 func TestAssetsView_NavigateWrapUp(t *testing.T) {
 	av := NewAssetsView()
 	av.Loaded = true
@@ -120,7 +130,7 @@ func TestAssetsView_NavigateWrapUp(t *testing.T) {
 		{Ticker: "BTC"},
 		{Ticker: "ETH"},
 	}
-	av.SelectedIndex = 1 // first data row
+	av.SelectedIndex = 0 // header row
 
 	newAv, _ := av.handleUp()
 	av = newAv.(*AssetsView)
@@ -217,9 +227,9 @@ func TestAssetsView_UpdateArrowUp(t *testing.T) {
 
 	_, _ = av.Update(tea.KeyMsg{Type: tea.KeyUp})
 
-	// Wrapping from first data row (index 1) to last visible row (index 29)
-	if av.SelectedIndex != 29 {
-		t.Errorf("Expected selectedIndex to be 29 (wrapped) after KeyUp at index 1, got %d", av.SelectedIndex)
+	// Navigate to header (index 0) from first data row (index 1)
+	if av.SelectedIndex != 0 {
+		t.Errorf("Expected selectedIndex to be 0 (header) after KeyUp at index 1, got %d", av.SelectedIndex)
 	}
 }
 
@@ -454,10 +464,18 @@ func TestAssetsView_NavigateWithPaddedRows(t *testing.T) {
 		t.Errorf("Expected selectedIndex to wrap to 1, got %d", av.SelectedIndex)
 	}
 
-	// Navigate up from first data row (index 1) - should wrap to last row (index 29)
+	// Navigate up from first data row (index 1) to header (index 0)
 	newAv, _ = av.handleUp()
 	av = newAv.(*AssetsView)
-	// Should wrap to last visible row (index 29) since selectedIndex <= 1
+	// Should decrement to header row (index 0)
+	if av.SelectedIndex != 0 {
+		t.Errorf("Expected selectedIndex to be 0 (header), got %d", av.SelectedIndex)
+	}
+
+	// Navigate up from header (index 0) to last visible row (index 29)
+	newAv, _ = av.handleUp()
+	av = newAv.(*AssetsView)
+	// Should wrap to last visible row (index 29)
 	if av.SelectedIndex != 29 {
 		t.Errorf("Expected selectedIndex to wrap to 29, got %d", av.SelectedIndex)
 	}
@@ -870,4 +888,390 @@ func parseLipglossRowColumns(row string) []string {
 	clean := strings.Trim(row, "│")
 	// Split by separator
 	return strings.Split(clean, ColumnSeparator)
+}
+
+// TestAssetHistoryModal_LoadMore_LoadsNextBatch verifies LoadMore fetches next batch of 10 days
+func TestAssetHistoryModal_LoadMore_LoadsNextBatch(t *testing.T) {
+	// Create a modal with 10 entries already loaded
+	m := NewAssetHistoryModal()
+	m.AssetTicker = "BTC"
+
+	// Pre-populate with 10 entries
+	for i := 0; i < 10; i++ {
+		m.EntriesByDate = append(m.EntriesByDate, EntryByDate{
+			Date:          fmt.Sprintf("2025-01-%02d", i+1),
+			TotalInvested: float64(i) * 100,
+		})
+	}
+	m.Loaded = true
+
+	// Create a test file with 25 entries
+	testFile := createTestFileWith25Entries(t)
+	defer removeTestFile(t, testFile)
+
+	// Load more data
+	err := m.LoadMore(testFile)
+	if err != nil {
+		t.Fatalf("LoadMore returned error: %v", err)
+	}
+
+	// Should now have 20 entries (10 + 10 new)
+	if len(m.EntriesByDate) != 20 {
+		t.Errorf("Expected 20 entries after LoadMore, got %d", len(m.EntriesByDate))
+	}
+
+	// AllLoaded should be false (still more data available)
+	if m.AllLoaded {
+		t.Error("Expected AllLoaded to be false, got true")
+	}
+
+	// Loading should be false after completion
+	if m.Loading {
+		t.Error("Expected Loading to be false after LoadMore completes")
+	}
+}
+
+// TestAssetHistoryModal_LoadMore_AllLoaded verifies AllLoaded is set when all data is loaded
+func TestAssetHistoryModal_LoadMore_AllLoaded(t *testing.T) {
+	// Create a modal with 5 entries (less than batch size)
+	m := NewAssetHistoryModal()
+	m.AssetTicker = "BTC"
+
+	for i := 0; i < 5; i++ {
+		m.EntriesByDate = append(m.EntriesByDate, EntryByDate{
+			Date:          fmt.Sprintf("2025-01-%02d", i+1),
+			TotalInvested: float64(i) * 100,
+		})
+	}
+	m.Loaded = true
+
+	// Create a test file with only 5 entries
+	testFile := createTestFileWith5Entries(t)
+	defer removeTestFile(t, testFile)
+
+	// Load more data
+	err := m.LoadMore(testFile)
+	if err != nil {
+		t.Fatalf("LoadMore returned error: %v", err)
+	}
+
+	// Should still have 5 entries
+	if len(m.EntriesByDate) != 5 {
+		t.Errorf("Expected 5 entries (all loaded), got %d", len(m.EntriesByDate))
+	}
+
+	// AllLoaded should be true
+	if !m.AllLoaded {
+		t.Error("Expected AllLoaded to be true when all data loaded")
+	}
+}
+
+// TestAssetHistoryModal_LoadMore_EmptyHistory handles empty history gracefully
+func TestAssetHistoryModal_LoadMore_EmptyHistory(t *testing.T) {
+	m := NewAssetHistoryModal()
+	m.AssetTicker = "BTC"
+	m.Loaded = true
+	m.EntriesByDate = []EntryByDate{}
+
+	// Create a test file with no entries for this asset
+	testFile := createTestFileWithNoBTC(t)
+	defer removeTestFile(t, testFile)
+
+	// Load more data
+	err := m.LoadMore(testFile)
+	if err != nil {
+		t.Fatalf("LoadMore returned error: %v", err)
+	}
+
+	// Should still have empty history
+	if len(m.EntriesByDate) != 0 {
+		t.Errorf("Expected 0 entries, got %d", len(m.EntriesByDate))
+	}
+
+	// AllLoaded should be true
+	if !m.AllLoaded {
+		t.Error("Expected AllLoaded to be true")
+	}
+}
+
+// TestAssetHistoryModal_LoadMore_AlreadyAllLoaded doesn't reload when all loaded
+func TestAssetHistoryModal_LoadMore_AlreadyAllLoaded(t *testing.T) {
+	m := NewAssetHistoryModal()
+	m.AssetTicker = "BTC"
+	m.AllLoaded = true
+	m.Loaded = true
+
+	// Create a test file with entries
+	testFile := createTestFileWith25Entries(t)
+	defer removeTestFile(t, testFile)
+
+	// Load more data (should be no-op since AllLoaded is true)
+	err := m.LoadMore(testFile)
+	if err != nil {
+		t.Fatalf("LoadMore returned error: %v", err)
+	}
+
+	// Should still be marked as all loaded
+	if !m.AllLoaded {
+		t.Error("Expected AllLoaded to still be true")
+	}
+}
+
+// TestAssetHistoryModal_LoadMore_LoadingState verifies Loading flag during fetch
+func TestAssetHistoryModal_LoadMore_LoadingState(t *testing.T) {
+	m := NewAssetHistoryModal()
+	m.AssetTicker = "BTC"
+
+	for i := 0; i < 5; i++ {
+		m.EntriesByDate = append(m.EntriesByDate, EntryByDate{
+			Date:          fmt.Sprintf("2025-01-%02d", i+1),
+			TotalInvested: float64(i) * 100,
+		})
+	}
+	m.Loaded = true
+
+	// Create a test file with entries
+	testFile := createTestFileWith25Entries(t)
+	defer removeTestFile(t, testFile)
+
+	// Initial state
+	if m.Loading {
+		t.Error("Expected Loading to be false initially")
+	}
+
+	// Load more data
+	err := m.LoadMore(testFile)
+	if err != nil {
+		t.Fatalf("LoadMore returned error: %v", err)
+	}
+
+	// After completion, Loading should be false
+	if m.Loading {
+		t.Error("Expected Loading to be false after LoadMore completes")
+	}
+}
+
+// TestAssetHistoryModal_LoadMore_MultipleBatches verifies multiple LoadMore calls
+func TestAssetHistoryModal_LoadMore_MultipleBatches(t *testing.T) {
+	m := NewAssetHistoryModal()
+	m.AssetTicker = "BTC"
+	m.Loaded = true
+
+	// Create a test file with 25 entries
+	testFile := createTestFileWith25Entries(t)
+	defer removeTestFile(t, testFile)
+
+	// First LoadMore should load 10 (from 0 to 10)
+	err := m.LoadMore(testFile)
+	if err != nil {
+		t.Fatalf("First LoadMore returned error: %v", err)
+	}
+	if len(m.EntriesByDate) != 10 {
+		t.Errorf("Expected 10 entries after first LoadMore, got %d", len(m.EntriesByDate))
+	}
+
+	// Second LoadMore should load 10 more (from 10 to 20)
+	err = m.LoadMore(testFile)
+	if err != nil {
+		t.Fatalf("Second LoadMore returned error: %v", err)
+	}
+	if len(m.EntriesByDate) != 20 {
+		t.Errorf("Expected 20 entries after second LoadMore, got %d", len(m.EntriesByDate))
+	}
+
+	// Third LoadMore should load 5 more (from 20 to 25)
+	err = m.LoadMore(testFile)
+	if err != nil {
+		t.Fatalf("Third LoadMore returned error: %v", err)
+	}
+	if len(m.EntriesByDate) != 25 {
+		t.Errorf("Expected 25 entries after third LoadMore, got %d", len(m.EntriesByDate))
+	}
+
+	// AllLoaded should now be true
+	if !m.AllLoaded {
+		t.Error("Expected AllLoaded to be true after loading all data")
+	}
+}
+
+// TestAssetsView_UpdateLoadMore handles LoadMoreMsg
+func TestAssetsView_UpdateLoadMore(t *testing.T) {
+	av := NewAssetsView()
+	av.Loaded = true
+
+	// Open modal with initial LoadData (loads first 10 from file)
+	av.Modal = NewAssetHistoryModal()
+	av.Modal.AssetTicker = "BTC"
+
+	// Create a temp file with 25 BTC entries for testing
+	testFile := createTestFileWith25Entries(t)
+	defer removeTestFile(t, testFile)
+
+	// Load initial data from the temp file
+	err := av.Modal.LoadData(testFile, "BTC")
+	if err != nil {
+		t.Fatalf("Failed to load initial data: %v", err)
+	}
+
+	av.Modal.Visible = true
+
+	// Verify we start with 10 entries (batch size)
+	if len(av.Modal.EntriesByDate) != 10 {
+		t.Errorf("Expected 10 entries after LoadData, got %d", len(av.Modal.EntriesByDate))
+	}
+
+	// Simulate LoadMoreMsg
+	newAv, _ := av.Update(LoadMoreMsg{})
+
+	// Should return AssetsView
+	_, ok := newAv.(*AssetsView)
+	if !ok {
+		t.Fatalf("Expected AssetsView from Update, got %T", newAv)
+	}
+
+	// Modal should now have 20 entries (10 + 10 new from LoadMore)
+	if len(av.Modal.EntriesByDate) != 20 {
+		t.Errorf("Expected 20 entries after LoadMore, got %d", len(av.Modal.EntriesByDate))
+	}
+}
+
+// TestAssetsView_UpdateLoadMore_EmptyModal no-op if modal is nil
+func TestAssetsView_UpdateLoadMore_EmptyModal(t *testing.T) {
+	av := NewAssetsView()
+	av.Modal = nil
+
+	newAv, _ := av.Update(LoadMoreMsg{})
+
+	// Should return AssetsView unchanged
+	_, ok := newAv.(*AssetsView)
+	if !ok {
+		t.Fatalf("Expected AssetsView from Update, got %T", newAv)
+	}
+}
+
+// TestAssetsView_UpdateLoadMore_ModalNotVisible no-op if modal is not visible
+func TestAssetsView_UpdateLoadMore_ModalNotVisible(t *testing.T) {
+	av := NewAssetsView()
+	av.Modal = NewAssetHistoryModal()
+	av.Modal.Visible = false // Not visible
+
+	newAv, _ := av.Update(LoadMoreMsg{})
+
+	// Should return AssetsView unchanged
+	_, ok := newAv.(*AssetsView)
+	if !ok {
+		t.Fatalf("Expected AssetsView from Update, got %T", newAv)
+	}
+}
+
+// TestAssetsView_UpdateLoadMore_Error handles error during LoadMore
+func TestAssetsView_UpdateLoadMore_Error(t *testing.T) {
+	av := NewAssetsView()
+	av.Modal = NewAssetHistoryModal()
+	av.Modal.AssetTicker = "BTC"
+	av.Modal.Loaded = true
+	av.Modal.Visible = true
+
+	// Load more from non-existent file - returns empty data, not an error
+	// This is the expected behavior - file not found is handled gracefully
+	err := av.Modal.LoadMore("non_existent_file.json")
+	// Error should be nil (file not found returns empty data)
+	if err != nil {
+		t.Errorf("Expected no error for non-existent file, got: %v", err)
+	}
+	// AllLoaded should be true since there's no data to load
+	if !av.Modal.AllLoaded {
+		t.Error("Expected AllLoaded to be true when file has no data")
+	}
+}
+
+// createTestFileWith25Entries creates a test file with 25 BTC entries
+func createTestFileWith25Entries(t *testing.T) string {
+	t.Helper()
+
+	data := &dca.DCAData{
+		Entries: map[string][]dca.DCAEntry{
+			"BTC": makeEntries(25),
+		},
+	}
+
+	file, err := os.CreateTemp("", "dca_test_*.json")
+	if err != nil {
+		t.Fatalf("Failed to create temp file: %v", err)
+	}
+	defer file.Close()
+
+	if err := dca.SaveEntries(file.Name(), data); err != nil {
+		t.Fatalf("Failed to save test data: %v", err)
+	}
+
+	return file.Name()
+}
+
+// createTestFileWith5Entries creates a test file with 5 BTC entries
+func createTestFileWith5Entries(t *testing.T) string {
+	t.Helper()
+
+	data := &dca.DCAData{
+		Entries: map[string][]dca.DCAEntry{
+			"BTC": makeEntries(5),
+		},
+	}
+
+	file, err := os.CreateTemp("", "dca_test_*.json")
+	if err != nil {
+		t.Fatalf("Failed to create temp file: %v", err)
+	}
+	defer file.Close()
+
+	if err := dca.SaveEntries(file.Name(), data); err != nil {
+		t.Fatalf("Failed to save test data: %v", err)
+	}
+
+	return file.Name()
+}
+
+// createTestFileWithNoBTC creates a test file with no BTC entries
+func createTestFileWithNoBTC(t *testing.T) string {
+	t.Helper()
+
+	data := &dca.DCAData{
+		Entries: map[string][]dca.DCAEntry{
+			"ETH": makeEntries(10),
+		},
+	}
+
+	file, err := os.CreateTemp("", "dca_test_*.json")
+	if err != nil {
+		t.Fatalf("Failed to create temp file: %v", err)
+	}
+	defer file.Close()
+
+	if err := dca.SaveEntries(file.Name(), data); err != nil {
+		t.Fatalf("Failed to save test data: %v", err)
+	}
+
+	return file.Name()
+}
+
+// makeEntries creates n sample entries
+func makeEntries(n int) []dca.DCAEntry {
+	entries := make([]dca.DCAEntry, n)
+	for i := 0; i < n; i++ {
+		date, _ := time.Parse("2006-01-02", fmt.Sprintf("2025-01-%02d", i+1))
+		entries[i] = dca.DCAEntry{
+			Amount:        100 + float64(i*10),
+			Date:          date,
+			Asset:         "BTC",
+			PricePerShare: 50000 + float64(i*100),
+			Shares:        0.001 + float64(i)*0.0001,
+		}
+	}
+	return entries
+}
+
+// removeTestFile removes a test file
+func removeTestFile(t *testing.T, filename string) {
+	t.Helper()
+	os.Remove(filename)
 }

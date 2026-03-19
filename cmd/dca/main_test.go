@@ -135,3 +135,108 @@ func TestFormEntrySavesToSharedReference(t *testing.T) {
 		t.Errorf("Expected 1 ETH entry, got %d", len(entries.Entries["ETH"]))
 	}
 }
+
+// TestFormCancelledMsg_ReturnsToAssetsView tests that ESC on form returns to assets view
+func TestFormCancelledMsg_ReturnsToAssetsView(t *testing.T) {
+	// Create a temporary directory for the test
+	tmpDir := t.TempDir()
+	testFile := filepath.Join(tmpDir, "test_entries.json")
+
+	// Create initial entries
+	entries := &dca.DCAData{Entries: make(map[string][]dca.DCAEntry)}
+
+	// Create model with form state
+	m := model{
+		form:         form.NewFormModel(entries, testFile),
+		entries:      entries,
+		currentState: StateForm,
+	}
+
+	// Simulate pressing ESC on form
+	newModel, _ := m.Update(tea.KeyMsg{Type: tea.KeyEsc})
+
+	// Verify state transition to assets view
+	newM := newModel.(model)
+	if newM.currentState != StateAssetsView {
+		t.Errorf("Expected currentState to be StateAssetsView after ESC, got %d", newM.currentState)
+	}
+
+	// Verify form is cleared
+	if newM.form != nil {
+		t.Error("Expected form to be nil after returning to assets view")
+	}
+
+	// Verify assets view is created
+	if newM.assetsView == nil {
+		t.Error("Expected assetsView to be created after ESC")
+	}
+}
+
+// TestFormCancelledMsg_DoesNotSaveData tests that cancelled form doesn't save entries
+func TestFormCancelledMsg_DoesNotSaveData(t *testing.T) {
+	// Create a temporary directory for the test
+	tmpDir := t.TempDir()
+	testFile := filepath.Join(tmpDir, "test_entries.json")
+
+	// Create initial entries with no data
+	entries := &dca.DCAData{Entries: make(map[string][]dca.DCAEntry)}
+
+	// Create model with form state (form is empty, not submitted)
+	m := model{
+		form:         form.NewFormModel(entries, testFile),
+		entries:      entries,
+		currentState: StateForm,
+	}
+
+	// Simulate pressing ESC on form
+	newModel, _ := m.Update(tea.KeyMsg{Type: tea.KeyEsc})
+
+	newM := newModel.(model)
+
+	// Verify no entries were saved (form was cancelled before submission)
+	if len(newM.entries.Entries) != 0 {
+		t.Errorf("Expected no entries to be saved after cancel, got %d", len(newM.entries.Entries))
+	}
+
+	// Verify the form file was not created
+	if _, err := os.Stat(testFile); err == nil {
+		t.Error("Expected test file to not be created after cancel")
+	}
+}
+
+// TestCtrlCStillQuits tests that Ctrl+C still exits the application
+func TestCtrlCStillQuits(t *testing.T) {
+	// Create a temporary directory for the test
+	tmpDir := t.TempDir()
+	testFile := filepath.Join(tmpDir, "test_entries.json")
+
+	// Create initial entries
+	entries := &dca.DCAData{Entries: make(map[string][]dca.DCAEntry)}
+
+	// Create model with form state
+	m := model{
+		form:         form.NewFormModel(entries, testFile),
+		entries:      entries,
+		currentState: StateForm,
+	}
+
+	// Simulate pressing Ctrl+C on form
+	newModel, cmd := m.Update(tea.KeyMsg{Type: tea.KeyCtrlC})
+
+	// Verify command returns tea.Quit
+	if cmd == nil {
+		t.Fatal("Expected cmd to return tea.Quit, got nil")
+	}
+
+	// Execute the command
+	msg := cmd()
+	if _, ok := msg.(tea.QuitMsg); !ok {
+		t.Errorf("Expected tea.QuitMsg, got %T", msg)
+	}
+
+	// Verify form is still in place (quit doesn't clear it)
+	newM := newModel.(model)
+	if newM.form == nil {
+		t.Error("Expected form to still be present when quit is issued")
+	}
+}
