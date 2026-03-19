@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - Catarina
 created_date: '2026-03-19 12:09'
-updated_date: '2026-03-19 12:12'
+updated_date: '2026-03-19 12:39'
 labels: []
 dependencies: []
 ordinal: 6000
@@ -113,62 +113,56 @@ This is a **documentation-only task** to review and enhance the README. After re
 ## Implementation Notes
 
 <!-- SECTION:NOTES:BEGIN -->
-# Implementation Plan: Update README
+# Implementation Log - Update README (GOT-051)
 
-## Research Findings
+## Research Phase
+- Reviewed README.md against codebase implementation
+- Analyzed all source files in `/cmd/dca/`, `/internal/form/`, `/internal/dca/`, `/internal/assets/`
+- Verified project structure, build commands, and keyboard navigation
 
-After reviewing the codebase, the README is already **well-comprehensive** and accurately reflects most aspects of the application. The following sections were analyzed:
+## Changes Made to README.md
 
-### Current README Coverage
+### 1. Added Makefile Section (Lines 52-69)
+- Documented all available make commands
+- Added table with command descriptions
+- Included `make help` as primary reference
 
-| Section | Status | Notes |
-|---------|--------|-------|
-| Overview | ✅ Accurate | Correctly describes DCA tracker purpose |
-| Features | ✅ Accurate | All listed features implemented |
-| Architecture | ✅ Accurate | Folder structure matches actual layout |
-| Package Dependencies | ✅ Accurate | Dependency tree correct |
-| Getting Started | ✅ Accurate | Prerequisites and build commands correct |
-| Usage | ✅ Accurate | Form and asset view workflows correct |
-| Data Format | ✅ Accurate | JSON structure and models correct |
-| Testing | ✅ Accurate | Test commands and coverage description correct |
-| Extending | ✅ Accurate | Code patterns and examples valid |
-| Dependencies | ✅ Accurate | Bubble Tea and Lipgloss correctly listed |
+### 2. Updated Usage Section (Lines 96-144)
+- Reorganized to clarify app starts in **Assets View** (not form)
+- Added `c` key to switch to Form View
+- Updated Form View instructions with ESC behavior (returns to assets, no save)
+- Updated Asset List View navigation with:
+  - `c` key to switch to form
+  - `Enter` to open history modal
+  - `Esc`/`Ctrl+C` to exit
+- Added **Asset History Modal** section documenting:
+  - How modal opens (Enter on asset row)
+  - Modal columns (Date, Avg Price, Total Invested, Entry Count)
+  - Modal navigation (Up/Down, Enter to load more, Esc to close)
 
-### Potential Minor Improvements
+### 3. Technical Details Verified
+- Build command: `go build -o dca ./cmd/dca` ✅
+- Run command: `./dca` ✅
+- All make targets working (`make help`, `make build`, `make run`, etc.) ✅
+- All 94 tests passing ✅
+- No new compiler warnings ✅
+- Code follows project style (`go fmt` passes) ✅
 
-1. **Makefile section**: README could mention `make` commands as alternative to direct `go` commands
-2. **Exit behavior**: Could clarify that ESC exits form and returns to list, but exits app from list view
-3. **Modal functionality**: The asset history modal is not mentioned in current README
+## Testing Results
+All 5 packages pass with 94 total tests:
+- github.com/danilo/scripts/github/dca (0.002s)
+- github.com/danilo/scripts/github/dca/cmd/dca (0.003s)
+- github.com/danilo/scripts/github/dca/internal/assets (0.009s)
+- github.com/danilo/scripts/github/dca/internal/dca (0.002s)
+- github.com/danilo/scripts/github/dca/internal/form (0.003s)
 
-## Implementation Approach
-
-### Step 1: Review and Validate
-- Cross-check each README section against actual code
-- Test all documented commands
-- Verify file paths and struct names
-
-### Step 2: Add Missing Content
-- Add Makefile usage section
-- Document modal functionality (enter on asset to view history)
-- Clarify ESC key behavior differences between views
-
-### Step 3: Polish
-- Ensure consistent formatting
-- Verify all code examples compile correctly
-- Add any helpful tips or common use cases
-
-## Files to Modify
-
-- `README.md` - Update with missing/missing content
-
-## No Code Changes Required
-
-This task is documentation-only. No Go source files need modification.
-
-## Testing Strategy
-
-- Verify all code examples in README still compile and work
-- Run `make check` after changes to ensure no syntax errors (though none expected)
+## Definition of Done Checklist
+- [x] #1 All acceptance criteria met (N/A - no criteria defined)
+- [x] #2 Unit tests pass (go test)
+- [x] #3 No new compiler warnings
+- [x] #4 Code follows project style (go fmt)
+- [x] #5 PRD referenced in task (README.md)
+- [x] #6 Documentation updated (comments)
 <!-- SECTION:NOTES:END -->
 
 ## Definition of Done
