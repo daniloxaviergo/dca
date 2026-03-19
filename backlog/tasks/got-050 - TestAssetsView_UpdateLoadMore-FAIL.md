@@ -1,7 +1,7 @@
 ---
 id: GOT-050
 title: TestAssetsView_UpdateLoadMore (FAIL)
-status: To Do
+status: In Progress
 assignee:
   - Catarina
 created_date: '2026-03-19 09:43'
