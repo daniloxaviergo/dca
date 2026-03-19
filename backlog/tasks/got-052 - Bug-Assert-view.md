@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - Thomas
 created_date: '2026-03-19 16:45'
-updated_date: '2026-03-19 17:40'
+updated_date: '2026-03-19 17:42'
 labels: []
 dependencies: []
 references:
@@ -34,7 +34,7 @@ The sum should be the sum of previues days
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [x] #1 Entries in asset history modal are sorted in descending order (newest first)
+- [ ] #1 - [x] #1 Entries in asset history modal are sorted in descending order (newest first)
 - [ ] #2 - [x] #2 Total Invested shows cumulative sum of all previous days (running total)
 <!-- AC:END -->
 
