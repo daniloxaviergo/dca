@@ -60,12 +60,16 @@ cmd/dca
 
 ```bash
 go build -o dca ./cmd/dca
+# Or use make:
+make build
 ```
 
 ### Run
 
 ```bash
 ./dca
+# Or use make:
+make run
 ```
 
 Or run directly:
@@ -74,12 +78,31 @@ Or run directly:
 go run ./cmd/dca
 ```
 
+### Development Commands
+
+Use the provided Makefile for common tasks:
+
+| Command | Description |
+|---------|-------------|
+| `make help` | Display all available commands |
+| `make build` | Build the binary |
+| `make run` | Run the application |
+| `make test` | Run all tests with verbose output |
+| `make test-quiet` | Run all tests without verbose output |
+| `make test-cover` | Generate coverage report |
+| `make fmt` | Format all Go files |
+| `make check` | Run fmt, build, and test (CI validation) |
+| `make clean` | Remove compiled binary and temporary files |
+| `make version` | Show Go version |
+
 ## Usage
 
-### Entering Data
+The application starts in **Assets View** (asset list). Press `c` to open the form, or select an asset and press `Enter` to view its history.
 
-1. Launch the application: `./dca`
-2. The form interface will appear with the following fields:
+### Entering Data (Form View)
+
+1. Press `c` in Assets View to switch to the form interface
+2. Fill in the following fields:
 
 | Field | Description | Format |
 |-------|-------------|--------|
@@ -91,11 +114,14 @@ go run ./cmd/dca
 
 3. Navigate between fields with `←`/`→` or `Tab`
 4. Press `Enter` to proceed to the next field or submit
-5. Press `Ctrl+C` or `Esc` to cancel/exit at any time
+5. Press `Esc` to cancel and return to Assets View (data not saved)
+6. Press `Ctrl+C` to exit the application at any time
 
-### Viewing Assets
+**Note:** The form starts with default values (current date, etc.). You can modify them before pressing Enter.
 
-After submitting an entry, the application switches to the Assets view showing:
+### Viewing Assets (Asset List)
+
+The asset list shows aggregated statistics for all your investments:
 
 | Column | Description |
 |--------|-------------|
@@ -105,7 +131,22 @@ After submitting an entry, the application switches to the Assets view showing:
 | Avg Price | Weighted average price |
 | Total Value | Sum of all amounts invested |
 
-Navigate the list with `↑`/`↓` arrows. Press `Esc` or `Ctrl+C` to return to the form.
+**Navigation:**
+- `↑` / `↓` - Navigate up/down through the list
+- `c` - Switch to Form View to enter new data
+- `Enter` - Open the history modal for the selected asset
+- `Esc` / `Ctrl+C` - Exit the application
+
+### Asset History Modal
+
+When you press `Enter` on a row in the asset list:
+
+- **Modal Opens**: Shows detailed history for the selected asset, grouped by date
+- **Modal Columns**: Date, Avg Price (per day), Total Invested (per day), Entry Count
+- **Navigation**:
+  - `↑` / `↓` - Scroll through history entries
+  - `Enter` - Load more entries (paginated, loads 10 at a time)
+  - `Esc` - Close modal and return to asset list
 
 ## Data Format
 
