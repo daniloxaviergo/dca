@@ -151,20 +151,27 @@ func AggregateByDate(entries []dca.DCAEntry) []EntryByDate {
 		dateGroups[dateStr] = append(dateGroups[dateStr], entry)
 	}
 
-	// Convert to slice and sort by date ascending
+	// Convert to slice and calculate daily metrics
 	var result []EntryByDate
 	for dateStr, dayEntries := range dateGroups {
 		entry := calculateDayMetrics(dateStr, dayEntries)
 		result = append(result, entry)
 	}
 
-	// Sort by date ascending
+	// Sort by date descending (newest first)
 	for i := 0; i < len(result)-1; i++ {
 		for j := i + 1; j < len(result); j++ {
-			if result[i].Date > result[j].Date {
+			if result[i].Date < result[j].Date {
 				result[i], result[j] = result[j], result[i]
 			}
 		}
+	}
+
+	// Calculate cumulative totals (running sum)
+	var cumulativeTotal float64
+	for i := range result {
+		cumulativeTotal += result[i].TotalInvested
+		result[i].TotalInvested = RoundTo8Decimals(cumulativeTotal)
 	}
 
 	return result

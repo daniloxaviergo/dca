@@ -322,7 +322,7 @@ func TestAggregateByDate_Calculations(t *testing.T) {
 	}
 }
 
-// TestAggregateByDate_Sorting sorts entries by date ascending
+// TestAggregateByDate_Sorting sorts entries by date descending (newest first)
 func TestAggregateByDate_Sorting(t *testing.T) {
 	entries := []dca.DCAEntry{
 		{
@@ -348,8 +348,8 @@ func TestAggregateByDate_Sorting(t *testing.T) {
 		t.Fatalf("Expected 3 days, got %d", len(result))
 	}
 
-	// Verify dates are in ascending order
-	expectedDates := []string{"2025-01-15", "2025-01-18", "2025-01-20"}
+	// Verify dates are in descending order (newest first)
+	expectedDates := []string{"2025-01-20", "2025-01-18", "2025-01-15"}
 	for i, expected := range expectedDates {
 		if result[i].Date != expected {
 			t.Errorf("Date at position %d: expected '%s', got '%s'", i, expected, result[i].Date)
@@ -711,5 +711,95 @@ func TestLoadData_MissingFileReturnsEmpty(t *testing.T) {
 
 	if !m.Loaded {
 		t.Error("Expected Loaded to be true for missing file (returns empty data)")
+	}
+}
+
+// TestAggregateByDate_CumulativeTotal calculates running total correctly
+func TestAggregateByDate_CumulativeTotal(t *testing.T) {
+	entries := []dca.DCAEntry{
+		{
+			Amount: 100,
+			Date:   time.Date(2025, 1, 20, 10, 0, 0, 0, time.UTC),
+			Asset:  "BTC",
+		},
+		{
+			Amount: 100,
+			Date:   time.Date(2025, 1, 15, 10, 0, 0, 0, time.UTC),
+			Asset:  "BTC",
+		},
+		{
+			Amount: 100,
+			Date:   time.Date(2025, 1, 18, 10, 0, 0, 0, time.UTC),
+			Asset:  "BTC",
+		},
+	}
+
+	result := AggregateByDate(entries)
+
+	if len(result) != 3 {
+		t.Fatalf("Expected 3 days, got %d", len(result))
+	}
+
+	// Results should be sorted descending (2025-01-20, 2025-01-18, 2025-01-15)
+	// Cumulative totals:
+	// Position 0 (2025-01-20): 100
+	// Position 1 (2025-01-18): 100 + 100 = 200
+	// Position 2 (2025-01-15): 100 + 100 + 100 = 300
+	expectedTotals := []float64{100.0, 200.0, 300.0}
+	for i, expected := range expectedTotals {
+		if result[i].TotalInvested != expected {
+			t.Errorf("TotalInvested at position %d: expected %.2f, got %.2f", i, expected, result[i].TotalInvested)
+		}
+	}
+}
+
+// TestAggregateByDate_DescendingSortAndCumulative verifies both descending sort and cumulative totals
+func TestAggregateByDate_DescendingSortAndCumulative(t *testing.T) {
+	entries := []dca.DCAEntry{
+		{
+			Amount: 100,
+			Date:   time.Date(2025, 1, 20, 10, 0, 0, 0, time.UTC),
+			Asset:  "BTC",
+		},
+		{
+			Amount: 50,
+			Date:   time.Date(2025, 1, 20, 12, 0, 0, 0, time.UTC),
+			Asset:  "BTC",
+		},
+		{
+			Amount: 75,
+			Date:   time.Date(2025, 1, 15, 10, 0, 0, 0, time.UTC),
+			Asset:  "BTC",
+		},
+	}
+
+	result := AggregateByDate(entries)
+
+	if len(result) != 2 {
+		t.Fatalf("Expected 2 days, got %d", len(result))
+	}
+
+	// Should be sorted descending
+	if result[0].Date != "2025-01-20" {
+		t.Errorf("Expected first date '2025-01-20', got '%s'", result[0].Date)
+	}
+	if result[1].Date != "2025-01-15" {
+		t.Errorf("Expected second date '2025-01-15', got '%s'", result[1].Date)
+	}
+
+	// Cumulative: 150 (20th), 225 (15th = 150 + 75)
+	expectedTotals := []float64{150.0, 225.0}
+	for i, expected := range expectedTotals {
+		if result[i].TotalInvested != expected {
+			t.Errorf("TotalInvested at position %d: expected %.2f, got %.2f", i, expected, result[i].TotalInvested)
+		}
+	}
+
+	// Entry count: 2 on 20th, 1 on 15th
+	if result[0].EntryCount != 2 {
+		t.Errorf("Expected entry count 2 on 2025-01-20, got %d", result[0].EntryCount)
+	}
+	if result[1].EntryCount != 1 {
+		t.Errorf("Expected entry count 1 on 2025-01-15, got %d", result[1].EntryCount)
 	}
 }
