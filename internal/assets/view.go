@@ -160,7 +160,19 @@ func (a *AssetsView) handleDown() (tea.Model, tea.Cmd) {
 
 // handleEnterOnAsset opens the modal for the selected asset
 func (a *AssetsView) handleEnterOnAsset() (tea.Model, tea.Cmd) {
-	if a.SelectedIndex <= 0 || a.SelectedIndex > len(a.Entries) {
+	if a.SelectedIndex <= 0 {
+		return a, nil
+	}
+
+	// Data rows start at index 1, but only up to maxDataRows are rendered
+	const maxVisibleRows = 30
+	const maxDataRows = maxVisibleRows - 1 // 29 data rows max
+	maxSelectableIndex := 1 + len(a.Entries)
+	if maxSelectableIndex > 1+maxDataRows {
+		maxSelectableIndex = 1 + maxDataRows
+	}
+
+	if a.SelectedIndex >= maxSelectableIndex {
 		return a, nil
 	}
 
@@ -480,7 +492,8 @@ func (a *AssetsView) renderDataRow(index int, entry AssetSummary) string {
 	rowStr := strings.Join(rowData, ColumnSeparator)
 
 	// Apply active row styling
-	if index == a.SelectedIndex {
+	// Data rows start at index 1 (header is at index 0)
+	if index+1 == a.SelectedIndex {
 		return lipgloss.NewStyle().
 			Background(lipgloss.Color("63")).
 			Foreground(lipgloss.Color("15")).
@@ -517,7 +530,8 @@ func (a *AssetsView) renderEmptyDataRow(index int) string {
 	rowStr := strings.Join(rowData, ColumnSeparator)
 
 	// Apply active row styling
-	if index == a.SelectedIndex {
+	// Data rows start at index 1 (header is at index 0)
+	if index+1 == a.SelectedIndex {
 		return lipgloss.NewStyle().
 			Background(lipgloss.Color("63")).
 			Foreground(lipgloss.Color("15")).
