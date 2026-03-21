@@ -2,10 +2,9 @@
 id: GOT-054
 title: Bug avg price
 status: Done
-assignee:
-  - Thomas
+assignee: []
 created_date: '2026-03-21 11:20'
-updated_date: '2026-03-21 11:49'
+updated_date: '2026-03-21 11:53'
 labels: []
 dependencies: []
 ordinal: 6000
