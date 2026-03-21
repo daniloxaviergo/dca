@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - Catarina
 created_date: '2026-03-21 11:20'
-updated_date: '2026-03-21 11:20'
+updated_date: '2026-03-21 11:22'
 labels: []
 dependencies: []
 ordinal: 6000
@@ -17,6 +17,65 @@ ordinal: 6000
 has diferencies between avg price of table and avg price of modal history assets, what the correct information?
 Fix to show the correct information
 <!-- SECTION:DESCRIPTION:END -->
+
+## Implementation Plan
+
+<!-- SECTION:PLAN:BEGIN -->
+### 1. Technical Approach
+
+The bug is in the `internal/assets/` package. The `TotalInvested` and `WeightedAvgPrice` fields in the modal display inconsistent values:
+
+- **Assets View (`aggregateEntries`)**: Shows overall weighted average price = sum(all amounts) / sum(all shares) across all time
+- **Modal History (`calculateDayMetrics`)**: Calculates daily weighted averages, but `TotalInvested` is shown as a cumulative running sum
+
+This creates confusion because:
+1. The modal's per-day WeightedAvgPrice doesn't match the overall Assets View AvgPrice
+2. The cumulative TotalInvested doesn't have a matching cumulative weighted average
+
+**Solution**: Modify `AggregateByDate` to also calculate a cumulative weighted average price. The cumulative weighted average at each day = sum(all amounts up to that day) / sum(all shares up to that day). This ensures the last row's WeightedAvgPrice in the modal matches the Assets View's AvgPrice.
+
+### 2. Files to Modify
+
+- `internal/assets/aggregate.go`:
+  - Modify `calculateDayMetrics` to also track cumulative weighted average
+  - Modify `AggregateByDate` to accumulate the weighted average calculation
+  - Update `EntryByDate` struct if needed (or use existing fields)
+
+- `internal/assets/view.go`:
+  - Update `renderModalDataRow` to display the cumulative weighted average (not per-day)
+
+### 3. Dependencies
+
+- No external dependencies required
+- No blocking tasks
+- Fix can be implemented directly after this plan is approved
+
+### 4. Code Patterns
+
+- Follow existing rounding pattern: `RoundTo8Decimals` for 8 decimal precision, format to 2 decimals for display
+- Maintain same calculation formula: weighted average = totalAmount / totalShares
+- Keep existing date aggregation and pagination logic unchanged
+- Use cumulative sums for both TotalInvested and WeightedAvgPrice in modal
+
+### 5. Testing Strategy
+
+- Update `TestAggregateByDate` in `internal/assets/aggregate_test.go` to verify cumulative weighted average
+- Verify that the last row's WeightedAvgPrice in modal matches Assets View's AvgPrice
+- Test with multiple entries on same day vs. multiple days
+- Run `go test -v ./internal/assets/` to verify all tests pass
+
+### 6. Risks and Considerations
+
+**Risk**: The current implementation calculates weighted average per day, which is mathematically correct for daily analysis. Making it cumulative changes the semantic meaning.
+
+**Mitigation**: The cumulative weighted average is more consistent with the Assets View and provides a better user experience. Users can see how their average price changes over time, and the final value matches the overall portfolio average.
+
+**Trade-off**: Per-day weighted averages are mathematically accurate for that day's transactions. Cumulative averages blend all days together, which may mask daily variations but provides a clearer picture of overall performance.
+
+**Alternative approach considered**: Keep per-day weighted averages but add a separate "Cumulative Avg Price" column. This would require UI changes and might clutter the modal.
+
+**Decision**: Cumulative weighted average is simpler and aligns with user expectations (final value = overall average).
+<!-- SECTION:PLAN:END -->
 
 ## Definition of Done
 <!-- DOD:BEGIN -->
