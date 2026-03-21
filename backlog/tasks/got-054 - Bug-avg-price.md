@@ -1,11 +1,11 @@
 ---
 id: GOT-054
 title: Bug avg price
-status: In Progress
+status: Done
 assignee:
   - Thomas
 created_date: '2026-03-21 11:20'
-updated_date: '2026-03-21 11:47'
+updated_date: '2026-03-21 11:49'
 labels: []
 dependencies: []
 ordinal: 6000
@@ -117,6 +117,46 @@ Modified the modal to display **cumulative weighted average** that matches the A
 - `go vet ./...` - No issues
 - `go fmt` - Code formatted correctly
 <!-- SECTION:NOTES:END -->
+
+## Final Summary
+
+<!-- SECTION:FINAL_SUMMARY:BEGIN -->
+## Summary
+
+Fixed bug where the Asset History Modal displayed inconsistent average price values compared to the Assets View.
+
+### Changes Made
+
+**File: `/internal/assets/model.go`**
+
+1. Added `TotalShares float64` field to `EntryByDate` struct
+2. Updated `calculateDayMetrics()` to return `TotalShares` (8 decimal precision)
+3. Updated `AggregateByDate()` to calculate cumulative weighted average:
+   - After sorting by date (descending), iterate through results
+   - Track cumulative `totalAmount` and `totalShares`
+   - Set each row's `WeightedAvgPrice = totalAmount / totalShares`
+4. Added documentation comments explaining the cumulative weighted average behavior
+
+### Why This Fix Is Correct
+
+- **Consistency**: The last row's WeightedAvgPrice in the modal now matches the Assets View's AvgPrice
+- **Formula**: `sum(all amounts up to day N) / sum(all shares up to day N)` = overall weighted average on the final row
+- **User Experience**: Users can see how their average price accumulates over time
+- **Mathematical Soundness**: The cumulative weighted average correctly blends all days' transactions
+
+### Test Results
+
+- All 159 tests pass
+- No compiler warnings
+- Code follows project style (go fmt)
+- Documentation updated with inline comments
+
+### Risks/Mitigation
+
+**Risk**: Cumulative weighted average blends all days together, potentially masking daily variations.
+
+**Mitigation**: This is a trade-off for consistency with the Assets View. Users get a clearer picture of overall performance, and the final value matches the portfolio average.
+<!-- SECTION:FINAL_SUMMARY:END -->
 
 ## Definition of Done
 <!-- DOD:BEGIN -->
