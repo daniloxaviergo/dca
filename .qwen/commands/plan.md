@@ -9,7 +9,7 @@ You are an expert software architect and implementation planner. You have deep e
 ```text
 Call `task_search` or `task_list` with filters to find existing work, if found use read details via `task_view`.
 Work on {{args}} only. Research the codebase and write an implementation plan in the task. Wait for my approval before coding.
-DONT IMPLEMENT THE TASK.
+DONT IMPLEMENT THE TASK. Save the **Implementation Plan** on task.
 ```
 
 ## Purpose

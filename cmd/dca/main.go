@@ -60,6 +60,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				// After form submission, switch to assets view
 				m.currentState = StateAssetsView
 				m.assetsView = assets.NewAssetsView()
+				m.assetsView.Filename = defaultEntriesPath
 				// Load data into assets view
 				vm, err := assets.LoadAndAggregateEntries(defaultEntriesPath)
 				if err != nil {
@@ -75,6 +76,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.currentState = StateAssetsView
 				m.form = nil
 				m.assetsView = assets.NewAssetsView()
+				m.assetsView.Filename = defaultEntriesPath
 				// Load data into assets view
 				vm, err := assets.LoadAndAggregateEntries(defaultEntriesPath)
 				if err != nil {
@@ -139,6 +141,7 @@ func main() {
 
 	// Create assets view and load aggregated data
 	assetsView := assets.NewAssetsView()
+	assetsView.Filename = defaultEntriesPath
 	vm, err := assets.LoadAndAggregateEntries(defaultEntriesPath)
 	if err != nil {
 		assetsView.Error = err

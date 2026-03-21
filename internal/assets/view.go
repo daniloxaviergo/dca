@@ -51,6 +51,7 @@ type AssetsView struct {
 	SelectedIndex    int
 	Loaded           bool
 	Error            error
+	Filename         string // Path to the data file for modal operations
 	TableHeaderStyle lipgloss.Style
 	TableRowStyle    lipgloss.Style
 	ActiveRowStyle   lipgloss.Style
@@ -171,7 +172,7 @@ func (a *AssetsView) handleEnterOnAsset() (tea.Model, tea.Cmd) {
 	}
 
 	// Load data into modal for the selected asset
-	err := a.Modal.LoadData("dca_entries.json", asset.Ticker)
+	err := a.Modal.LoadData(a.Filename, asset.Ticker)
 	if err != nil {
 		a.Modal.Error = err
 		a.Modal.Loaded = true
@@ -212,7 +213,7 @@ func (a *AssetsView) handleOpenModal(assetTicker string) (tea.Model, tea.Cmd) {
 	}
 
 	// Load data into modal
-	err := a.Modal.LoadData("dca_entries.json", assetTicker)
+	err := a.Modal.LoadData(a.Filename, assetTicker)
 	if err != nil {
 		a.Modal.Error = err
 		a.Modal.Loaded = true
@@ -544,6 +545,7 @@ func NewAssetsView() *AssetsView {
 		SelectedIndex: 0,
 		Loaded:        false,
 		Error:         nil,
+		Filename:      "dca_entries.json",
 		Modal:         NewAssetHistoryModal(),
 		TableHeaderStyle: lipgloss.NewStyle().
 			Foreground(lipgloss.Color("15")).
