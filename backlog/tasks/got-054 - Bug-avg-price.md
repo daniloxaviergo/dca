@@ -2,7 +2,8 @@
 id: GOT-054
 title: Bug avg price
 status: In Progress
-assignee: []
+assignee:
+  - Thomas
 created_date: '2026-03-21 11:20'
 updated_date: '2026-03-21 11:24'
 labels: []
