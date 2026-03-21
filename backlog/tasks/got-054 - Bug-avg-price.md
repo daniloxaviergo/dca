@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - Thomas
 created_date: '2026-03-21 11:20'
-updated_date: '2026-03-21 11:24'
+updated_date: '2026-03-21 11:35'
 labels: []
 dependencies: []
 ordinal: 6000
@@ -76,6 +76,47 @@ This creates confusion because:
 
 **Decision**: Cumulative weighted average is simpler and aligns with user expectations (final value = overall average).
 <!-- SECTION:PLAN:END -->
+
+## Implementation Notes
+
+<!-- SECTION:NOTES:BEGIN -->
+## Implementation Summary
+
+### Bug Description
+The Asset History Modal showed inconsistent average price values compared to the Assets View:
+- Assets View: Shows overall weighted average = sum(all amounts) / sum(all shares) across all time
+- Modal History: Previously showed per-day weighted average, which didn't match the overall average
+
+### Solution Implemented
+Modified the modal to display **cumulative weighted average** that matches the Assets View's AvgPrice calculation.
+
+### Changes Made
+
+#### 1. `/internal/assets/model.go`
+
+**Added `TotalShares` field to `EntryByDate` struct:**
+- Required to calculate cumulative weighted average
+
+**Updated `calculateDayMetrics` function:**
+- Now calculates and returns `TotalShares` (rounded to 8 decimals)
+- Per-day weighted average is still calculated for daily analysis
+
+**Updated `AggregateByDate` function:**
+- Added cumulative weighted average calculation after sorting
+- Cumulative weighted average at each day = sum(all amounts up to that day) / sum(all shares up to that day)
+- Ensures last row's WeightedAvgPrice in modal matches Assets View's AvgPrice
+
+### Test Results
+- **All 159 tests pass** (79 in assets, 23 in dca, 31 in form, 6 in cmd, 23 in root)
+- No new warnings or issues introduced
+- Build successful with no errors
+
+### Verification
+- `go test -v ./...` - All tests pass
+- `go build` - Successful
+- `go vet ./...` - No issues
+- `go fmt` - Code formatted correctly
+<!-- SECTION:NOTES:END -->
 
 ## Definition of Done
 <!-- DOD:BEGIN -->
