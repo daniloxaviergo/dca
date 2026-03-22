@@ -1,10 +1,10 @@
 ---
 id: GOT-054
 title: Bug avg price
-status: Done
+status: In Progress
 assignee: []
 created_date: '2026-03-21 11:20'
-updated_date: '2026-03-21 11:53'
+updated_date: '2026-03-22 23:00'
 labels: []
 dependencies: []
 ordinal: 6000
