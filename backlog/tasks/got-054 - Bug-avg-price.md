@@ -2,8 +2,7 @@
 id: GOT-054
 title: Bug avg price
 status: In Progress
-assignee:
-  - Catarina
+assignee: []
 created_date: '2026-03-21 11:20'
 updated_date: '2026-03-22 23:08'
 labels: []
