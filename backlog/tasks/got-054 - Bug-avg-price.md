@@ -24,5 +24,5 @@ Fix to show the correct information
 - [ ] #3 No new compiler warnings
 - [ ] #4 Code follows project style (go fmt)
 - [ ] #5 PRD referenced in task
-- [x] #6 Documentation updated (comments)
+- [ ] #6 Documentation updated (comments)
 <!-- DOD:END -->
