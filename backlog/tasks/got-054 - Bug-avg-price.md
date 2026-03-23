@@ -22,7 +22,7 @@ Fix to show the correct information
 - [ ] #1 All acceptance criteria met (no acceptance criteria defined, so N/A)
 - [ ] #2 Unit tests pass (go test)
 - [ ] #3 No new compiler warnings
-- [x] #4 Code follows project style (go fmt)
+- [ ] #4 Code follows project style (go fmt)
 - [x] #5 PRD referenced in task
 - [x] #6 Documentation updated (comments)
 <!-- DOD:END -->
