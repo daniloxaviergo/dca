@@ -19,7 +19,7 @@ Fix to show the correct information
 
 ## Definition of Done
 <!-- DOD:BEGIN -->
-- [x] #1 All acceptance criteria met (no acceptance criteria defined, so N/A)
+- [ ] #1 All acceptance criteria met (no acceptance criteria defined, so N/A)
 - [x] #2 Unit tests pass (go test)
 - [x] #3 No new compiler warnings
 - [x] #4 Code follows project style (go fmt)
