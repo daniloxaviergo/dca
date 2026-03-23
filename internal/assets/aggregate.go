@@ -60,16 +60,18 @@ func LoadAndAggregateEntries(filename string) (*AssetsViewModel, error) {
 func aggregateEntries(ticker string, entries []dca.DCAEntry) AssetSummary {
 	var totalShares float64
 	var totalAmount float64
+	var sumPriceAmount float64
 
 	for _, entry := range entries {
 		totalShares += entry.Shares
 		totalAmount += entry.Amount
+		sumPriceAmount += entry.PricePerShare * entry.Amount
 	}
 
-	// Calculate weighted average price: sum(amounts) / sum(shares)
+	// Weighted average price (PRD formula): sum(price_per_share × amount) / sum(amounts)
 	var avgPrice float64
-	if totalShares > 0 {
-		avgPrice = RoundTo8Decimals(totalAmount / totalShares)
+	if totalAmount > 0 {
+		avgPrice = RoundTo8Decimals(sumPriceAmount / totalAmount)
 	}
 
 	return AssetSummary{
@@ -81,13 +83,13 @@ func aggregateEntries(ticker string, entries []dca.DCAEntry) AssetSummary {
 	}
 }
 
-// CalculateWeightedAverage calculates the weighted average price
-// weightedAverage = sum(amounts) / sum(shares)
-func CalculateWeightedAverage(totalAmount, totalShares float64) float64 {
-	if totalShares == 0 {
+// CalculateWeightedAverage calculates the weighted average price using the PRD formula:
+// weightedAverage = sum(price_per_share × amount) / sum(amounts)
+func CalculateWeightedAverage(totalAmount, sumPriceAmount float64) float64 {
+	if totalAmount == 0 {
 		return 0
 	}
-	return RoundTo8Decimals(totalAmount / totalShares)
+	return RoundTo8Decimals(sumPriceAmount / totalAmount)
 }
 
 // Validate validates an AssetSummary

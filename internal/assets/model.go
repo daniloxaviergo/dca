@@ -24,6 +24,7 @@ type AssetHistoryModal struct {
 type EntryByDate struct {
 	Date             string
 	TotalInvested    float64
+	TotalShares      float64
 	WeightedAvgPrice float64
 	EntryCount       int
 }
@@ -142,7 +143,9 @@ func (m *AssetHistoryModal) LoadMore(filename string) error {
 	return nil
 }
 
-// AggregateByDate groups entries by calendar date and calculates daily metrics
+// AggregateByDate groups entries by calendar date and calculates daily metrics with
+// cumulative weighted average. The cumulative weighted average at each day uses the
+// PRD formula: sum(price_per_share × amount) / sum(amounts) for all entries up to that day.
 func AggregateByDate(entries []dca.DCAEntry) []EntryByDate {
 	// Group entries by date string (YYYY-MM-DD)
 	dateGroups := make(map[string][]dca.DCAEntry)
@@ -167,37 +170,49 @@ func AggregateByDate(entries []dca.DCAEntry) []EntryByDate {
 		}
 	}
 
-	// Calculate cumulative totals (running sum)
-	var cumulativeTotal float64
+	// Calculate cumulative totals and cumulative weighted average using PRD formula
+	// cumulativeWeightedAvg = sum(all price_per_share × amount up to this day) / sum(all amounts up to this day)
+	var cumulativeTotalAmount float64
+	var cumulativeSumPriceAmount float64
 	for i := range result {
-		cumulativeTotal += result[i].TotalInvested
-		result[i].TotalInvested = RoundTo8Decimals(cumulativeTotal)
+		cumulativeTotalAmount += result[i].TotalInvested
+		// Calculate sum of (price_per_share × amount) for this day
+		// weightedAvgPrice = sumPriceAmount / totalInvested, so sumPriceAmount = weightedAvgPrice × totalInvested
+		cumulativeSumPriceAmount += result[i].WeightedAvgPrice * result[i].TotalInvested
+		result[i].TotalInvested = RoundTo8Decimals(cumulativeTotalAmount)
+		// Recalculate cumulative weighted average with PRD formula
+		if cumulativeTotalAmount > 0 {
+			result[i].WeightedAvgPrice = RoundTo8Decimals(cumulativeSumPriceAmount / cumulativeTotalAmount)
+		}
 	}
 
 	return result
 }
 
-// calculateDayMetrics calculates the daily aggregation metrics for a group of entries
+// calculateDayMetrics calculates the daily aggregation metrics for a group of entries.
+// Returns per-day metrics including the weighted average price for that specific day.
+// Note: Cumulative weighted average across all days is calculated in AggregateByDate.
 func calculateDayMetrics(dateStr string, entries []dca.DCAEntry) EntryByDate {
 	var totalInvested float64
-	var totalAmount float64
+	var sumPriceAmount float64
 	var totalShares float64
 
 	for _, entry := range entries {
 		totalInvested += entry.Amount
-		totalAmount += entry.Amount
+		sumPriceAmount += entry.PricePerShare * entry.Amount
 		totalShares += entry.Shares
 	}
 
-	// Weighted average price: sum(amounts) / sum(shares)
+	// Weighted average price (PRD formula): sum(price_per_share × amount) / sum(amounts)
 	var weightedAvgPrice float64
-	if totalShares > 0 {
-		weightedAvgPrice = RoundTo8Decimals(totalAmount / totalShares)
+	if totalInvested > 0 {
+		weightedAvgPrice = RoundTo8Decimals(sumPriceAmount / totalInvested)
 	}
 
 	return EntryByDate{
 		Date:             dateStr,
 		TotalInvested:    RoundTo8Decimals(totalInvested),
+		TotalShares:      RoundTo8Decimals(totalShares),
 		WeightedAvgPrice: weightedAvgPrice,
 		EntryCount:       len(entries),
 	}

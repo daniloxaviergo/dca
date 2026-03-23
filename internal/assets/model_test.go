@@ -286,7 +286,7 @@ func TestAggregateByDate_Calculations(t *testing.T) {
 				},
 			},
 			expectedTotal:      250,
-			expectedAvgPrice:   50595.20195581, // 250 / 0.00494118 rounded to 8 decimals
+			expectedAvgPrice:   50600.0, // PRD formula: (50000×100 + 51000×150) / (100+150) = 12650000/250
 			expectedEntryCount: 2,
 			expectedDate:       "2025-01-15",
 		},
@@ -366,7 +366,8 @@ func TestAggregateByDate_EmptyEntries(t *testing.T) {
 	}
 }
 
-// TestCalculateDayMetrics_WeightedAverage calculates weighted average correctly
+// TestCalculateDayMetrics_WeightedAverage calculates weighted average correctly using PRD formula
+// PRD formula: sum(price_per_share × amount) / sum(amounts)
 func TestCalculateDayMetrics_WeightedAverage(t *testing.T) {
 	tests := []struct {
 		name             string
@@ -402,11 +403,12 @@ func TestCalculateDayMetrics_WeightedAverage(t *testing.T) {
 
 			if tt.totalShares > 0 {
 				// Create a single entry with the total values
+				// For PRD formula with single entry: weighted avg = price (since amount × price / amount = price)
 				entries = []dca.DCAEntry{
 					{
 						Amount:        tt.totalAmount,
 						Date:          time.Date(2025, 1, 15, 10, 0, 0, 0, time.UTC),
-						PricePerShare: tt.totalAmount / tt.totalShares, // Derived price
+						PricePerShare: tt.expectedAvgPrice,
 						Shares:        tt.totalShares,
 					},
 				}
@@ -562,8 +564,9 @@ func TestAggregateByDate_MultipleEntriesPerDay(t *testing.T) {
 	if day.TotalInvested != expectedTotal {
 		t.Errorf("Expected total invested %f, got %f", expectedTotal, day.TotalInvested)
 	}
-	// Weighted avg = 450 / (0.002 + 0.00294118 + 0.00408163) = 450 / 0.00902281 ≈ 49873.77493388
-	expectedAvgPrice := RoundTo8Decimals(450.0 / 0.00902281)
+	// Weighted avg (PRD formula) = sum(price × amount) / sum(amounts)
+	// = (50000×100 + 51000×150 + 49000×200) / 450 = 22450000 / 450 ≈ 49888.88888889
+	expectedAvgPrice := RoundTo8Decimals(22450000.0 / 450.0)
 	if day.WeightedAvgPrice != expectedAvgPrice {
 		t.Errorf("Expected weighted avg price %f, got %f", expectedAvgPrice, day.WeightedAvgPrice)
 	}
@@ -718,19 +721,25 @@ func TestLoadData_MissingFileReturnsEmpty(t *testing.T) {
 func TestAggregateByDate_CumulativeTotal(t *testing.T) {
 	entries := []dca.DCAEntry{
 		{
-			Amount: 100,
-			Date:   time.Date(2025, 1, 20, 10, 0, 0, 0, time.UTC),
-			Asset:  "BTC",
+			Amount:        100,
+			Date:          time.Date(2025, 1, 20, 10, 0, 0, 0, time.UTC),
+			Asset:         "BTC",
+			PricePerShare: 50000, // Add price for PRD formula
+			Shares:        0.002,
 		},
 		{
-			Amount: 100,
-			Date:   time.Date(2025, 1, 15, 10, 0, 0, 0, time.UTC),
-			Asset:  "BTC",
+			Amount:        100,
+			Date:          time.Date(2025, 1, 15, 10, 0, 0, 0, time.UTC),
+			Asset:         "BTC",
+			PricePerShare: 50000, // Add price for PRD formula
+			Shares:        0.002,
 		},
 		{
-			Amount: 100,
-			Date:   time.Date(2025, 1, 18, 10, 0, 0, 0, time.UTC),
-			Asset:  "BTC",
+			Amount:        100,
+			Date:          time.Date(2025, 1, 18, 10, 0, 0, 0, time.UTC),
+			Asset:         "BTC",
+			PricePerShare: 50000, // Add price for PRD formula
+			Shares:        0.002,
 		},
 	}
 
@@ -751,25 +760,39 @@ func TestAggregateByDate_CumulativeTotal(t *testing.T) {
 			t.Errorf("TotalInvested at position %d: expected %.2f, got %.2f", i, expected, result[i].TotalInvested)
 		}
 	}
+
+	// Weighted avg price should be 50000 for all (same price each day)
+	expectedAvgPrice := 50000.0
+	for i := range expectedTotals {
+		if result[i].WeightedAvgPrice != expectedAvgPrice {
+			t.Errorf("WeightedAvgPrice at position %d: expected %.2f, got %.2f", i, expectedAvgPrice, result[i].WeightedAvgPrice)
+		}
+	}
 }
 
 // TestAggregateByDate_DescendingSortAndCumulative verifies both descending sort and cumulative totals
 func TestAggregateByDate_DescendingSortAndCumulative(t *testing.T) {
 	entries := []dca.DCAEntry{
 		{
-			Amount: 100,
-			Date:   time.Date(2025, 1, 20, 10, 0, 0, 0, time.UTC),
-			Asset:  "BTC",
+			Amount:        100,
+			Date:          time.Date(2025, 1, 20, 10, 0, 0, 0, time.UTC),
+			Asset:         "BTC",
+			PricePerShare: 50000,
+			Shares:        0.002,
 		},
 		{
-			Amount: 50,
-			Date:   time.Date(2025, 1, 20, 12, 0, 0, 0, time.UTC),
-			Asset:  "BTC",
+			Amount:        50,
+			Date:          time.Date(2025, 1, 20, 12, 0, 0, 0, time.UTC),
+			Asset:         "BTC",
+			PricePerShare: 50000,
+			Shares:        0.001,
 		},
 		{
-			Amount: 75,
-			Date:   time.Date(2025, 1, 15, 10, 0, 0, 0, time.UTC),
-			Asset:  "BTC",
+			Amount:        75,
+			Date:          time.Date(2025, 1, 15, 10, 0, 0, 0, time.UTC),
+			Asset:         "BTC",
+			PricePerShare: 50000,
+			Shares:        0.0015,
 		},
 	}
 
@@ -787,11 +810,19 @@ func TestAggregateByDate_DescendingSortAndCumulative(t *testing.T) {
 		t.Errorf("Expected second date '2025-01-15', got '%s'", result[1].Date)
 	}
 
-	// Cumulative: 150 (20th), 225 (15th = 150 + 75)
+	// Cumulative totals: 150 (20th), 225 (15th = 150 + 75)
 	expectedTotals := []float64{150.0, 225.0}
 	for i, expected := range expectedTotals {
 		if result[i].TotalInvested != expected {
 			t.Errorf("TotalInvested at position %d: expected %.2f, got %.2f", i, expected, result[i].TotalInvested)
+		}
+	}
+
+	// Weighted avg price should be 50000 for all (same price each day)
+	expectedAvgPrice := 50000.0
+	for i := range expectedTotals {
+		if result[i].WeightedAvgPrice != expectedAvgPrice {
+			t.Errorf("WeightedAvgPrice at position %d: expected %.2f, got %.2f", i, expectedAvgPrice, result[i].WeightedAvgPrice)
 		}
 	}
 

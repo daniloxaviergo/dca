@@ -100,42 +100,49 @@ func TestAssetSummary_Validate_NegativeTotalValue(t *testing.T) {
 	}
 }
 
-// TestCalculateWeightedAverage_Pass calculates weighted average correctly
+// TestCalculateWeightedAverage_Pass calculates weighted average correctly using PRD formula
+// PRD formula: sum(price_per_share × amount) / sum(amounts)
 func TestCalculateWeightedAverage_Pass(t *testing.T) {
-	totalAmount := 1500.0
-	totalShares := 0.023
+	// For single entry: price=65000, amount=500 → sumPriceAmount = 65000×500 = 32500000
+	// Weighted avg = 32500000 / 500 = 65000
+	totalAmount := 500.0
+	sumPriceAmount := 32500000.0
 
-	result := CalculateWeightedAverage(totalAmount, totalShares)
-	// Expected: 1500 / 0.023 = 65217.3913043478...
-	expected := math.Round((1500.0/0.023)*1e8) / 1e8
+	result := CalculateWeightedAverage(totalAmount, sumPriceAmount)
+	expected := 65000.0
 
 	if result != expected {
-		t.Errorf("CalculateWeightedAverage(%f, %f) = %f, want %f", totalAmount, totalShares, result, expected)
+		t.Errorf("CalculateWeightedAverage(%f, %f) = %f, want %f", totalAmount, sumPriceAmount, result, expected)
 	}
 }
 
-// TestCalculateWeightedAverage_ZeroShares returns 0 for zero shares
-func TestCalculateWeightedAverage_ZeroShares(t *testing.T) {
-	totalAmount := 1500.0
-	totalShares := 0.0
+// TestCalculateWeightedAverage_ZeroAmount returns 0 for zero amount
+func TestCalculateWeightedAverage_ZeroAmount(t *testing.T) {
+	totalAmount := 0.0
+	sumPriceAmount := 1000.0
 
-	result := CalculateWeightedAverage(totalAmount, totalShares)
+	result := CalculateWeightedAverage(totalAmount, sumPriceAmount)
 
 	if result != 0 {
-		t.Errorf("CalculateWeightedAverage(%f, %f) = %f, want 0", totalAmount, totalShares, result)
+		t.Errorf("CalculateWeightedAverage(%f, %f) = %f, want 0", totalAmount, sumPriceAmount, result)
 	}
 }
 
-// TestCalculateWeightedAverage_Precision verifies 8 decimal precision
-func TestCalculateWeightedAverage_Precision(t *testing.T) {
-	totalAmount := 500.0
-	totalShares := 0.00769231
+// TestCalculateWeightedAverage_MultipleEntries calculates weighted average for multiple entries
+func TestCalculateWeightedAverage_MultipleEntries(t *testing.T) {
+	// Entry 1: price=50000, amount=100 → contribution = 5000000
+	// Entry 2: price=60000, amount=200 → contribution = 12000000
+	// sumPriceAmount = 5000000 + 12000000 = 17000000
+	// totalAmount = 100 + 200 = 300
+	// Weighted avg = 17000000 / 300 = 56666.66666667
+	totalAmount := 300.0
+	sumPriceAmount := 17000000.0
 
-	result := CalculateWeightedAverage(totalAmount, totalShares)
-	expected := math.Round((500.0/0.00769231)*1e8) / 1e8
+	result := CalculateWeightedAverage(totalAmount, sumPriceAmount)
+	expected := math.Round((17000000.0/300.0)*1e8) / 1e8
 
 	if result != expected {
-		t.Errorf("CalculateWeightedAverage(%f, %f) = %f, want %f", totalAmount, totalShares, result, expected)
+		t.Errorf("CalculateWeightedAverage(%f, %f) = %f, want %f", totalAmount, sumPriceAmount, result, expected)
 	}
 }
 
@@ -251,8 +258,8 @@ func TestLoadAndAggregateEntries_SingleAsset(t *testing.T) {
 		t.Errorf("Expected TotalShares %.8f, got %.8f", expectedShares, summary.TotalShares)
 	}
 	// Total amount: 500 + 300 = 800
-	// Avg price: 800 / 0.01269231 = 63030.78864373
-	expectedAvgPrice := math.Round((800.0/0.01269231)*1e8) / 1e8
+	// Avg price (PRD formula): (65000×500 + 60000×300) / 800 = 50500000/800 = 63125.0
+	expectedAvgPrice := 63125.0
 	if summary.AvgPrice != expectedAvgPrice {
 		t.Errorf("Expected AvgPrice %.8f, got %.8f", expectedAvgPrice, summary.AvgPrice)
 	}
@@ -521,11 +528,10 @@ func TestLoadAndAggregateEntries_Calculations_Accurate(t *testing.T) {
 	if summary.TotalValue != 123.45 {
 		t.Errorf("Expected TotalValue 123.45, got %.8f", summary.TotalValue)
 	}
-	// AvgPrice should be calculated as TotalValue / TotalShares = 123.45 / 0.00188513
-	// Note: The calculation uses stored share values, which may have rounding
-	expectedAvgPrice := math.Round((123.45/0.00188513)*1e8) / 1e8
+	// AvgPrice (PRD formula): sum(price × amount) / sum(amounts) = 65432.10 × 123.45 / 123.45 = 65432.10
+	expectedAvgPrice := 65432.10
 	if summary.AvgPrice != expectedAvgPrice {
-		t.Errorf("Expected AvgPrice %.8f (123.45/0.00188513), got %.8f", expectedAvgPrice, summary.AvgPrice)
+		t.Errorf("Expected AvgPrice %.8f (PRD formula), got %.8f", expectedAvgPrice, summary.AvgPrice)
 	}
 }
 
