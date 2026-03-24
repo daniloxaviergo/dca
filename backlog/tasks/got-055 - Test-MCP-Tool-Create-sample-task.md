@@ -1,7 +1,7 @@
 ---
 id: GOT-055
 title: 'Test MCP Tool: Create sample task'
-status: In Progress
+status: Done
 assignee:
   - Qwen Code
 created_date: '2026-03-24 01:16'
