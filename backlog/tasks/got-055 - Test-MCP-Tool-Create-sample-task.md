@@ -9,8 +9,9 @@ updated_date: '2026-03-24 01:16'
 labels:
   - test
   - mcp
+milestone: m-0
 dependencies: []
-priority: low
+priority: medium
 ---
 
 ## Description
