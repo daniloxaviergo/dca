@@ -1,10 +1,10 @@
 ---
 id: GOT-056
 title: '[doc-013 Phase 1] Extract validation functions into shared package'
-status: To Do
+status: Done
 assignee: []
 created_date: '2026-03-28 20:49'
-updated_date: '2026-03-28 23:14'
+updated_date: '2026-03-28 23:15'
 labels:
   - feature
   - refactoring
@@ -147,6 +147,62 @@ func IsValidAmount(value string) error {
 <!-- SECTION:NOTES:BEGIN -->
 ## Implementation Complete
 <!-- SECTION:NOTES:END -->
+
+## Final Summary
+
+<!-- SECTION:FINAL_SUMMARY:BEGIN -->
+## Summary
+
+Extracted validation functions from `internal/form/validation.go` into a new shared package `internal/validation` to enable reuse between TUI form and CLI entry.
+
+### What Changed
+
+**New Files:**
+- `internal/validation/validation.go` - Shared validation package with 4 exported functions
+- `internal/validation/validation_test.go` - Comprehensive test suite (24 tests)
+
+**Modified Files:**
+- `internal/form/validation.go` - Refactored to call shared validation functions
+- `internal/form/model.go` - Updated imports to use shared validation; delegated `CalculateSharesFromValues` and `RoundTo8Decimals` to shared package
+
+### Technical Details
+
+**Exported Functions:**
+- `IsValidAmount(value string) error` - Validates positive amounts
+- `IsValidPrice(value string) error` - Validates positive prices  
+- `IsValidAsset(value string) error` - Validates non-empty asset tickers
+- `IsValidDate(value string) error` - Validates RFC3339 date format
+
+**Precision Maintained:**
+- 8 decimal places for share calculations via `RoundTo8Decimals()`
+- Error messages match PRD specification exactly
+
+**Test Results:**
+- 192 total tests pass (including 24 new validation tests)
+- 100% coverage on `internal/validation` package
+- No compiler warnings (`go vet` clean)
+- `make check` passes (fmt, build, test)
+
+### Acceptance Criteria Met
+
+- [x] #1 Validation functions extracted with unit tests (24 tests, 100% coverage)
+- [x] #2 Shared validation logic tested with existing TUI form (all 25 form tests pass)
+- [x] #3 Functions maintain 8 decimal precision for shares calculation
+- [x] #4 Error messages match PRD specification (verified exact match)
+
+### Definition of Done
+
+- [x] #1 All acceptance criteria met
+- [x] #2 Unit tests pass (go test -v ./...)
+- [x] #3 No new compiler warnings (go vet clean)
+- [x] #4 Code follows project style (go fmt applied)
+- [x] #6 Documentation updated (comments in validation.go)
+
+### Related Tasks
+
+- GOT-057 (CLI flag parsing) - Will use shared validation package
+- GOT-058 (CLI run function) - Will use shared validation package
+<!-- SECTION:FINAL_SUMMARY:END -->
 
 ## Definition of Done
 <!-- DOD:BEGIN -->
