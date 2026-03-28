@@ -189,6 +189,70 @@ Verified make check passes (fmt, build, test all pass)
 All 156 tests passing with 100% coverage on validation package
 <!-- SECTION:NOTES:END -->
 
+## Final Summary
+
+<!-- SECTION:FINAL_SUMMARY:BEGIN -->
+## Summary
+
+Fixed share calculation precision in CLI to use `DCAEntry.CalculateShares()` for consistent 8-decimal precision across the codebase.
+
+## Changes
+
+### cmd/dca/cli.go
+
+**Before:**
+```go
+func CreateDCAEntry(cliData CLIData) dca.DCAEntry {
+    shares := validation.CalculateSharesFromValues(cliData.Amount, cliData.Price)
+    // ... rest of code
+}
+```
+
+**After:**
+```go
+func CreateDCAEntry(cliData CLIData) dca.DCAEntry {
+    entry := dca.DCAEntry{
+        Amount:        cliData.Amount,
+        PricePerShare: cliData.Price,
+    }
+    // ... parse date and set other fields
+    entry.Shares = entry.CalculateShares()
+    return entry
+}
+```
+
+### Why
+
+The previous implementation used `validation.CalculateSharesFromValues()` which used `int(val*1e8+.5)` for rounding - this truncates instead of properly rounding for negative values and edge cases. The `DCAEntry.CalculateShares()` method uses `math.Round()` for correct 8-decimal precision.
+
+## Tests
+
+- All 156 tests pass
+- Validation package at 100% coverage
+- No compiler warnings
+- Code follows project style (`go fmt` passes)
+
+## Acceptance Criteria
+
+| Criteria | Status |
+|----------|--------|
+| #1 runCLI() implemented with full validation | ✅ |
+| #2 Shares calculated with 8 decimal precision | ✅ Fixed |
+| #3 Date auto-set to current RFC3339 | ✅ |
+| #4 Entry persisted using existing file I/O | ✅ |
+| #5 No output on success, exit code 1 on error | ✅ |
+
+## Definition of Done
+
+| Item | Status |
+|------|--------|
+| All acceptance criteria met | ✅ |
+| Unit tests pass | ✅ |
+| No compiler warnings | ✅ |
+| Code follows project style | ✅ |
+| Documentation updated (comments) | ✅ |
+<!-- SECTION:FINAL_SUMMARY:END -->
+
 ## Definition of Done
 <!-- DOD:BEGIN -->
 - [x] #1 All acceptance criteria met
