@@ -2,7 +2,6 @@ package form
 
 import (
 	"fmt"
-	"math"
 	"strconv"
 	"strings"
 	"time"
@@ -11,6 +10,7 @@ import (
 	"github.com/charmbracelet/lipgloss"
 
 	"github.com/danilo/scripts/github/dca/internal/dca"
+	"github.com/danilo/scripts/github/dca/internal/validation"
 )
 
 // FormStep represents the current step in the form
@@ -240,20 +240,12 @@ func (m *FormModel) saveEntry() error {
 
 // CalculateSharesFromValues calculates shares from float64 values
 func CalculateSharesFromValues(amount, price float64) float64 {
-	if price == 0 {
-		return 0
-	}
-	shares := amount / price
-	// Validate shares is a finite number
-	if math.IsNaN(shares) || math.IsInf(shares, 0) {
-		return 0
-	}
-	return RoundTo8Decimals(shares)
+	return validation.CalculateSharesFromValues(amount, price)
 }
 
 // RoundTo8Decimals rounds a float to 8 decimal places
 func RoundTo8Decimals(val float64) float64 {
-	return float64(int(val*1e8+.5)) / 1e8
+	return validation.RoundTo8Decimals(val)
 }
 
 // View renders the form UI

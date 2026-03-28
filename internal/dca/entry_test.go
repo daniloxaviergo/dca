@@ -402,7 +402,7 @@ func TestSaveEntries_AtomicWrite_Succeeds(t *testing.T) {
 		t.Fatalf("Failed to read temp dir: %v", err)
 	}
 	for _, entry := range entries {
-		if filepath.Ext(entry.Name()) == ".json" && filepath.Base(entry.Name()) != filepath.Base(tmpfile.Name()) {
+		if strings.HasPrefix(filepath.Base(entry.Name()), ".dca_entries_") && filepath.Base(entry.Name()) != filepath.Base(tmpfile.Name()) {
 			t.Errorf("Found unexpected temp JSON file: %s", entry.Name())
 		}
 	}
