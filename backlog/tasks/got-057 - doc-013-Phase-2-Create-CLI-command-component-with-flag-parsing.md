@@ -4,7 +4,7 @@ title: '[doc-013 Phase 2] Create CLI command component with flag parsing'
 status: To Do
 assignee: []
 created_date: '2026-03-28 20:49'
-updated_date: '2026-03-28 23:18'
+updated_date: '2026-03-28 23:31'
 labels:
   - feature
   - cli
@@ -136,6 +136,28 @@ The CLI command component will be implemented as a new `cmd/dca/cli.go` file tha
 - Backward compatible (existing TUI usage unaffected)
 - Binary size increase negligible (standard library only)
 <!-- SECTION:PLAN:END -->
+
+## Implementation Notes
+
+<!-- SECTION:NOTES:BEGIN -->
+2026-03-28: Created cmd/dca/cli.go with flag parsing logic using Go's flag package
+
+2026-03-28: Added --add, --asset, --amount, --price, --date flags
+
+2026-03-28: Implemented validation using internal/validation package
+
+2026-03-28: Modified cmd/dca/main.go to check for CLI mode before TUI initialization
+
+2026-03-28: Created internal/dca/entry.go with DCAEntry and DCAData types and file I/O
+
+2026-03-28: CLI exits with code 1 on validation errors, code 0 on success (silent)
+
+2026-03-28: Tested CLI functionality: entry creation, validation, date defaults
+
+2026-03-28: All 148 tests pass, code formatted with go fmt
+
+2026-03-28: CLI flag signature: ./dca --add --asset <ticker> --amount <usd> --price <per-share> [--date <rfc3339>]
+<!-- SECTION:NOTES:END -->
 
 ## Definition of Done
 <!-- DOD:BEGIN -->
