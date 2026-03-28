@@ -25,10 +25,10 @@ Create cmd/dca/cli.go with CLI-specific logic including flag parsing for --add, 
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 cli.go created with flag parsing logic
-- [ ] #2 All required flags implemented (--add, --asset, --amount, --price)
-- [ ] #3 Optional --date flag with now() default
-- [ ] #4 Exit codes implemented for error handling
+- [x] #1 cli.go created with flag parsing logic
+- [x] #2 All required flags implemented (--add, --asset, --amount, --price)
+- [x] #3 Optional --date flag with now() default
+- [x] #4 Exit codes implemented for error handling
 <!-- AC:END -->
 
 ## Implementation Plan
