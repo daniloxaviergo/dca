@@ -4,6 +4,7 @@ title: '[doc-013 Phase 2] Create CLI command component with flag parsing'
 status: To Do
 assignee: []
 created_date: '2026-03-28 20:49'
+updated_date: '2026-03-28 23:18'
 labels:
   - feature
   - cli
@@ -29,6 +30,112 @@ Create cmd/dca/cli.go with CLI-specific logic including flag parsing for --add, 
 - [ ] #3 Optional --date flag with now() default
 - [ ] #4 Exit codes implemented for error handling
 <!-- AC:END -->
+
+## Implementation Plan
+
+<!-- SECTION:PLAN:BEGIN -->
+### 1. Technical Approach
+
+The CLI command component will be implemented as a new `cmd/dca/cli.go` file that handles command-line argument parsing and entry creation without requiring the interactive TUI. The approach follows the existing architecture patterns:
+
+1. **Flag-based entry point**: Use Go's `flag` package to parse CLI arguments, with `--add` flag triggering CLI mode (early exit before Bubble Tea initialization)
+2. **Shared validation**: Leverage existing `internal/validation` package functions for strict validation (no duplication)
+3. **Direct persistence**: Use `internal/dca.SaveEntries()` for atomic file writes
+4. **Auto-calculation**: Calculate shares using `validation.CalculateSharesFromValues()` and use `time.Now()` for date
+
+**Key architectural decisions:**
+- CLI mode detected via `--add` flag, exits immediately after processing
+- TUI mode unchanged (app starts in asset view by default)
+- CLI returns exit code 1 on error, 0 on success (silent on success per PRD)
+- Uses existing shared validation and persistence layers
+
+### 2. Files to Modify
+
+| File | Action | Reason |
+|------|--------|--------|
+| `cmd/dca/cli.go` | Create | New CLI component with flag parsing |
+| `cmd/dca/main.go` | Modify | Add CLI flag detection and early exit logic |
+| `internal/validation/validation_test.go` | Create | Unit tests for CLI-specific validation scenarios |
+| `cmd/dca/main_test.go` | Create | Integration tests for CLI mode |
+
+### 3. Dependencies
+
+**Existing packages (no new dependencies required):**
+- `github.com/danilo/scripts/github/dca/internal/validation` - Validation functions
+- `github.com/danilo/scripts/github/dca/internal/dca` - Data model and file I/O
+- `github.com/charmbracelet/bubbletea` - TUI (unchanged, only used when CLI not triggered)
+
+**Prerequisites:**
+- Validation package must exist (DONE - GOT-056 completed)
+- DCA file I/O must exist (DONE - internal/dca/file.go in entry.go)
+- No blocking issues, all dependencies available
+
+### 4. Code Patterns
+
+**Follow existing patterns in the codebase:**
+
+1. **Error handling**: Use formatted error messages consistent with validation package
+2. **Exit codes**: 0 for success, 1 for any error (including validation failures)
+3. **File I/O**: Use `dca.SaveEntries()` for atomic writes
+4. **Share calculation**: Use `validation.CalculateSharesFromValues()` with 8 decimal precision
+5. **Date handling**: Use `time.Now()` with RFC3339 format
+
+**CLI command signature:**
+```bash
+./dca --add --asset <ticker> --amount <usd> --price <per-share> [--date <rfc3339>]
+```
+
+**Required flags:** `--add`, `--asset`, `--amount`, `--price`  
+**Optional flags:** `--date` (defaults to `time.Now().Format(time.RFC3339)`)
+
+### 5. Testing Strategy
+
+**Unit tests (`cmd/dca/cli_test.go`):**
+- `TestCLI_ParseFlags_Add` - Flags parsed correctly with required fields
+- `TestCLI_ParseFlags_AddWithDate` - Optional date flag included
+- `TestCLI_ValidateAmount` - Amount validation (positive, parseable)
+- `TestCLI_ValidatePrice` - Price validation (positive, parseable)
+- `TestCLI_ValidateAsset` - Asset validation (non-empty, non-whitespace)
+- `TestCLI_ValidateDate` - Date validation (RFC3339 format)
+- `TestCLI_CalculateShares` - Shares computed correctly (8 decimals)
+- `TestCLI_ExitOnError` - Exit code 1 on validation failure
+- `TestCLI_ExitOnSuccess` - Exit code 0 on successful entry
+
+**Integration tests (`cmd/dca/main_test.go` additions):**
+- `TestMain_CLIModeExitsEarly` - CLI flag triggers early exit before TUI init
+- `TestMain_CLISavesEntry` - Entry persisted to JSON file correctly
+- `TestMain_TUIModeUnchanged` - Normal TUI flow unaffected by CLI flags
+
+**Edge cases:**
+- Missing required flags (exit code 1)
+- Negative/zero amount (exit code 1)
+- Negative/zero price (exit code 1)
+- Empty/whitespace asset (exit code 1)
+- Invalid date format (exit code 1)
+- Zero price in share calculation (returns 0)
+
+### 6. Risks and Considerations
+
+**Low risk items:**
+- **No breaking changes**: CLI mode is opt-in via `--add` flag, TUI unchanged
+- **Code reuse**: All validation/persistence logic already exists
+- **Test coverage**: Existing patterns can be extended
+
+**Potential challenges:**
+- **Flag parsing in Go**: Need to handle unknown flags gracefully (Go's `flag` package exits by default on unknown flags, which may need custom handling if stricter control required)
+- **Shared state**: Must ensure CLI doesn't interfere with TUI's file locking or concurrent access (atomic writes in `dca.SaveEntries()` handles this)
+- **Date format consistency**: Must use `time.RFC3339` for both default and parsed dates
+
+**Trade-offs:**
+- CLI exits after single entry (per PRD: "Single entry only" out of scope for batch mode)
+- Silent success (no output on success per PRD)
+- No verbose mode (`-v` flag out of scope per PRD)
+
+**Deployment considerations:**
+- No data migration needed (new feature, no schema changes)
+- Backward compatible (existing TUI usage unaffected)
+- Binary size increase negligible (standard library only)
+<!-- SECTION:PLAN:END -->
 
 ## Definition of Done
 <!-- DOD:BEGIN -->
