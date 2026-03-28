@@ -1,0 +1,17 @@
+# Build output
+bin/
+
+agents/*/execution.log
+./assignee_changes.log
+*.out
+coverage/
+*.test
+
+.dca
+.dca_entries.json
+
+# Go language server
+.gopls/
+
+# qwen logs
+./logs
