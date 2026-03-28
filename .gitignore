@@ -8,7 +8,7 @@ coverage/
 *.test
 
 dca
-.dca_entries.json
+dca_entries.json
 
 # Go language server
 .gopls/
