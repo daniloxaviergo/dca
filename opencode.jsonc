@@ -1,0 +1,13 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "backlog": {
+      "type": "local",
+      "enabled": true,
+      "command": ["backlog", "mcp", "start"],
+      "environment": {
+        "BACKLOG_CWD": "/home/danilo/scripts/github/dca"
+      }
+    }
+  },
+}
