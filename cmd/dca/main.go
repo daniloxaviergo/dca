@@ -132,6 +132,12 @@ func main() {
 		}
 	}()
 
+	// Check for CLI mode first (before TUI initialization)
+	if RunCLI() {
+		// CLI mode handled and exited, should not reach here
+		return
+	}
+
 	// Load existing entries
 	entries, err := dca.LoadEntries(defaultEntriesPath)
 	if err != nil {
