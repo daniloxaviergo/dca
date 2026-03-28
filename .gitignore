@@ -7,11 +7,11 @@ agents/*/execution.log
 coverage/
 *.test
 
-.dca
+dca
 .dca_entries.json
 
 # Go language server
 .gopls/
 
 # qwen logs
-./logs/*
+logs/
