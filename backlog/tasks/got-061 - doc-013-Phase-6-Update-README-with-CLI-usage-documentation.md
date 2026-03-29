@@ -1,7 +1,7 @@
 ---
 id: GOT-061
 title: '[doc-013 Phase 6] Update README with CLI usage documentation'
-status: To Do
+status: Done
 assignee: []
 created_date: '2026-03-28 20:50'
 updated_date: '2026-03-29 01:21'
