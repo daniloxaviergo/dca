@@ -25,10 +25,10 @@ Modify cmd/dca/main.go to detect the --add flag during initialization and route 
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 Main function detects --add flag
-- [ ] #2 CLI path executes early exit
-- [ ] #3 TUI initialization skipped for CLI mode
-- [ ] #4 All existing TUI functionality preserved
+- [x] #1 Main function detects --add flag
+- [x] #2 CLI path executes early exit
+- [x] #3 TUI initialization skipped for CLI mode
+- [x] #4 All existing TUI functionality preserved
 <!-- AC:END -->
 
 ## Implementation Plan
@@ -246,10 +246,10 @@ Successfully implemented comprehensive test coverage for CLI integration with ma
 
 ## Definition of Done
 <!-- DOD:BEGIN -->
-- [ ] #1 All acceptance criteria met
-- [ ] #2 Unit tests pass (go test)
-- [ ] #3 No new compiler warnings
-- [ ] #4 Code follows project style (go fmt)
+- [x] #1 All acceptance criteria met
+- [x] #2 Unit tests pass (go test)
+- [x] #3 No new compiler warnings
+- [x] #4 Code follows project style (go fmt)
 - [ ] #5 PRD referenced in task
 - [ ] #6 Documentation updated (comments)
 <!-- DOD:END -->
