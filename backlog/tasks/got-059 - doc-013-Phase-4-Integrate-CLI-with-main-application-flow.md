@@ -4,7 +4,7 @@ title: '[doc-013 Phase 4] Integrate CLI with main application flow'
 status: To Do
 assignee: []
 created_date: '2026-03-28 20:50'
-updated_date: '2026-03-29 00:00'
+updated_date: '2026-03-29 00:02'
 labels:
   - feature
   - integration
@@ -36,13 +36,23 @@ Modify cmd/dca/main.go to detect the --add flag during initialization and route 
 <!-- SECTION:PLAN:BEGIN -->
 ### 1. Technical Approach
 
-The task requires modifying `cmd/dca/main.go` to integrate the CLI flag detection from `cmd/dca/cli.go` and ensure early exit before TUI initialization. The implementation is already complete through existing code in `cli.go` and `main.go`, but this task formalizes the integration pattern.
+**This task is a verification and documentation task** - the CLI integration is already complete and operational. The task ensures the integration pattern is correct and well-tested.
+
+**Current state analysis:**
+- `cmd/dca/cli.go` already contains all CLI functionality:
+  - `ParseFlags()` - Parses `--add`, `--asset`, `--amount`, `--price`, `--date` flags
+  - `CreateDCAEntry()` - Creates DCAEntry with 8-decimal share precision
+  - `SaveEntry()` - Saves entry to JSON using atomic write
+  - `RunCLI()` - Main CLI entry point that exits with appropriate code
+
+- `cmd/dca/main.go` already has CLI integration:
+  - `RunCLI()` is called BEFORE Bubble Tea initialization
+  - Returns early if CLI mode is active (no TUI setup)
+  - TUI code path unchanged when CLI not triggered
 
 **How the feature will be built:**
-- `cmd/dca/cli.go` already contains `ParseFlags()`, `CreateDCAEntry()`, `SaveEntry()`, and `RunCLI()` functions
-- `cmd/dca/main.go` already checks for CLI mode via `RunCLI()` before Bubble Tea initialization
-- The integration pattern is already established: `if RunCLI() { return }`
-- Task focuses on verifying and documenting the integration
+- CLI mode: `./dca --add --asset BTC --amount 100 --price 50000` → exits immediately
+- TUI mode: `./dca` → starts Bubble Tea program normally
 
 **Architecture decisions and trade-offs:**
 - CLI mode detected via `--add` flag in `ParseFlags()`, returns early if active
@@ -65,11 +75,11 @@ The task requires modifying `cmd/dca/main.go` to integrate the CLI flag detectio
 | `internal/validation/validation.go` | Review only | Shared validation used by CLI |
 | `internal/dca/entry.go` | Review only | Data model and file I/O used by CLI |
 
-**Files to CREATE (tests):**
+**Files to CREATE (tests - new work):**
 | File | Action | Reason |
 |------|--------|--------|
-| `cmd/dca/cli_test.go` | Create | Unit tests for CLI-specific logic |
-| `cmd/dca/main_test.go` | Update | Add integration tests for CLI-TUI separation |
+| `cmd/dca/cli_test.go` | Create | Unit tests for CLI-specific logic (not yet implemented) |
+| `cmd/dca/main_test.go` | Update | Add integration tests for CLI-TUI separation (not yet implemented) |
 
 ### 3. Dependencies
 
