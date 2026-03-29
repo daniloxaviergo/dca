@@ -4,7 +4,7 @@ title: '[doc-013 Phase 4] Integrate CLI with main application flow'
 status: To Do
 assignee: []
 created_date: '2026-03-28 20:50'
-updated_date: '2026-03-29 00:44'
+updated_date: '2026-03-29 00:45'
 labels:
   - feature
   - integration
@@ -243,6 +243,30 @@ if RunCLI() {
 <!-- SECTION:NOTES:BEGIN -->
 Successfully implemented comprehensive test coverage for CLI integration with main application flow. Created 31 tests covering flag parsing, validation, file I/O, and integration scenarios. All 234 tests pass. Build completes with no warnings.
 <!-- SECTION:NOTES:END -->
+
+## Final Summary
+
+<!-- SECTION:FINAL_SUMMARY:BEGIN -->
+feat(cli): Added comprehensive test coverage for CLI integration with main application flow
+
+## Changes
+- Created `cmd/dca/cli_test.go` with 20 unit tests for CLI-specific logic (flag parsing, validation, file I/O)
+- Created `cmd/dca/main_test.go` with 11 integration tests for CLI-TUI separation
+- Refactored `cli.go` to use `flag.NewFlagSet` for testable parsing and return errors instead of calling os.Exit()
+- Added `RunCLIWithoutExit()` wrapper for tests without process exit
+- Changed `defaultEntriesPath` from const to var for test override
+
+## Verification
+- All 234 tests pass (100%)
+- Build completes with no warnings
+- Code formatted with `go fmt`
+- Manual testing confirms CLI mode exits 0 on success, 1 on error
+- TUI mode (no flags) starts Bubble Tea normally
+
+## Risks/Follow-ups
+- PRD reference (doc-013) should be reviewed for any missing acceptance criteria
+- Documentation updates in code comments could be enhanced
+<!-- SECTION:FINAL_SUMMARY:END -->
 
 ## Definition of Done
 <!-- DOD:BEGIN -->
