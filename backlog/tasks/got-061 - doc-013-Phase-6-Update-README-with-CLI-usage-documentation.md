@@ -4,7 +4,7 @@ title: '[doc-013 Phase 6] Update README with CLI usage documentation'
 status: To Do
 assignee: []
 created_date: '2026-03-28 20:50'
-updated_date: '2026-03-29 01:13'
+updated_date: '2026-03-29 01:19'
 labels:
   - documentation
   - cli
@@ -29,6 +29,7 @@ Update README.md with a new section documenting the CLI quick entry feature. Inc
 - [ ] #3 All flags explained (required/optional)
 - [ ] #4 Example usage provided
 - [ ] #5 Behavior notes included (silent success, exit codes)
+- [ ] #6 #1 README.md updated with CLI quick entry section
 <!-- AC:END -->
 
 ## Implementation Plan
