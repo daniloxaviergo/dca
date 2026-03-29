@@ -1,0 +1,2082 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>dca: Go Coverage Report</title>
+		<style>
+			body {
+				background: black;
+				color: rgb(80, 80, 80);
+			}
+			body, pre, #legend span {
+				font-family: Menlo, monospace;
+				font-weight: bold;
+			}
+			#topbar {
+				background: black;
+				position: fixed;
+				top: 0; left: 0; right: 0;
+				height: 42px;
+				border-bottom: 1px solid rgb(80, 80, 80);
+			}
+			#content {
+				margin-top: 50px;
+			}
+			#nav, #legend {
+				float: left;
+				margin-left: 10px;
+			}
+			#legend {
+				margin-top: 12px;
+			}
+			#nav {
+				margin-top: 10px;
+			}
+			#legend span {
+				margin: 0 5px;
+			}
+			.cov0 { color: rgb(192, 0, 0) }
+.cov1 { color: rgb(128, 128, 128) }
+.cov2 { color: rgb(116, 140, 131) }
+.cov3 { color: rgb(104, 152, 134) }
+.cov4 { color: rgb(92, 164, 137) }
+.cov5 { color: rgb(80, 176, 140) }
+.cov6 { color: rgb(68, 188, 143) }
+.cov7 { color: rgb(56, 200, 146) }
+.cov8 { color: rgb(44, 212, 149) }
+.cov9 { color: rgb(32, 224, 152) }
+.cov10 { color: rgb(20, 236, 155) }
+
+		</style>
+	</head>
+	<body>
+		<div id="topbar">
+			<div id="nav">
+				<select id="files">
+				
+				<option value="file0">github.com/danilo/scripts/github/dca/cmd/dca/cli.go (0.0%)</option>
+				
+				<option value="file1">github.com/danilo/scripts/github/dca/cmd/dca/main.go (26.4%)</option>
+				
+				<option value="file2">github.com/danilo/scripts/github/dca/internal/assets/aggregate.go (97.1%)</option>
+				
+				<option value="file3">github.com/danilo/scripts/github/dca/internal/assets/model.go (95.3%)</option>
+				
+				<option value="file4">github.com/danilo/scripts/github/dca/internal/assets/test_debug.go (0.0%)</option>
+				
+				<option value="file5">github.com/danilo/scripts/github/dca/internal/assets/view.go (60.2%)</option>
+				
+				<option value="file6">github.com/danilo/scripts/github/dca/internal/dca/entry.go (63.6%)</option>
+				
+				<option value="file7">github.com/danilo/scripts/github/dca/internal/form/model.go (44.2%)</option>
+				
+				<option value="file8">github.com/danilo/scripts/github/dca/internal/form/validation.go (100.0%)</option>
+				
+				<option value="file9">github.com/danilo/scripts/github/dca/internal/validation/validation.go (100.0%)</option>
+				
+				</select>
+			</div>
+			<div id="legend">
+				<span>not tracked</span>
+			
+				<span class="cov0">not covered</span>
+				<span class="cov8">covered</span>
+			
+			</div>
+		</div>
+		<div id="content">
+		
+		<pre class="file" id="file0" style="display: none">package main
+
+import (
+        "flag"
+        "fmt"
+        "os"
+        "time"
+
+        "github.com/danilo/scripts/github/dca/internal/dca"
+        "github.com/danilo/scripts/github/dca/internal/validation"
+)
+
+// CLIData holds the parsed CLI arguments
+type CLIData struct {
+        Add     bool
+        Asset   string
+        Amount  float64
+        Price   float64
+        Date    string
+        HasDate bool
+}
+
+// ParseFlags parses command-line flags and returns CLIData
+// Exits with code 1 on validation failure or missing required flags
+func ParseFlags() CLIData <span class="cov0" title="0">{
+        add := flag.Bool("add", false, "Add a new DCA entry")
+        asset := flag.String("asset", "", "Asset ticker symbol (e.g., BTC, ETH)")
+        amount := flag.Float64("amount", 0, "Amount in USD to invest")
+        price := flag.Float64("price", 0, "Price per share in USD")
+        date := flag.String("date", "", "Investment date in RFC3339 format (optional, defaults to now)")
+
+        flag.Parse()
+
+        result := CLIData{
+                Add:     *add,
+                Asset:   *asset,
+                Amount:  *amount,
+                Price:   *price,
+                Date:    *date,
+                HasDate: *date != "",
+        }
+
+        // Validate required flags
+        if !result.Add </span><span class="cov0" title="0">{
+                // No CLI action requested, return empty
+                return result
+        }</span>
+
+        // Validate required fields for --add
+        <span class="cov0" title="0">if result.Asset == "" </span><span class="cov0" title="0">{
+                fmt.Fprintln(os.Stderr, "Error: --asset is required when using --add")
+                os.Exit(1)
+        }</span>
+        <span class="cov0" title="0">if result.Amount &lt;= 0 </span><span class="cov0" title="0">{
+                fmt.Fprintln(os.Stderr, "Error: --amount must be a positive number")
+                os.Exit(1)
+        }</span>
+        <span class="cov0" title="0">if result.Price &lt;= 0 </span><span class="cov0" title="0">{
+                fmt.Fprintln(os.Stderr, "Error: --price must be a positive number")
+                os.Exit(1)
+        }</span>
+
+        // Validate asset ticker format
+        <span class="cov0" title="0">if err := validation.IsValidAsset(result.Asset); err != nil </span><span class="cov0" title="0">{
+                fmt.Fprintln(os.Stderr, err.Error())
+                os.Exit(1)
+        }</span>
+
+        // Validate amount format
+        <span class="cov0" title="0">amountStr := fmt.Sprintf("%.2f", result.Amount)
+        if err := validation.IsValidAmount(amountStr); err != nil </span><span class="cov0" title="0">{
+                fmt.Fprintln(os.Stderr, err.Error())
+                os.Exit(1)
+        }</span>
+
+        // Validate price format
+        <span class="cov0" title="0">priceStr := fmt.Sprintf("%.2f", result.Price)
+        if err := validation.IsValidPrice(priceStr); err != nil </span><span class="cov0" title="0">{
+                fmt.Fprintln(os.Stderr, err.Error())
+                os.Exit(1)
+        }</span>
+
+        // Validate date if provided
+        <span class="cov0" title="0">if result.HasDate </span><span class="cov0" title="0">{
+                if err := validation.IsValidDate(result.Date); err != nil </span><span class="cov0" title="0">{
+                        fmt.Fprintln(os.Stderr, err.Error())
+                        os.Exit(1)
+                }</span>
+        } else<span class="cov0" title="0"> {
+                // Default to current time in RFC3339 format
+                result.Date = time.Now().Format(time.RFC3339)
+        }</span>
+
+        <span class="cov0" title="0">return result</span>
+}
+
+// CreateDCAEntry creates a DCAEntry from CLI data
+// Shares are calculated using the same 8-decimal precision as internal/dca/entry.go
+func CreateDCAEntry(cliData CLIData) dca.DCAEntry <span class="cov0" title="0">{
+        // Create entry with raw values first
+        entry := dca.DCAEntry{
+                Amount:        cliData.Amount,
+                PricePerShare: cliData.Price,
+        }
+
+        // Parse the date string to time.Time
+        dateTime, _ := time.Parse(time.RFC3339, cliData.Date)
+        entry.Date = dateTime
+        entry.Asset = cliData.Asset
+
+        // Calculate shares using the DCAEntry method for 8-decimal precision
+        entry.Shares = entry.CalculateShares()
+
+        return entry
+}</span>
+
+// SaveEntry adds a new entry to the JSON file
+func SaveEntry(entry dca.DCAEntry, filename string) error <span class="cov0" title="0">{
+        // Load existing entries
+        data, err := dca.LoadEntries(filename)
+        if err != nil </span><span class="cov0" title="0">{
+                return fmt.Errorf("failed to load entries: %v", err)
+        }</span>
+
+        // Add new entry
+        <span class="cov0" title="0">data.Entries[entry.Asset] = append(data.Entries[entry.Asset], entry)
+
+        // Save back to file
+        if err := dca.SaveEntries(filename, data); err != nil </span><span class="cov0" title="0">{
+                return fmt.Errorf("failed to save entries: %v", err)
+        }</span>
+
+        <span class="cov0" title="0">return nil</span>
+}
+
+// RunCLI processes CLI arguments and creates entries
+// Returns true if CLI mode was active (even on error)
+func RunCLI() bool <span class="cov0" title="0">{
+        cliData := ParseFlags()
+
+        // If --add not specified, not CLI mode
+        if !cliData.Add </span><span class="cov0" title="0">{
+                return false
+        }</span>
+
+        // Create entry
+        <span class="cov0" title="0">entry := CreateDCAEntry(cliData)
+
+        // Save entry
+        filename := defaultEntriesPath
+        if err := SaveEntry(entry, filename); err != nil </span><span class="cov0" title="0">{
+                fmt.Fprintln(os.Stderr, err.Error())
+                os.Exit(1)
+        }</span>
+
+        // Success - exit silently (exit code 0)
+        <span class="cov0" title="0">os.Exit(0)
+        return true</span>
+}
+</pre>
+		
+		<pre class="file" id="file1" style="display: none">package main
+
+import (
+        "fmt"
+        "os"
+        "runtime/debug"
+
+        "github.com/charmbracelet/bubbletea"
+
+        "github.com/danilo/scripts/github/dca/internal/assets"
+        "github.com/danilo/scripts/github/dca/internal/dca"
+        "github.com/danilo/scripts/github/dca/internal/form"
+)
+
+// Default path for DCA entries JSON file
+const defaultEntriesPath = "dca_entries.json"
+
+// AppState represents the current view state of the application
+type AppState int
+
+const (
+        StateForm AppState = iota
+        StateAssetsView
+)
+
+type model struct {
+        form         *form.FormModel
+        assetsView   *assets.AssetsView
+        entries      *dca.DCAData
+        currentState AppState
+}
+
+// Init initializes the model
+func (m model) Init() tea.Cmd <span class="cov0" title="0">{
+        if m.currentState == StateForm &amp;&amp; m.form != nil </span><span class="cov0" title="0">{
+                return m.form.Init()
+        }</span>
+        <span class="cov0" title="0">if m.currentState == StateAssetsView &amp;&amp; m.assetsView != nil </span><span class="cov0" title="0">{
+                return m.assetsView.Init()
+        }</span>
+        <span class="cov0" title="0">return nil</span>
+}
+
+// Update handles state transitions and delegates to current view
+func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) <span class="cov8" title="1">{
+        switch m.currentState </span>{
+        case StateForm:<span class="cov8" title="1">
+                if m.form != nil </span><span class="cov8" title="1">{
+                        newForm, cmd := m.form.Update(msg)
+                        m.form = newForm.(*form.FormModel)
+
+                        // Execute the command to produce any messages (for testing purposes)
+                        var producedMsg tea.Msg
+                        if cmd != nil </span><span class="cov8" title="1">{
+                                producedMsg = cmd()
+                        }</span>
+
+                        // Check for form submission or view transition from form
+                        <span class="cov8" title="1">if _, ok := msg.(form.FormSubmittedMsg); ok </span><span class="cov0" title="0">{
+                                // After form submission, switch to assets view
+                                m.currentState = StateAssetsView
+                                m.assetsView = assets.NewAssetsView()
+                                m.assetsView.Filename = defaultEntriesPath
+                                // Load data into assets view
+                                vm, err := assets.LoadAndAggregateEntries(defaultEntriesPath)
+                                if err != nil </span><span class="cov0" title="0">{
+                                        m.assetsView.Error = err
+                                }</span> else<span class="cov0" title="0"> {
+                                        m.assetsView.Entries = vm.Entries
+                                        m.assetsView.Loaded = true
+                                }</span>
+                                <span class="cov0" title="0">return m, nil</span>
+                        }
+                        <span class="cov8" title="1">if _, ok := producedMsg.(form.FormCancelledMsg); ok </span><span class="cov8" title="1">{
+                                // When form is cancelled, return to assets view
+                                m.currentState = StateAssetsView
+                                m.form = nil
+                                m.assetsView = assets.NewAssetsView()
+                                m.assetsView.Filename = defaultEntriesPath
+                                // Load data into assets view
+                                vm, err := assets.LoadAndAggregateEntries(defaultEntriesPath)
+                                if err != nil </span><span class="cov0" title="0">{
+                                        m.assetsView.Error = err
+                                }</span> else<span class="cov8" title="1"> {
+                                        m.assetsView.Entries = vm.Entries
+                                        m.assetsView.Loaded = true
+                                }</span>
+                                <span class="cov8" title="1">return m, nil</span>
+                        }
+                        <span class="cov8" title="1">return m, cmd</span>
+                }
+
+        case StateAssetsView:<span class="cov0" title="0">
+                if m.assetsView != nil </span><span class="cov0" title="0">{
+                        newAssetsView, cmd := m.assetsView.Update(msg)
+                        m.assetsView = newAssetsView.(*assets.AssetsView)
+                        // On view transition ('c' key), switch to form view
+                        if transitionMsg, ok := msg.(assets.ViewTransitionMsg); ok &amp;&amp; transitionMsg.View == "form" </span><span class="cov0" title="0">{
+                                m.currentState = StateForm
+                                m.form = form.NewFormModel(m.entries, defaultEntriesPath)
+                                return m, nil
+                        }</span>
+                        <span class="cov0" title="0">return m, cmd</span>
+                }
+        }
+
+        <span class="cov0" title="0">return m, nil</span>
+}
+
+// View renders the current state
+func (m model) View() string <span class="cov0" title="0">{
+        switch m.currentState </span>{
+        case StateForm:<span class="cov0" title="0">
+                if m.form != nil </span><span class="cov0" title="0">{
+                        return m.form.View()
+                }</span>
+        case StateAssetsView:<span class="cov0" title="0">
+                if m.assetsView != nil </span><span class="cov0" title="0">{
+                        return m.assetsView.View()
+                }</span>
+        }
+        <span class="cov0" title="0">return "Loading..."</span>
+}
+
+func main() <span class="cov0" title="0">{
+        // Panic recovery wrapper for the entire application
+        defer func() </span><span class="cov0" title="0">{
+                if r := recover(); r != nil </span><span class="cov0" title="0">{
+                        fmt.Fprintf(os.Stderr, "Panic recovered: %v\n", r)
+                        fmt.Fprintf(os.Stderr, "Stack trace:\n%s\n", debug.Stack())
+                        os.Exit(1)
+                }</span>
+        }()
+
+        // Check for CLI mode first (before TUI initialization)
+        <span class="cov0" title="0">if RunCLI() </span><span class="cov0" title="0">{
+                // CLI mode handled and exited, should not reach here
+                return
+        }</span>
+
+        // Load existing entries
+        <span class="cov0" title="0">entries, err := dca.LoadEntries(defaultEntriesPath)
+        if err != nil </span><span class="cov0" title="0">{
+                fmt.Fprintf(os.Stderr, "Error loading entries: %v\n", err)
+                os.Exit(1)
+        }</span>
+
+        // Create assets view and load aggregated data
+        <span class="cov0" title="0">assetsView := assets.NewAssetsView()
+        assetsView.Filename = defaultEntriesPath
+        vm, err := assets.LoadAndAggregateEntries(defaultEntriesPath)
+        if err != nil </span><span class="cov0" title="0">{
+                assetsView.Error = err
+        }</span> else<span class="cov0" title="0"> {
+                assetsView.Entries = vm.Entries
+                assetsView.Loaded = true
+        }</span>
+
+        // Create initial model with assets view state (app starts in asset list view)
+        <span class="cov0" title="0">m := model{
+                assetsView:   assetsView,
+                entries:      entries,
+                currentState: StateAssetsView,
+        }
+
+        // Run the program
+        p := tea.NewProgram(m)
+        if _, err := p.Run(); err != nil </span><span class="cov0" title="0">{
+                fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+                os.Exit(1)
+        }</span>
+}
+</pre>
+		
+		<pre class="file" id="file2" style="display: none">package assets
+
+import (
+        "errors"
+        "fmt"
+
+        "github.com/danilo/scripts/github/dca/internal/dca"
+)
+
+// AssetSummary represents aggregated data for a single asset
+type AssetSummary struct {
+        Ticker      string
+        EntryCount  int
+        TotalShares float64
+        AvgPrice    float64
+        TotalValue  float64
+}
+
+// AssetsViewModel manages the loaded and aggregated asset data
+type AssetsViewModel struct {
+        Entries []AssetSummary
+        Error   error
+}
+
+// RoundTo8Decimals rounds a float to 8 decimal places
+func RoundTo8Decimals(val float64) float64 <span class="cov8" title="1">{
+        return float64(int(val*1e8+.5)) / 1e8
+}</span>
+
+// LoadAndAggregateEntries loads entries from a JSON file and aggregates them by asset ticker
+func LoadAndAggregateEntries(filename string) (*AssetsViewModel, error) <span class="cov8" title="1">{
+        // Load entries from file
+        data, err := dca.LoadEntries(filename)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, fmt.Errorf("failed to load entries: %w", err)
+        }</span>
+
+        // Handle empty entries map gracefully
+        <span class="cov8" title="1">if len(data.Entries) == 0 </span><span class="cov8" title="1">{
+                return &amp;AssetsViewModel{
+                        Entries: []AssetSummary{},
+                        Error:   nil,
+                }, nil
+        }</span>
+
+        // Aggregate entries by asset
+        <span class="cov8" title="1">var summaries []AssetSummary
+        for ticker, entries := range data.Entries </span><span class="cov8" title="1">{
+                summary := aggregateEntries(ticker, entries)
+                summaries = append(summaries, summary)
+        }</span>
+
+        <span class="cov8" title="1">return &amp;AssetsViewModel{
+                Entries: summaries,
+                Error:   nil,
+        }, nil</span>
+}
+
+// aggregateEntries aggregates a slice of DCAEntry for a single asset
+func aggregateEntries(ticker string, entries []dca.DCAEntry) AssetSummary <span class="cov8" title="1">{
+        var totalShares float64
+        var totalAmount float64
+        var sumPriceAmount float64
+
+        for _, entry := range entries </span><span class="cov8" title="1">{
+                totalShares += entry.Shares
+                totalAmount += entry.Amount
+                sumPriceAmount += entry.PricePerShare * entry.Amount
+        }</span>
+
+        // Weighted average price (PRD formula): sum(price_per_share × amount) / sum(amounts)
+        <span class="cov8" title="1">var avgPrice float64
+        if totalAmount &gt; 0 </span><span class="cov8" title="1">{
+                avgPrice = RoundTo8Decimals(sumPriceAmount / totalAmount)
+        }</span>
+
+        <span class="cov8" title="1">return AssetSummary{
+                Ticker:      ticker,
+                EntryCount:  len(entries),
+                TotalShares: RoundTo8Decimals(totalShares),
+                AvgPrice:    avgPrice,
+                TotalValue:  RoundTo8Decimals(totalAmount),
+        }</span>
+}
+
+// CalculateWeightedAverage calculates the weighted average price using the PRD formula:
+// weightedAverage = sum(price_per_share × amount) / sum(amounts)
+func CalculateWeightedAverage(totalAmount, sumPriceAmount float64) float64 <span class="cov8" title="1">{
+        if totalAmount == 0 </span><span class="cov8" title="1">{
+                return 0
+        }</span>
+        <span class="cov8" title="1">return RoundTo8Decimals(sumPriceAmount / totalAmount)</span>
+}
+
+// Validate validates an AssetSummary
+func (s *AssetSummary) Validate() error <span class="cov8" title="1">{
+        if s.Ticker == "" </span><span class="cov8" title="1">{
+                return errors.New("Ticker is required")
+        }</span>
+        <span class="cov8" title="1">if s.EntryCount &lt; 0 </span><span class="cov8" title="1">{
+                return errors.New("EntryCount cannot be negative")
+        }</span>
+        <span class="cov8" title="1">if s.TotalShares &lt; 0 </span><span class="cov8" title="1">{
+                return errors.New("TotalShares cannot be negative")
+        }</span>
+        <span class="cov8" title="1">if s.TotalValue &lt; 0 </span><span class="cov8" title="1">{
+                return errors.New("TotalValue cannot be negative")
+        }</span>
+        <span class="cov8" title="1">return nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file3" style="display: none">package assets
+
+import (
+        "github.com/danilo/scripts/github/dca/internal/dca"
+)
+
+// AssetHistoryModal represents a modal for displaying daily asset history
+type AssetHistoryModal struct {
+        AssetTicker   string
+        Filename      string // Source filename for data loading (used by LoadMore)
+        EntriesByDate []EntryByDate
+        SelectedIndex int
+        Loaded        bool
+        Error         error
+        Visible       bool
+
+        // Pagination fields for infinite scroll
+        Offset    int  // Number of days already loaded
+        AllLoaded bool // True when all available data has been loaded
+        Loading   bool // True when fetching more data
+}
+
+// EntryByDate represents entries aggregated by a single calendar date
+type EntryByDate struct {
+        Date             string
+        TotalInvested    float64
+        TotalShares      float64
+        WeightedAvgPrice float64
+        EntryCount       int
+}
+
+// NewAssetHistoryModal creates a new asset history modal
+func NewAssetHistoryModal() *AssetHistoryModal <span class="cov8" title="1">{
+        return &amp;AssetHistoryModal{
+                SelectedIndex: 0,
+                Loaded:        false,
+                Error:         nil,
+                Visible:       false,
+                Offset:        0,
+                AllLoaded:     false,
+                Loading:       false,
+        }
+}</span>
+
+// LoadData loads entries for the specified asset from the file and aggregates by date
+func (m *AssetHistoryModal) LoadData(filename string, assetTicker string) error <span class="cov8" title="1">{
+        // Load all entries from file
+        data, err := dca.LoadEntries(filename)
+        if err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span>
+
+        // Get entries for the specific asset
+        <span class="cov8" title="1">entries, exists := data.Entries[assetTicker]
+        if !exists </span><span class="cov8" title="1">{
+                // No entries for this asset - return empty data
+                m.EntriesByDate = []EntryByDate{}
+                m.Loaded = true
+                m.Error = nil
+                m.AllLoaded = true
+                return nil
+        }</span>
+
+        // Aggregate entries by date (all dates, we'll paginate on display)
+        <span class="cov8" title="1">allEntries := AggregateByDate(entries)
+
+        // Limit to first 10 days (batch size)
+        const batchSize = 10
+        if len(allEntries) &gt; batchSize </span><span class="cov8" title="1">{
+                m.EntriesByDate = allEntries[:batchSize]
+        }</span> else<span class="cov8" title="1"> {
+                m.EntriesByDate = allEntries
+        }</span>
+
+        <span class="cov8" title="1">m.AssetTicker = assetTicker
+        m.Filename = filename // Store filename for LoadMore
+        m.Loaded = true
+        m.Error = nil
+        return nil</span>
+}
+
+// LoadMore loads the next batch of 10 days for infinite scroll
+func (m *AssetHistoryModal) LoadMore(filename string) error <span class="cov8" title="1">{
+        if m.AllLoaded || m.Loading </span><span class="cov8" title="1">{
+                return nil
+        }</span>
+
+        <span class="cov8" title="1">m.Loading = true
+
+        // Use stored filename with fallback to parameter for backward compatibility
+        loadFilename := m.Filename
+        if loadFilename == "" </span><span class="cov8" title="1">{
+                loadFilename = filename
+        }</span>
+
+        // Load all entries from file
+        <span class="cov8" title="1">data, err := dca.LoadEntries(loadFilename)
+        if err != nil </span><span class="cov0" title="0">{
+                m.Loading = false
+                m.Error = err
+                return err
+        }</span>
+
+        // Get entries for the specific asset
+        <span class="cov8" title="1">entries, exists := data.Entries[m.AssetTicker]
+        if !exists </span><span class="cov8" title="1">{
+                m.AllLoaded = true
+                m.Loading = false
+                return nil
+        }</span>
+
+        // Aggregate entries by date
+        <span class="cov8" title="1">allEntries := AggregateByDate(entries)
+
+        // Calculate how many days we already have loaded
+        // Use len(EntriesByDate) as the current count
+        currentCount := len(m.EntriesByDate)
+        if currentCount &gt;= len(allEntries) </span><span class="cov8" title="1">{
+                m.AllLoaded = true
+                m.Loading = false
+                return nil
+        }</span>
+
+        // Calculate how many more days we can load (batch of 10)
+        <span class="cov8" title="1">const batchSize = 10
+        remaining := len(allEntries) - currentCount
+        toLoad := batchSize
+        if remaining &lt; batchSize </span><span class="cov8" title="1">{
+                toLoad = remaining
+        }</span>
+
+        // Append next batch
+        <span class="cov8" title="1">if toLoad &gt; 0 </span><span class="cov8" title="1">{
+                m.EntriesByDate = append(m.EntriesByDate, allEntries[currentCount:currentCount+toLoad]...)
+        }</span>
+
+        // Check if all data is now loaded
+        <span class="cov8" title="1">if len(m.EntriesByDate) &gt;= len(allEntries) </span><span class="cov8" title="1">{
+                m.AllLoaded = true
+        }</span>
+
+        <span class="cov8" title="1">m.Loading = false
+        return nil</span>
+}
+
+// AggregateByDate groups entries by calendar date and calculates daily metrics with
+// cumulative weighted average. The cumulative weighted average at each day uses the
+// PRD formula: sum(price_per_share × amount) / sum(amounts) for all entries up to that day.
+func AggregateByDate(entries []dca.DCAEntry) []EntryByDate <span class="cov8" title="1">{
+        // Group entries by date string (YYYY-MM-DD)
+        dateGroups := make(map[string][]dca.DCAEntry)
+        for _, entry := range entries </span><span class="cov8" title="1">{
+                dateStr := entry.Date.Format("2006-01-02")
+                dateGroups[dateStr] = append(dateGroups[dateStr], entry)
+        }</span>
+
+        // Convert to slice and calculate daily metrics
+        <span class="cov8" title="1">var result []EntryByDate
+        for dateStr, dayEntries := range dateGroups </span><span class="cov8" title="1">{
+                entry := calculateDayMetrics(dateStr, dayEntries)
+                result = append(result, entry)
+        }</span>
+
+        // Sort by date descending (newest first)
+        <span class="cov8" title="1">for i := 0; i &lt; len(result)-1; i++ </span><span class="cov8" title="1">{
+                for j := i + 1; j &lt; len(result); j++ </span><span class="cov8" title="1">{
+                        if result[i].Date &lt; result[j].Date </span><span class="cov8" title="1">{
+                                result[i], result[j] = result[j], result[i]
+                        }</span>
+                }
+        }
+
+        // Calculate cumulative totals and cumulative weighted average using PRD formula
+        // cumulativeWeightedAvg = sum(all price_per_share × amount up to this day) / sum(all amounts up to this day)
+        <span class="cov8" title="1">var cumulativeTotalAmount float64
+        var cumulativeSumPriceAmount float64
+        for i := range result </span><span class="cov8" title="1">{
+                cumulativeTotalAmount += result[i].TotalInvested
+                // Calculate sum of (price_per_share × amount) for this day
+                // weightedAvgPrice = sumPriceAmount / totalInvested, so sumPriceAmount = weightedAvgPrice × totalInvested
+                cumulativeSumPriceAmount += result[i].WeightedAvgPrice * result[i].TotalInvested
+                result[i].TotalInvested = RoundTo8Decimals(cumulativeTotalAmount)
+                // Recalculate cumulative weighted average with PRD formula
+                if cumulativeTotalAmount &gt; 0 </span><span class="cov8" title="1">{
+                        result[i].WeightedAvgPrice = RoundTo8Decimals(cumulativeSumPriceAmount / cumulativeTotalAmount)
+                }</span>
+        }
+
+        <span class="cov8" title="1">return result</span>
+}
+
+// calculateDayMetrics calculates the daily aggregation metrics for a group of entries.
+// Returns per-day metrics including the weighted average price for that specific day.
+// Note: Cumulative weighted average across all days is calculated in AggregateByDate.
+func calculateDayMetrics(dateStr string, entries []dca.DCAEntry) EntryByDate <span class="cov8" title="1">{
+        var totalInvested float64
+        var sumPriceAmount float64
+        var totalShares float64
+
+        for _, entry := range entries </span><span class="cov8" title="1">{
+                totalInvested += entry.Amount
+                sumPriceAmount += entry.PricePerShare * entry.Amount
+                totalShares += entry.Shares
+        }</span>
+
+        // Weighted average price (PRD formula): sum(price_per_share × amount) / sum(amounts)
+        <span class="cov8" title="1">var weightedAvgPrice float64
+        if totalInvested &gt; 0 </span><span class="cov8" title="1">{
+                weightedAvgPrice = RoundTo8Decimals(sumPriceAmount / totalInvested)
+        }</span>
+
+        <span class="cov8" title="1">return EntryByDate{
+                Date:             dateStr,
+                TotalInvested:    RoundTo8Decimals(totalInvested),
+                TotalShares:      RoundTo8Decimals(totalShares),
+                WeightedAvgPrice: weightedAvgPrice,
+                EntryCount:       len(entries),
+        }</span>
+}
+</pre>
+		
+		<pre class="file" id="file4" style="display: none">package assets
+
+import (
+        "fmt"
+        "testing"
+)
+
+func TestDebugLoadMoreError(t *testing.T) <span class="cov0" title="0">{
+        m := NewAssetHistoryModal()
+        m.AssetTicker = "BTC"
+        m.Loaded = true
+        m.Visible = true
+
+        err := m.LoadMore("non_existent_file.json")
+        fmt.Printf("Error from LoadMore: %v\n", err)
+        fmt.Printf("AllLoaded: %v\n", m.AllLoaded)
+        fmt.Printf("Loading: %v\n", m.Loading)
+        fmt.Printf("Error field: %v\n", m.Error)
+}</span>
+</pre>
+		
+		<pre class="file" id="file5" style="display: none">package assets
+
+import (
+        "fmt"
+        "strings"
+
+        "github.com/charmbracelet/bubbletea"
+        "github.com/charmbracelet/lipgloss"
+)
+
+// Column width constants for the Assets View table
+// Total table width: 10 + 8 + 14 + 13 + 13 + (4 separators × 2) = 74 characters
+const (
+        ColumnAssetWidth      = 10   // Asset: 10 characters, left-aligned
+        ColumnCountWidth      = 8    // Count: 8 characters, right-aligned
+        ColumnSharesWidth     = 14   // Total Shares: 14 characters, right-aligned with 8 decimal places
+        ColumnAvgPriceWidth   = 13   // Avg Price: 13 characters, right-aligned with 2 decimal places
+        ColumnTotalValueWidth = 13   // Total Value: 13 characters, right-aligned with 2 decimal places
+        ColumnSeparator       = "  " // 2 spaces between columns
+)
+
+// Modal width constants
+const (
+        ModalWidth              = 60
+        ModalDateWidth          = 12 // YYYY-MM-DD
+        ModalAvgPriceWidth      = 12 // Right-aligned with 2 decimals
+        ModalTotalInvestedWidth = 14 // Right-aligned with 2 decimals
+        ModalEntryCountWidth    = 10 // Right-aligned
+        ModalDateSeparator      = "  "
+)
+
+// ViewTransitionMsg is a custom message for switching between views
+type ViewTransitionMsg struct {
+        View string
+}
+
+// OpenModalMsg is a message to open the asset history modal
+type OpenModalMsg struct {
+        AssetTicker string
+}
+
+// CloseModalMsg is a message to close the asset history modal
+type CloseModalMsg struct{}
+
+// LoadMoreMsg is a message to load the next batch of data for the modal
+type LoadMoreMsg struct{}
+
+// AssetsView is a Bubble Tea component for displaying asset data in an interactive table
+type AssetsView struct {
+        Entries          []AssetSummary
+        SelectedIndex    int
+        Loaded           bool
+        Error            error
+        Filename         string // Path to the data file for modal operations
+        TableHeaderStyle lipgloss.Style
+        TableRowStyle    lipgloss.Style
+        ActiveRowStyle   lipgloss.Style
+        Modal            *AssetHistoryModal
+}
+
+// Init initializes the AssetsView component
+func (a *AssetsView) Init() tea.Cmd <span class="cov8" title="1">{
+        return nil
+}</span>
+
+// Update handles user input for the AssetsView component
+func (a *AssetsView) Update(msg tea.Msg) (tea.Model, tea.Cmd) <span class="cov8" title="1">{
+        switch msg := msg.(type) </span>{
+        case tea.KeyMsg:<span class="cov8" title="1">
+                switch msg.Type </span>{
+                case tea.KeyCtrlC:<span class="cov8" title="1">
+                        return a, tea.Quit</span>
+                case tea.KeyEsc:<span class="cov8" title="1">
+                        // Handle Escape key differently based on modal state
+                        if a.Modal != nil &amp;&amp; a.Modal.Visible </span><span class="cov0" title="0">{
+                                // Close modal when Escape pressed in modal view
+                                return a.handleCloseModal()
+                        }</span>
+                        // Quit app when Escape pressed in list view
+                        <span class="cov8" title="1">return a, tea.Quit</span>
+                case tea.KeyRunes:<span class="cov8" title="1">
+                        if string(msg.Runes) == "c" </span><span class="cov8" title="1">{
+                                return a, func() tea.Msg </span><span class="cov8" title="1">{
+                                        return ViewTransitionMsg{View: "form"}
+                                }</span>
+                        }
+                case tea.KeyUp:<span class="cov8" title="1">
+                        return a.handleUp()</span>
+                case tea.KeyDown:<span class="cov8" title="1">
+                        return a.handleDown()</span>
+                case tea.KeyEnter:<span class="cov8" title="1">
+                        // Handle Enter differently based on modal state
+                        if a.Modal != nil &amp;&amp; a.Modal.Visible </span><span class="cov0" title="0">{
+                                // Load more when Enter is pressed in modal view
+                                return a.handleLoadMore()
+                        }</span>
+                        // Open modal when Enter is pressed on a data row
+                        // Skip header row (index 0)
+                        <span class="cov8" title="1">if a.SelectedIndex &gt; 0 &amp;&amp; a.SelectedIndex &lt;= len(a.Entries) </span><span class="cov8" title="1">{
+                                return a.handleEnterOnAsset()
+                        }</span>
+                }
+        case tea.QuitMsg:<span class="cov8" title="1">
+                return a, tea.Quit</span>
+        case ViewTransitionMsg:<span class="cov0" title="0">
+                if msg.View == "form" </span><span class="cov0" title="0">{
+                        return a, func() tea.Msg </span><span class="cov0" title="0">{
+                                return ViewTransitionMsg{View: "form"}
+                        }</span>
+                }
+        case OpenModalMsg:<span class="cov0" title="0">
+                return a.handleOpenModal(msg.AssetTicker)</span>
+        case CloseModalMsg:<span class="cov0" title="0">
+                return a.handleCloseModal()</span>
+        case LoadMoreMsg:<span class="cov8" title="1">
+                return a.handleLoadMore()</span>
+        }
+        <span class="cov8" title="1">return a, nil</span>
+}
+
+// handleUp moves selection up (with wrap-around from header to last visible row)
+func (a *AssetsView) handleUp() (tea.Model, tea.Cmd) <span class="cov8" title="1">{
+        if len(a.Entries) == 0 </span><span class="cov8" title="1">{
+                return a, nil
+        }</span>
+
+        // Total visible rows = 30 (1 header + up to 29 data/empty rows)
+        // Data rows are at indices 1-29 (0 is header)
+        // Selection index ranges from 0 (header) to 29 (last data/empty row)
+        <span class="cov8" title="1">const maxRowIndex = 29 // 30 total rows - 1
+
+        if a.SelectedIndex == 0 </span><span class="cov8" title="1">{
+                // Wrap from header (index 0) to last visible row (index 29)
+                a.SelectedIndex = maxRowIndex
+        }</span> else<span class="cov8" title="1"> {
+                a.SelectedIndex--
+        }</span>
+        <span class="cov8" title="1">return a, nil</span>
+}
+
+// handleDown moves selection down (with wrap-around to first data row)
+func (a *AssetsView) handleDown() (tea.Model, tea.Cmd) <span class="cov8" title="1">{
+        if len(a.Entries) == 0 </span><span class="cov8" title="1">{
+                return a, nil
+        }</span>
+
+        // Total visible rows = 30 (1 header + up to 29 data/empty rows)
+        // Data rows are at indices 1-29 (0 is header)
+        // Selection index ranges from 0 (header) to 29 (last data/empty row)
+        <span class="cov8" title="1">const maxRowIndex = 29 // 30 total rows - 1
+
+        if a.SelectedIndex &gt;= maxRowIndex </span><span class="cov8" title="1">{
+                // Wrap to first data row (index 1, skipping header at 0)
+                a.SelectedIndex = 1
+        }</span> else<span class="cov8" title="1"> {
+                a.SelectedIndex++
+        }</span>
+        <span class="cov8" title="1">return a, nil</span>
+}
+
+// handleEnterOnAsset opens the modal for the selected asset
+func (a *AssetsView) handleEnterOnAsset() (tea.Model, tea.Cmd) <span class="cov8" title="1">{
+        if a.SelectedIndex &lt;= 0 </span><span class="cov0" title="0">{
+                return a, nil
+        }</span>
+
+        // Data rows start at index 1, but only up to maxDataRows are rendered
+        <span class="cov8" title="1">const maxVisibleRows = 30
+        const maxDataRows = maxVisibleRows - 1 // 29 data rows max
+        maxSelectableIndex := 1 + len(a.Entries)
+        if maxSelectableIndex &gt; 1+maxDataRows </span><span class="cov0" title="0">{
+                maxSelectableIndex = 1 + maxDataRows
+        }</span>
+
+        <span class="cov8" title="1">if a.SelectedIndex &gt;= maxSelectableIndex </span><span class="cov0" title="0">{
+                return a, nil
+        }</span>
+
+        <span class="cov8" title="1">asset := a.Entries[a.SelectedIndex-1] // Adjust for header row at index 0
+
+        // Initialize modal if nil
+        if a.Modal == nil </span><span class="cov8" title="1">{
+                a.Modal = NewAssetHistoryModal()
+        }</span>
+
+        // Load data into modal for the selected asset
+        <span class="cov8" title="1">err := a.Modal.LoadData(a.Filename, asset.Ticker)
+        if err != nil </span><span class="cov0" title="0">{
+                a.Modal.Error = err
+                a.Modal.Loaded = true
+        }</span> else<span class="cov8" title="1"> {
+                a.Modal.Loaded = true
+        }</span>
+
+        <span class="cov8" title="1">a.Modal.Visible = true
+        return a, nil</span>
+}
+
+// handleCloseModal closes the modal and returns to list view
+func (a *AssetsView) handleCloseModal() (tea.Model, tea.Cmd) <span class="cov0" title="0">{
+        a.Modal.Visible = false
+        return a, nil
+}</span>
+
+// handleLoadMore loads the next batch of data for the modal
+func (a *AssetsView) handleLoadMore() (tea.Model, tea.Cmd) <span class="cov8" title="1">{
+        if a.Modal == nil || !a.Modal.Visible </span><span class="cov8" title="1">{
+                return a, nil
+        }</span>
+
+        // Load more data using the modal's stored filename
+        <span class="cov8" title="1">err := a.Modal.LoadMore(a.Modal.Filename)
+        if err != nil </span><span class="cov0" title="0">{
+                a.Modal.Error = err
+        }</span>
+
+        <span class="cov8" title="1">return a, nil</span>
+}
+
+// handleOpenModal opens the modal for the specified asset
+func (a *AssetsView) handleOpenModal(assetTicker string) (tea.Model, tea.Cmd) <span class="cov0" title="0">{
+        // Initialize modal if nil
+        if a.Modal == nil </span><span class="cov0" title="0">{
+                a.Modal = NewAssetHistoryModal()
+        }</span>
+
+        // Load data into modal
+        <span class="cov0" title="0">err := a.Modal.LoadData(a.Filename, assetTicker)
+        if err != nil </span><span class="cov0" title="0">{
+                a.Modal.Error = err
+                a.Modal.Loaded = true
+        }</span> else<span class="cov0" title="0"> {
+                a.Modal.Loaded = true
+        }</span>
+
+        <span class="cov0" title="0">a.Modal.Visible = true
+        return a, nil</span>
+}
+
+// View renders the AssetsView component
+func (a *AssetsView) View() string <span class="cov8" title="1">{
+        // If modal is visible, render the modal instead of the list
+        if a.Modal != nil &amp;&amp; a.Modal.Visible </span><span class="cov0" title="0">{
+                return a.renderModal()
+        }</span>
+
+        <span class="cov8" title="1">var sb strings.Builder
+
+        sb.WriteString(a.renderHeader())
+        sb.WriteString("\n\n")
+        sb.WriteString(a.renderTable())
+        sb.WriteString("\n\n")
+        sb.WriteString(a.renderFooter())
+
+        return sb.String()</span>
+}
+
+// renderModal renders the asset history modal
+func (a *AssetsView) renderModal() string <span class="cov0" title="0">{
+        if a.Modal == nil || !a.Modal.Visible </span><span class="cov0" title="0">{
+                return ""
+        }</span>
+
+        // Modal container with centered styling
+        <span class="cov0" title="0">modalStyle := lipgloss.NewStyle().
+                Width(ModalWidth).
+                Border(lipgloss.RoundedBorder()).
+                BorderForeground(lipgloss.Color("63")).
+                Align(lipgloss.Center).
+                Padding(1, 2)
+
+        // Title
+        title := lipgloss.NewStyle().
+                Foreground(lipgloss.Color("159")).
+                Bold(true).
+                Render(fmt.Sprintf("Asset History: %s", a.Modal.AssetTicker))
+
+        var content string
+        if !a.Modal.Loaded </span><span class="cov0" title="0">{
+                content = lipgloss.NewStyle().
+                        Foreground(lipgloss.Color("240")).
+                        Render("Loading history...")
+        }</span> else<span class="cov0" title="0"> if a.Modal.Error != nil </span><span class="cov0" title="0">{
+                content = lipgloss.NewStyle().
+                        Foreground(lipgloss.Color("196")).
+                        Render(fmt.Sprintf("❌ Error loading history: %v", a.Modal.Error))
+        }</span> else<span class="cov0" title="0"> if len(a.Modal.EntriesByDate) == 0 </span><span class="cov0" title="0">{
+                content = lipgloss.NewStyle().
+                        Foreground(lipgloss.Color("240")).
+                        Render("No history for this asset")
+        }</span> else<span class="cov0" title="0"> {
+                content = a.renderModalContent()
+        }</span>
+
+        // Combine title and content
+        <span class="cov0" title="0">body := lipgloss.JoinVertical(lipgloss.Center, title, content)
+
+        // Add footer instructions based on state
+        var footerText []string
+        if a.Modal.AllLoaded </span><span class="cov0" title="0">{
+                footerText = append(footerText, "All data loaded")
+        }</span> else<span class="cov0" title="0"> if a.Modal.Loading </span><span class="cov0" title="0">{
+                footerText = append(footerText, "Loading more...")
+        }</span> else<span class="cov0" title="0"> {
+                footerText = append(footerText, "[Esc] Close Modal")
+                footerText = append(footerText, "[Enter] Load More")
+        }</span>
+
+        <span class="cov0" title="0">footer := lipgloss.NewStyle().
+                Foreground(lipgloss.Color("240")).
+                Render(strings.Join(footerText, "  "))
+
+        return modalStyle.Render(lipgloss.JoinVertical(lipgloss.Center, body, footer))</span>
+}
+
+// renderModalContent renders the modal data table
+func (a *AssetsView) renderModalContent() string <span class="cov0" title="0">{
+        var rows []string
+
+        // Header row
+        header := a.renderModalHeaderRow()
+        rows = append(rows, header)
+
+        // Data rows
+        for i, entry := range a.Modal.EntriesByDate </span><span class="cov0" title="0">{
+                row := a.renderModalDataRow(i, entry)
+                rows = append(rows, row)
+        }</span>
+
+        // Create table with border
+        <span class="cov0" title="0">tableStyle := lipgloss.NewStyle().
+                Border(lipgloss.RoundedBorder()).
+                BorderForeground(lipgloss.Color("240"))
+
+        return tableStyle.Render(lipgloss.JoinVertical(lipgloss.Left, rows...))</span>
+}
+
+// renderModalHeaderRow renders the modal header row
+func (a *AssetsView) renderModalHeaderRow() string <span class="cov0" title="0">{
+        headers := []string{"Date", "Avg Price", "Total Invested", "Entry Count"}
+        formatted := []string{
+                fmt.Sprintf("%-*s", ModalDateWidth, headers[0]),
+                fmt.Sprintf("%*s", ModalAvgPriceWidth, headers[1]),
+                fmt.Sprintf("%*s", ModalTotalInvestedWidth, headers[2]),
+                fmt.Sprintf("%*s", ModalEntryCountWidth, headers[3]),
+        }
+
+        var styled []string
+        for _, f := range formatted </span><span class="cov0" title="0">{
+                styled = append(styled, lipgloss.NewStyle().
+                        Foreground(lipgloss.Color("15")).
+                        Bold(true).
+                        Render(f))
+        }</span>
+
+        <span class="cov0" title="0">return strings.Join(styled, ModalDateSeparator)</span>
+}
+
+// renderModalDataRow renders a single modal data row
+func (a *AssetsView) renderModalDataRow(index int, entry EntryByDate) string <span class="cov0" title="0">{
+        rowData := []string{
+                fmt.Sprintf("%-*s", ModalDateWidth, entry.Date),
+                fmt.Sprintf("%*.2f", ModalAvgPriceWidth, entry.WeightedAvgPrice),
+                fmt.Sprintf("%*.2f", ModalTotalInvestedWidth, entry.TotalInvested),
+                fmt.Sprintf("%*d", ModalEntryCountWidth, entry.EntryCount),
+        }
+
+        rowStr := strings.Join(rowData, ModalDateSeparator)
+
+        return lipgloss.NewStyle().
+                Padding(0, 1).
+                Render(rowStr)
+}</span>
+
+// renderHeader displays the view title
+func (a *AssetsView) renderHeader() string <span class="cov8" title="1">{
+        title := lipgloss.NewStyle().
+                Foreground(lipgloss.Color("159")).
+                Background(lipgloss.Color("236")).
+                Bold(true).
+                Underline(true).
+                Render("DCA Assets List")
+
+        subtitle := lipgloss.NewStyle().
+                Foreground(lipgloss.Color("240")).
+                Render("View your aggregated investment data")
+
+        return lipgloss.JoinVertical(
+                lipgloss.Center,
+                title,
+                subtitle,
+        )
+}</span>
+
+// renderTable displays the asset data in a table format
+func (a *AssetsView) renderTable() string <span class="cov8" title="1">{
+        if !a.Loaded </span><span class="cov0" title="0">{
+                return lipgloss.NewStyle().
+                        Foreground(lipgloss.Color("240")).
+                        Render("Loading data...")
+        }</span>
+
+        <span class="cov8" title="1">if a.Error != nil </span><span class="cov0" title="0">{
+                return lipgloss.NewStyle().
+                        Foreground(lipgloss.Color("196")).
+                        Render(fmt.Sprintf("❌ Error loading data: %v", a.Error))
+        }</span>
+
+        <span class="cov8" title="1">if len(a.Entries) == 0 </span><span class="cov8" title="1">{
+                return a.renderEmptyState()
+        }</span>
+
+        // Cap displayed rows to maintain exactly 30 total rows (1 header + 29 data)
+        // Only display first maxDataRows entries
+        <span class="cov8" title="1">const maxVisibleRows = 30
+        const maxDataRows = maxVisibleRows - 1 // 29 data rows max
+        dataRowsToRender := len(a.Entries)
+        if dataRowsToRender &gt; maxDataRows </span><span class="cov8" title="1">{
+                dataRowsToRender = maxDataRows
+        }</span>
+
+        <span class="cov8" title="1">var rows []string
+
+        // Render header row
+        header := a.renderHeaderRow()
+        rows = append(rows, header)
+
+        // Render data rows (up to maxDataRows)
+        for i := 0; i &lt; dataRowsToRender; i++ </span><span class="cov8" title="1">{
+                entry := a.Entries[i]
+                row := a.renderDataRow(i, entry)
+                rows = append(rows, row)
+        }</span>
+
+        // Pad with empty rows to maintain exactly 30 rows (including header)
+        // 30 = 1 header + data rows + empty rows
+        // empty rows = 30 - 1 - data rows rendered
+        <span class="cov8" title="1">emptyRowsNeeded := maxVisibleRows - 1 - dataRowsToRender
+        if emptyRowsNeeded &gt; 0 </span><span class="cov8" title="1">{
+                for i := 0; i &lt; emptyRowsNeeded; i++ </span><span class="cov8" title="1">{
+                        row := a.renderEmptyDataRow(dataRowsToRender + i)
+                        rows = append(rows, row)
+                }</span>
+        }
+
+        // Create table with border
+        <span class="cov8" title="1">tableStyle := lipgloss.NewStyle().
+                Border(lipgloss.RoundedBorder()).
+                BorderForeground(lipgloss.Color("240"))
+
+        return tableStyle.Render(lipgloss.JoinVertical(lipgloss.Left, rows...))</span>
+}
+
+// renderHeaderRow renders the table header with column names
+func (a *AssetsView) renderHeaderRow() string <span class="cov8" title="1">{
+        headers := []string{"Asset", "Count", "Total Shares", "Avg Price", "Total Value"}
+        formatted := []string{
+                fmt.Sprintf("%-*s", ColumnAssetWidth, headers[0]),
+                fmt.Sprintf("%*s", ColumnCountWidth, headers[1]),
+                fmt.Sprintf("%*s", ColumnSharesWidth, headers[2]),
+                fmt.Sprintf("%*s", ColumnAvgPriceWidth, headers[3]),
+                fmt.Sprintf("%*s", ColumnTotalValueWidth, headers[4]),
+        }
+
+        var styled []string
+        for _, f := range formatted </span><span class="cov8" title="1">{
+                styled = append(styled, lipgloss.NewStyle().
+                        Foreground(lipgloss.Color("15")).
+                        Bold(true).
+                        Render(f))
+        }</span>
+
+        <span class="cov8" title="1">return strings.Join(styled, ColumnSeparator)</span>
+}
+
+// renderDataRow renders a single data row with the specified index
+func (a *AssetsView) renderDataRow(index int, entry AssetSummary) string <span class="cov8" title="1">{
+        // Format each cell with fixed widths
+        // Asset: left-aligned text
+        // Count: right-aligned integer
+        // Total Shares: right-aligned with 8 decimal places
+        // Avg Price: right-aligned with 2 decimal places
+        // Total Value: right-aligned with 2 decimal places
+        rowData := []string{
+                fmt.Sprintf("%-*s", ColumnAssetWidth, entry.Ticker),
+                fmt.Sprintf("%*d", ColumnCountWidth, entry.EntryCount),
+                fmt.Sprintf("%*.8f", ColumnSharesWidth, entry.TotalShares),
+                fmt.Sprintf("%*.2f", ColumnAvgPriceWidth, entry.AvgPrice),
+                fmt.Sprintf("%*.2f", ColumnTotalValueWidth, entry.TotalValue),
+        }
+
+        rowStr := strings.Join(rowData, ColumnSeparator)
+
+        // Apply active row styling
+        // Data rows start at index 1 (header is at index 0)
+        if index+1 == a.SelectedIndex </span><span class="cov0" title="0">{
+                return lipgloss.NewStyle().
+                        Background(lipgloss.Color("63")).
+                        Foreground(lipgloss.Color("15")).
+                        Bold(true).
+                        Padding(0, 1).
+                        Render(rowStr)
+        }</span>
+
+        <span class="cov8" title="1">return lipgloss.NewStyle().
+                Padding(0, 1).
+                Render(rowStr)</span>
+}
+
+// renderEmptyState displays message when no assets exist
+func (a *AssetsView) renderEmptyState() string <span class="cov8" title="1">{
+        msg := "No assets yet"
+        return lipgloss.NewStyle().
+                Foreground(lipgloss.Color("240")).
+                Padding(1).
+                Render(msg)
+}</span>
+
+// renderEmptyDataRow renders an empty row for padding (when data rows &lt; 30)
+func (a *AssetsView) renderEmptyDataRow(index int) string <span class="cov8" title="1">{
+        // Format each cell with fixed widths using empty/zeros
+        rowData := []string{
+                fmt.Sprintf("%-*s", ColumnAssetWidth, ""),
+                fmt.Sprintf("%*s", ColumnCountWidth, ""),
+                fmt.Sprintf("%*.8f", ColumnSharesWidth, 0.0),
+                fmt.Sprintf("%*.2f", ColumnAvgPriceWidth, 0.0),
+                fmt.Sprintf("%*.2f", ColumnTotalValueWidth, 0.0),
+        }
+
+        rowStr := strings.Join(rowData, ColumnSeparator)
+
+        // Apply active row styling
+        // Data rows start at index 1 (header is at index 0)
+        if index+1 == a.SelectedIndex </span><span class="cov0" title="0">{
+                return lipgloss.NewStyle().
+                        Background(lipgloss.Color("63")).
+                        Foreground(lipgloss.Color("15")).
+                        Bold(true).
+                        Padding(0, 1).
+                        Render(rowStr)
+        }</span>
+
+        <span class="cov8" title="1">return lipgloss.NewStyle().
+                Padding(0, 1).
+                Render(rowStr)</span>
+}
+
+// renderFooter displays navigation help text
+func (a *AssetsView) renderFooter() string <span class="cov8" title="1">{
+        help := []string{"[↑/↓] Navigate", "[Esc/Ctrl+C] Exit"}
+        return lipgloss.NewStyle().
+                Foreground(lipgloss.Color("240")).
+                Render(strings.Join(help, "  "))
+}</span>
+
+// NewAssetsView creates a new AssetsView component
+func NewAssetsView() *AssetsView <span class="cov8" title="1">{
+        return &amp;AssetsView{
+                SelectedIndex: 0,
+                Loaded:        false,
+                Error:         nil,
+                Filename:      "dca_entries.json",
+                Modal:         NewAssetHistoryModal(),
+                TableHeaderStyle: lipgloss.NewStyle().
+                        Foreground(lipgloss.Color("15")).
+                        Bold(true),
+                TableRowStyle: lipgloss.NewStyle().
+                        Foreground(lipgloss.Color("7")),
+                ActiveRowStyle: lipgloss.NewStyle().
+                        Background(lipgloss.Color("63")).
+                        Foreground(lipgloss.Color("15")).
+                        Bold(true),
+        }
+}</span>
+</pre>
+		
+		<pre class="file" id="file6" style="display: none">package dca
+
+import (
+        "encoding/json"
+        "errors"
+        "fmt"
+        "math"
+        "os"
+        "path/filepath"
+        "time"
+)
+
+// DCAEntry represents a single DCA investment entry
+type DCAEntry struct {
+        Amount        float64   `json:"amount"`
+        Date          time.Time `json:"date"`
+        Asset         string    `json:"asset"`
+        PricePerShare float64   `json:"pricePerShare"`
+        Shares        float64   `json:"shares"`
+}
+
+// DCAData represents a collection of DCA entries keyed by asset ticker
+type DCAData struct {
+        Entries map[string][]DCAEntry `json:"entries"`
+}
+
+// LoadEntries reads DCA entries from a JSON file
+func LoadEntries(filename string) (*DCAData, error) <span class="cov8" title="1">{
+        data := &amp;DCAData{
+                Entries: make(map[string][]DCAEntry),
+        }
+
+        file, err := os.ReadFile(filename)
+        if err != nil </span><span class="cov8" title="1">{
+                if errors.Is(err, os.ErrNotExist) </span><span class="cov8" title="1">{
+                        return data, nil
+                }</span>
+                // Handle permission errors with user-friendly message
+                <span class="cov0" title="0">var pathErr *os.PathError
+                if errors.As(err, &amp;pathErr) </span><span class="cov0" title="0">{
+                        if os.IsPermission(err) </span><span class="cov0" title="0">{
+                                return nil, fmt.Errorf("Permission denied: check file permissions")
+                        }</span>
+                }
+                <span class="cov0" title="0">return nil, err</span>
+        }
+
+        <span class="cov8" title="1">if len(file) == 0 </span><span class="cov8" title="1">{
+                return data, nil
+        }</span>
+
+        <span class="cov8" title="1">if err := json.Unmarshal(file, data); err != nil </span><span class="cov8" title="1">{
+                // Handle JSON parse errors gracefully with diagnostic message
+                var jsonErr *json.SyntaxError
+                if errors.As(err, &amp;jsonErr) </span><span class="cov8" title="1">{
+                        return nil, fmt.Errorf("JSON parse error at byte %d: invalid data format", jsonErr.Offset)
+                }</span>
+                <span class="cov0" title="0">return nil, fmt.Errorf("JSON parse error: %v", err)</span>
+        }
+
+        <span class="cov8" title="1">return data, nil</span>
+}
+
+// SaveEntries writes DCA entries to a JSON file with 2-space indentation using atomic write
+func SaveEntries(filename string, data *DCAData) error <span class="cov8" title="1">{
+        // 1. Marshal JSON
+        fileBytes, err := json.MarshalIndent(data, "", "  ")
+        if err != nil </span><span class="cov0" title="0">{
+                return fmt.Errorf("failed to serialize data: %v", err)
+        }</span>
+
+        // 2. Create temp file in same directory
+        <span class="cov8" title="1">tmpfile, err := os.CreateTemp(filepath.Dir(filename), ".dca_entries_*.json")
+        if err != nil </span><span class="cov8" title="1">{
+                // Handle permission errors with user-friendly message
+                var pathErr *os.PathError
+                if errors.As(err, &amp;pathErr) </span><span class="cov8" title="1">{
+                        if os.IsPermission(err) </span><span class="cov8" title="1">{
+                                return fmt.Errorf("Permission denied: check file permissions")
+                        }</span>
+                }
+                <span class="cov8" title="1">return fmt.Errorf("failed to create temp file: %v", err)</span>
+        }
+
+        // 3. Write to temp file
+        <span class="cov8" title="1">if _, err := tmpfile.Write(fileBytes); err != nil </span><span class="cov0" title="0">{
+                tmpfile.Close()
+                os.Remove(tmpfile.Name())
+                return fmt.Errorf("failed to write to temp file: %v", err)
+        }</span>
+
+        // 4. Close temp file before rename (required on Windows)
+        <span class="cov8" title="1">if err := tmpfile.Close(); err != nil </span><span class="cov0" title="0">{
+                os.Remove(tmpfile.Name())
+                return fmt.Errorf("failed to close temp file: %v", err)
+        }</span>
+
+        // 5. Atomic rename
+        <span class="cov8" title="1">if err := os.Rename(tmpfile.Name(), filename); err != nil </span><span class="cov0" title="0">{
+                os.Remove(tmpfile.Name())
+                // Handle permission errors with user-friendly message
+                var pathErr *os.PathError
+                if errors.As(err, &amp;pathErr) </span><span class="cov0" title="0">{
+                        if os.IsPermission(err) </span><span class="cov0" title="0">{
+                                return fmt.Errorf("Permission denied: check file permissions")
+                        }</span>
+                }
+                <span class="cov0" title="0">return fmt.Errorf("failed to rename temp file: %v", err)</span>
+        }
+
+        <span class="cov8" title="1">return nil</span>
+}
+
+// Validate checks that the DCAEntry has valid values
+func (e *DCAEntry) Validate() error <span class="cov8" title="1">{
+        if e.Amount &lt;= 0 </span><span class="cov8" title="1">{
+                return errors.New("Amount must be positive")
+        }</span>
+        <span class="cov8" title="1">if e.PricePerShare &lt;= 0 </span><span class="cov8" title="1">{
+                return errors.New("Price must be positive")
+        }</span>
+        // Validate shares is a valid finite positive number
+        <span class="cov8" title="1">shares := e.CalculateShares()
+        if math.IsNaN(shares) || math.IsInf(shares, 0) || shares &lt;= 0 </span><span class="cov0" title="0">{
+                return errors.New("Shares must be a positive finite number")
+        }</span>
+        <span class="cov8" title="1">return nil</span>
+}
+
+// CalculateShares computes the number of shares based on amount and price per share
+// with 8 decimal precision using rounding
+func (e *DCAEntry) CalculateShares() float64 <span class="cov8" title="1">{
+        if e.PricePerShare == 0 </span><span class="cov0" title="0">{
+                return 0
+        }</span>
+        <span class="cov8" title="1">shares := e.Amount / e.PricePerShare
+        return math.Round(shares*1e8) / 1e8</span>
+}
+</pre>
+		
+		<pre class="file" id="file7" style="display: none">package form
+
+import (
+        "fmt"
+        "strconv"
+        "strings"
+        "time"
+
+        "github.com/charmbracelet/bubbletea"
+        "github.com/charmbracelet/lipgloss"
+
+        "github.com/danilo/scripts/github/dca/internal/dca"
+        "github.com/danilo/scripts/github/dca/internal/validation"
+)
+
+// FormStep represents the current step in the form
+type FormStep int
+
+const (
+        StepAmount FormStep = iota
+        StepDate
+        StepAsset
+        StepPrice
+        StepShares
+        StepConfirm
+        StepDone
+)
+
+// FormField represents a single input field in the form
+type FormField struct {
+        Prompt   string
+        Value    string
+        Error    error
+        ReadOnly bool
+}
+
+// FormModel manages the state of the form
+type FormModel struct {
+        Step         FormStep
+        Fields       map[string]*FormField
+        CurrentField int
+        Entries      *dca.DCAData
+        FilePath     string
+        Submitted    bool
+}
+
+// Init starts the form with the first field focused
+func (m *FormModel) Init() tea.Cmd <span class="cov0" title="0">{
+        return nil
+}</span>
+
+// Update handles user input and form state transitions
+func (m *FormModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) <span class="cov0" title="0">{
+        switch msg := msg.(type) </span>{
+        case tea.KeyMsg:<span class="cov0" title="0">
+                switch msg.Type </span>{
+                case tea.KeyCtrlC:<span class="cov0" title="0">
+                        // Cancel without saving
+                        return m, tea.Quit</span>
+                case tea.KeyEsc:<span class="cov0" title="0">
+                        // Cancel form and return to assets view
+                        return m, func() tea.Msg </span><span class="cov0" title="0">{
+                                return FormCancelledMsg{}
+                        }</span>
+                case tea.KeyEnter:<span class="cov0" title="0">
+                        return m.handleEnter()</span>
+                case tea.KeyBackspace:<span class="cov0" title="0">
+                        return m.handleBackspace()</span>
+                case tea.KeyRunes:<span class="cov0" title="0">
+                        return m.handleInput(msg.String())</span>
+                case tea.KeyRight, tea.KeyTab:<span class="cov0" title="0">
+                        return m.handleTabForward()</span>
+                case tea.KeyLeft:<span class="cov0" title="0">
+                        return m.handleTabBackward()</span>
+                case tea.KeyUp, tea.KeyDown:<span class="cov0" title="0">
+                        return m, nil</span>
+                }
+        case tea.QuitMsg:<span class="cov0" title="0">
+                return m, tea.Quit</span>
+        }
+        <span class="cov0" title="0">return m, nil</span>
+}
+
+// handleEnter processes the Enter key press
+func (m *FormModel) handleEnter() (tea.Model, tea.Cmd) <span class="cov0" title="0">{
+        currentFieldKey := m.getCurrentFieldKey()
+        field := m.Fields[currentFieldKey]
+
+        switch m.Step </span>{
+        case StepAmount:<span class="cov0" title="0">
+                if err := m.validateAmount(field.Value); err != nil </span><span class="cov0" title="0">{
+                        field.Error = err
+                        return m, nil
+                }</span>
+                <span class="cov0" title="0">field.Error = nil
+                m.Step = StepDate
+                m.CurrentField = 1</span>
+        case StepDate:<span class="cov0" title="0">
+                if err := m.validateDate(field.Value); err != nil </span><span class="cov0" title="0">{
+                        field.Error = err
+                        return m, nil
+                }</span>
+                <span class="cov0" title="0">field.Error = nil
+                m.Step = StepAsset
+                m.CurrentField = 2</span>
+        case StepAsset:<span class="cov0" title="0">
+                if err := m.validateAsset(field.Value); err != nil </span><span class="cov0" title="0">{
+                        field.Error = err
+                        return m, nil
+                }</span>
+                <span class="cov0" title="0">field.Error = nil
+                m.Step = StepPrice
+                m.CurrentField = 3</span>
+        case StepPrice:<span class="cov0" title="0">
+                if err := m.validatePrice(field.Value); err != nil </span><span class="cov0" title="0">{
+                        field.Error = err
+                        return m, nil
+                }</span>
+                <span class="cov0" title="0">field.Error = nil
+                // Calculate and update shares
+                amount := m.getFieldFloat64("amount")
+                price := m.getFieldFloat64("price")
+                shares := CalculateSharesFromValues(amount, price)
+                m.Fields["shares"].Value = fmt.Sprintf("%.8f", shares)
+                m.Fields["shares"].ReadOnly = true
+                m.Step = StepConfirm
+                m.CurrentField = 5</span>
+        case StepConfirm:<span class="cov0" title="0">
+                // Submit the form
+                if err := m.saveEntry(); err != nil </span><span class="cov0" title="0">{
+                        return m, nil
+                }</span>
+                <span class="cov0" title="0">m.Submitted = true
+                m.Step = StepDone
+                return m, func() tea.Msg </span><span class="cov0" title="0">{
+                        return FormSubmittedMsg{}
+                }</span>
+        }
+
+        <span class="cov0" title="0">return m, nil</span>
+}
+
+// handleBackspace processes the Backspace key press
+func (m *FormModel) handleBackspace() (tea.Model, tea.Cmd) <span class="cov8" title="1">{
+        currentFieldKey := m.getCurrentFieldKey()
+        field := m.Fields[currentFieldKey]
+
+        if !field.ReadOnly &amp;&amp; len(field.Value) &gt; 0 </span><span class="cov8" title="1">{
+                // Remove last rune
+                field.Value = strings.TrimSuffix(field.Value, string(field.Value[len(field.Value)-1]))
+        }</span>
+        <span class="cov8" title="1">return m, nil</span>
+}
+
+// handleInput processes character input
+func (m *FormModel) handleInput(runes string) (tea.Model, tea.Cmd) <span class="cov8" title="1">{
+        currentFieldKey := m.getCurrentFieldKey()
+        field := m.Fields[currentFieldKey]
+
+        if !field.ReadOnly </span><span class="cov8" title="1">{
+                field.Value += runes
+        }</span>
+        <span class="cov8" title="1">return m, nil</span>
+}
+
+// handleTabForward moves focus to the next field
+func (m *FormModel) handleTabForward() (tea.Model, tea.Cmd) <span class="cov8" title="1">{
+        maxField := 5 // amount, date, asset, price, shares, confirm
+        if m.CurrentField &lt; maxField </span><span class="cov8" title="1">{
+                m.CurrentField++
+        }</span>
+        <span class="cov8" title="1">return m, nil</span>
+}
+
+// handleTabBackward moves focus to the previous field
+func (m *FormModel) handleTabBackward() (tea.Model, tea.Cmd) <span class="cov8" title="1">{
+        if m.CurrentField &gt; 0 </span><span class="cov8" title="1">{
+                m.CurrentField--
+        }</span>
+        <span class="cov8" title="1">return m, nil</span>
+}
+
+// getCurrentFieldKey returns the key for the current field based on step
+func (m *FormModel) getCurrentFieldKey() string <span class="cov8" title="1">{
+        keys := []string{"amount", "date", "asset", "price", "shares", "confirm"}
+        if m.CurrentField &gt;= 0 &amp;&amp; m.CurrentField &lt; len(keys) </span><span class="cov8" title="1">{
+                return keys[m.CurrentField]
+        }</span>
+        <span class="cov0" title="0">return "amount"</span>
+}
+
+// getFieldFloat64 safely parses a field value as float64
+func (m *FormModel) getFieldFloat64(key string) float64 <span class="cov8" title="1">{
+        val, _ := strconv.ParseFloat(m.Fields[key].Value, 64)
+        return val
+}</span>
+
+// saveEntry saves the current entry to the data file
+func (m *FormModel) saveEntry() error <span class="cov0" title="0">{
+        amount := m.getFieldFloat64("amount")
+        dateStr := m.Fields["date"].Value
+        date, err := time.Parse(time.RFC3339, dateStr)
+        if err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span>
+        <span class="cov0" title="0">asset := m.Fields["asset"].Value
+        price := m.getFieldFloat64("price")
+
+        // Create entry with calculated shares
+        shares := CalculateSharesFromValues(amount, price)
+
+        entry := dca.DCAEntry{
+                Amount:        amount,
+                Date:          date,
+                Asset:         asset,
+                PricePerShare: price,
+                Shares:        shares,
+        }
+
+        // Validate the entry
+        if err := entry.Validate(); err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span>
+
+        // Initialize entries map if nil
+        <span class="cov0" title="0">if m.Entries.Entries == nil </span><span class="cov0" title="0">{
+                m.Entries.Entries = make(map[string][]dca.DCAEntry)
+        }</span>
+
+        // Add entry to the asset's list
+        <span class="cov0" title="0">m.Entries.Entries[asset] = append(m.Entries.Entries[asset], entry)
+
+        // Save to file
+        if err := dca.SaveEntries(m.FilePath, m.Entries); err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span>
+
+        <span class="cov0" title="0">return nil</span>
+}
+
+// CalculateSharesFromValues calculates shares from float64 values
+func CalculateSharesFromValues(amount, price float64) float64 <span class="cov8" title="1">{
+        return validation.CalculateSharesFromValues(amount, price)
+}</span>
+
+// RoundTo8Decimals rounds a float to 8 decimal places
+func RoundTo8Decimals(val float64) float64 <span class="cov8" title="1">{
+        return validation.RoundTo8Decimals(val)
+}</span>
+
+// View renders the form UI
+func (m *FormModel) View() string <span class="cov8" title="1">{
+        var sb strings.Builder
+
+        // Header
+        sb.WriteString(m.renderHeader())
+
+        // Form fields
+        sb.WriteString("\n\n")
+        sb.WriteString(m.renderForm())
+
+        // Footer
+        sb.WriteString("\n\n")
+        sb.WriteString(m.renderFooter())
+
+        return sb.String()
+}</span>
+
+// renderHeader displays the form title
+func (m *FormModel) renderHeader() string <span class="cov8" title="1">{
+        title := lipgloss.NewStyle().
+                Foreground(lipgloss.Color("159")).
+                Background(lipgloss.Color("236")).
+                Bold(true).
+                Underline(true).
+                Render("Enter DCA Entry")
+
+        subtitle := lipgloss.NewStyle().
+                Foreground(lipgloss.Color("240")).
+                Render("Fill in the form below to add a new DCA investment entry")
+
+        return lipgloss.JoinVertical(
+                lipgloss.Center,
+                title,
+                subtitle,
+        )
+}</span>
+
+// renderForm displays all form fields
+func (m *FormModel) renderForm() string <span class="cov8" title="1">{
+        var fields []string
+
+        fieldConfigs := []struct {
+                key       string
+                prompt    string
+                step      FormStep
+                readOnly  bool
+                isConfirm bool
+        }{
+                {"amount", "Amount (USD)", StepAmount, false, false},
+                {"date", "Date (RFC3339)", StepDate, false, false},
+                {"asset", "Asset Ticker", StepAsset, false, false},
+                {"price", "Price per Share", StepPrice, false, false},
+                {"shares", "Calculated Shares", StepShares, true, false},
+                {"confirm", "Confirm (y/n)", StepConfirm, false, true},
+        }
+
+        for i, config := range fieldConfigs </span><span class="cov8" title="1">{
+                field := m.Fields[config.key]
+
+                // Only show fields for current or previous steps
+                if config.step &gt; m.Step &amp;&amp; !m.Submitted </span><span class="cov8" title="1">{
+                        continue</span>
+                }
+
+                <span class="cov8" title="1">fieldStyle := lipgloss.NewStyle().PaddingLeft(2)
+
+                // Style the field label
+                labelStyle := lipgloss.NewStyle().
+                        Foreground(lipgloss.Color("240")).
+                        Bold(true)
+
+                prompt := config.prompt
+                if config.isConfirm </span><span class="cov0" title="0">{
+                        prompt = "Confirm submission"
+                }</span>
+
+                // Check if this is the active field
+                <span class="cov8" title="1">if i == m.CurrentField &amp;&amp; !m.Submitted </span><span class="cov8" title="1">{
+                        labelStyle = labelStyle.
+                                Foreground(lipgloss.Color("63")).
+                                Bold(true)
+                        fieldStyle = fieldStyle.Border(lipgloss.RoundedBorder()).
+                                BorderForeground(lipgloss.Color("63")).
+                                Padding(0, 1)
+                }</span>
+
+                // Display value with validation error if present
+                <span class="cov8" title="1">valueDisplay := field.Value
+                if field.Error != nil &amp;&amp; !m.Submitted </span><span class="cov8" title="1">{
+                        valueDisplay = fmt.Sprintf("❌ %s", field.Error.Error())
+                        fieldStyle = fieldStyle.Foreground(lipgloss.Color("196"))
+                }</span> else<span class="cov8" title="1"> if config.readOnly &amp;&amp; !m.Submitted </span><span class="cov0" title="0">{
+                        // Calculate and display shares dynamically
+                        if config.key == "shares" &amp;&amp; m.Step &gt;= StepPrice </span><span class="cov0" title="0">{
+                                amount := m.getFieldFloat64("amount")
+                                price := m.getFieldFloat64("price")
+                                shares := CalculateSharesFromValues(amount, price)
+                                valueDisplay = fmt.Sprintf("%.8f", shares)
+                        }</span>
+                }
+
+                <span class="cov8" title="1">fieldLine := fmt.Sprintf("%s: %s", labelStyle.Render(prompt), valueDisplay)
+
+                // Add helper text for confirm step
+                if config.isConfirm </span><span class="cov0" title="0">{
+                        fieldLine = fmt.Sprintf("%s: [y]es / [n]o", labelStyle.Render("Confirm submission"))
+                        if m.Fields["confirm"].Value == "y" </span><span class="cov0" title="0">{
+                                fieldLine += lipgloss.NewStyle().Foreground(lipgloss.Color("82")).Render(" ✓")
+                        }</span> else<span class="cov0" title="0"> if m.Fields["confirm"].Value == "n" </span><span class="cov0" title="0">{
+                                fieldLine += lipgloss.NewStyle().Foreground(lipgloss.Color("196")).Render(" ✗")
+                        }</span>
+                }
+
+                <span class="cov8" title="1">fields = append(fields, fieldLine)</span>
+        }
+
+        <span class="cov8" title="1">return lipgloss.NewStyle().
+                Border(lipgloss.RoundedBorder()).
+                BorderForeground(lipgloss.Color("240")).
+                Padding(1).
+                Render(lipgloss.JoinVertical(lipgloss.Left, fields...))</span>
+}
+
+// renderFooter displays navigation instructions
+func (m *FormModel) renderFooter() string <span class="cov8" title="1">{
+        if m.Submitted </span><span class="cov0" title="0">{
+                success := lipgloss.NewStyle().
+                        Foreground(lipgloss.Color("82")).
+                        Bold(true).
+                        Render("✓ Entry saved successfully!")
+
+                cancel := lipgloss.NewStyle().
+                        Foreground(lipgloss.Color("240")).
+                        Render("\nPress Ctrl+C to exit")
+
+                return lipgloss.JoinVertical(lipgloss.Center, success, cancel)
+        }</span>
+
+        // Navigation help text
+        <span class="cov8" title="1">help := []string{}
+        if m.Step &gt;= StepAmount </span><span class="cov8" title="1">{
+                help = append(help, "[Enter] Next / Submit")
+        }</span>
+        <span class="cov8" title="1">if m.CurrentField &gt; 0 &amp;&amp; m.Step &lt; StepConfirm </span><span class="cov0" title="0">{
+                help = append(help, "[←] Previous")
+        }</span>
+        <span class="cov8" title="1">if m.CurrentField &lt; 5 &amp;&amp; m.Step &lt; StepConfirm </span><span class="cov8" title="1">{
+                help = append(help, "[→] Next field")
+        }</span>
+        <span class="cov8" title="1">help = append(help, "[Esc] Back to list", "[Ctrl+C] Exit")
+
+        return lipgloss.NewStyle().
+                Foreground(lipgloss.Color("240")).
+                Render(strings.Join(help, "  "))</span>
+}
+
+// NewFormModel creates a new form model with default values
+func NewFormModel(entries *dca.DCAData, filePath string) *FormModel <span class="cov8" title="1">{
+        now := time.Now()
+        defaultDate := now.Format(time.RFC3339)
+
+        return &amp;FormModel{
+                Step:         StepAmount,
+                CurrentField: 0,
+                FilePath:     filePath,
+                Entries:      entries,
+                Fields: map[string]*FormField{
+                        "amount":  {Prompt: "Amount (USD)", Value: "", Error: nil},
+                        "date":    {Prompt: "Date", Value: defaultDate, Error: nil},
+                        "asset":   {Prompt: "Asset Ticker", Value: "", Error: nil},
+                        "price":   {Prompt: "Price per Share", Value: "", Error: nil},
+                        "shares":  {Prompt: "Calculated Shares", Value: "", Error: nil, ReadOnly: true},
+                        "confirm": {Prompt: "Confirm", Value: "", Error: nil},
+                },
+        }
+}</span>
+
+// FormCancelledMsg is sent when the form is cancelled without saving
+type FormCancelledMsg struct{}
+
+// FormSubmittedMsg is sent when the form is successfully submitted
+type FormSubmittedMsg struct{}
+</pre>
+		
+		<pre class="file" id="file8" style="display: none">package form
+
+import (
+        "github.com/danilo/scripts/github/dca/internal/validation"
+)
+
+// validateAmount validates that the amount is a positive number
+func (m *FormModel) validateAmount(value string) error <span class="cov8" title="1">{
+        return validation.IsValidAmount(value)
+}</span>
+
+// validateDate validates that the date is in RFC3339 format
+func (m *FormModel) validateDate(value string) error <span class="cov8" title="1">{
+        return validation.IsValidDate(value)
+}</span>
+
+// validateAsset validates that the asset ticker is non-empty
+func (m *FormModel) validateAsset(value string) error <span class="cov8" title="1">{
+        return validation.IsValidAsset(value)
+}</span>
+
+// validatePrice validates that the price is a positive number
+func (m *FormModel) validatePrice(value string) error <span class="cov8" title="1">{
+        return validation.IsValidPrice(value)
+}</span>
+</pre>
+		
+		<pre class="file" id="file9" style="display: none">package validation
+
+import (
+        "fmt"
+        "strconv"
+        "strings"
+        "time"
+)
+
+// IsValidAmount validates that the amount is a positive number
+func IsValidAmount(value string) error <span class="cov8" title="1">{
+        if value == "" </span><span class="cov8" title="1">{
+                return fmt.Errorf("Amount must be positive")
+        }</span>
+        <span class="cov8" title="1">val, err := strconv.ParseFloat(value, 64)
+        if err != nil </span><span class="cov8" title="1">{
+                return fmt.Errorf("Amount must be positive")
+        }</span>
+        <span class="cov8" title="1">if val &lt;= 0 </span><span class="cov8" title="1">{
+                return fmt.Errorf("Amount must be positive")
+        }</span>
+        <span class="cov8" title="1">return nil</span>
+}
+
+// IsValidPrice validates that the price is a positive number
+func IsValidPrice(value string) error <span class="cov8" title="1">{
+        if value == "" </span><span class="cov8" title="1">{
+                return fmt.Errorf("Price must be positive")
+        }</span>
+        <span class="cov8" title="1">val, err := strconv.ParseFloat(value, 64)
+        if err != nil </span><span class="cov8" title="1">{
+                return fmt.Errorf("Price must be positive")
+        }</span>
+        <span class="cov8" title="1">if val &lt;= 0 </span><span class="cov8" title="1">{
+                return fmt.Errorf("Price must be positive")
+        }</span>
+        <span class="cov8" title="1">return nil</span>
+}
+
+// IsValidAsset validates that the asset ticker is non-empty
+func IsValidAsset(value string) error <span class="cov8" title="1">{
+        if value == "" </span><span class="cov8" title="1">{
+                return fmt.Errorf("Asset ticker is required")
+        }</span>
+        <span class="cov8" title="1">if strings.TrimSpace(value) == "" </span><span class="cov8" title="1">{
+                return fmt.Errorf("Asset ticker is required")
+        }</span>
+        <span class="cov8" title="1">return nil</span>
+}
+
+// IsValidDate validates that the date is in RFC3339 format
+func IsValidDate(value string) error <span class="cov8" title="1">{
+        if value == "" </span><span class="cov8" title="1">{
+                return fmt.Errorf("Use YYYY-MM-DD")
+        }</span>
+        <span class="cov8" title="1">_, err := time.Parse(time.RFC3339, value)
+        if err != nil </span><span class="cov8" title="1">{
+                return fmt.Errorf("Use YYYY-MM-DD")
+        }</span>
+        <span class="cov8" title="1">return nil</span>
+}
+
+// RoundTo8Decimals rounds a float to 8 decimal places
+func RoundTo8Decimals(val float64) float64 <span class="cov8" title="1">{
+        return float64(int(val*1e8+.5)) / 1e8
+}</span>
+
+// CalculateSharesFromValues calculates shares from float64 values
+func CalculateSharesFromValues(amount, price float64) float64 <span class="cov8" title="1">{
+        if price == 0 </span><span class="cov8" title="1">{
+                return 0
+        }</span>
+        <span class="cov8" title="1">shares := amount / price
+        // Validate shares is a finite number
+        if isNaNOrInf(shares) </span><span class="cov8" title="1">{
+                return 0
+        }</span>
+        <span class="cov8" title="1">return RoundTo8Decimals(shares)</span>
+}
+
+// isNaNOrInf checks if a value is NaN or infinite
+func isNaNOrInf(val float64) bool <span class="cov8" title="1">{
+        return isNaN(val) || isInf(val)
+}</span>
+
+// isNaN checks if a value is NaN (without using math.IsNaN for compatibility)
+func isNaN(val float64) bool <span class="cov8" title="1">{
+        return val != val
+}</span>
+
+// isInf checks if a value is infinite (without using math.IsInf for compatibility)
+func isInf(val float64) bool <span class="cov8" title="1">{
+        return val == val &amp;&amp; val != 0 &amp;&amp; (val &gt; 1e308 || val &lt; -1e308)
+}</span>
+</pre>
+		
+		</div>
+	</body>
+	<script>
+	(function() {
+		var files = document.getElementById('files');
+		var visible;
+		files.addEventListener('change', onChange, false);
+		function select(part) {
+			if (visible)
+				visible.style.display = 'none';
+			visible = document.getElementById(part);
+			if (!visible)
+				return;
+			files.value = part;
+			visible.style.display = 'block';
+			location.hash = part;
+		}
+		function onChange() {
+			select(files.value);
+			window.scrollTo(0, 0);
+		}
+		if (location.hash != "") {
+			select(location.hash.substr(1));
+		}
+		if (!visible) {
+			select("file0");
+		}
+	})();
+	</script>
+</html>

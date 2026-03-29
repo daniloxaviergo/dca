@@ -13,7 +13,7 @@ import (
 )
 
 // Default path for DCA entries JSON file
-const defaultEntriesPath = "dca_entries.json"
+var defaultEntriesPath = "dca_entries.json"
 
 // AppState represents the current view state of the application
 type AppState int
@@ -133,7 +133,7 @@ func main() {
 	}()
 
 	// Check for CLI mode first (before TUI initialization)
-	if RunCLI() {
+	if active, _ := RunCLI(); active {
 		// CLI mode handled and exited, should not reach here
 		return
 	}

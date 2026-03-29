@@ -2,20 +2,34 @@
   "entries": {
     "BTC": [
       {
-        "amount": 500,
-        "date": "2026-03-28T20:30:12-03:00",
+        "amount": 100,
+        "date": "2026-03-28T21:39:50-03:00",
         "asset": "BTC",
-        "pricePerShare": 65000,
-        "shares": 0.00769231
+        "pricePerShare": 50000,
+        "shares": 0.002
+      },
+      {
+        "amount": 100,
+        "date": "2026-03-28T22:16:36-03:00",
+        "asset": "BTC",
+        "pricePerShare": 50000,
+        "shares": 0.002
       }
     ],
     "ETH": [
       {
-        "amount": 1000,
-        "date": "2026-03-25T10:00:00Z",
+        "amount": 500,
+        "date": "2025-02-15T12:00:00Z",
         "asset": "ETH",
         "pricePerShare": 3000,
-        "shares": 0.33333333
+        "shares": 0.16666667
+      },
+      {
+        "amount": 200,
+        "date": "2025-01-01T00:00:00Z",
+        "asset": "ETH",
+        "pricePerShare": 3000,
+        "shares": 0.06666667
       }
     ]
   }

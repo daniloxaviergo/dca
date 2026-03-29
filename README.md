@@ -95,6 +95,65 @@ Use the provided Makefile for common tasks:
 | `make clean` | Remove compiled binary and temporary files |
 | `make version` | Show Go version |
 
+## Command-Line Quick Entry
+
+The application supports a command-line interface for quickly adding investment entries without launching the interactive TUI.
+
+### Syntax
+
+```bash
+./dca --add --asset <ticker> --amount <usd> --price <per-share> [--date <rfc3339>]
+```
+
+### Flags
+
+| Flag | Required | Description |
+|------|----------|-------------|
+| `--add` | Yes | Add a new DCA entry |
+| `--asset` | Yes | Asset ticker symbol (e.g., BTC, ETH) |
+| `--amount` | Yes | Amount in USD to invest (positive number) |
+| `--price` | Yes | Price per share in USD (positive number) |
+| `--date` | No | Investment date in RFC3339 format (defaults to current time if omitted) |
+
+### Behavior Notes
+
+- **Silent success**: On successful entry, the program exits with code 0 and produces no output
+- **Exit codes**: Returns 0 on success, 1 on any error (missing flags, validation failures)
+- **Date default**: If `--date` is omitted, the current timestamp (`time.Now()`) is used
+- **Validation**: All fields are validated; errors are printed to stderr before exiting
+
+### Examples
+
+Add a new entry with auto-detected date:
+
+```bash
+./dca --add --asset BTC --amount 100 --price 50000
+```
+
+Add a new entry with a specific date:
+
+```bash
+./dca --add --asset ETH --amount 200 --price 3000 --date "2025-01-01T00:00:00Z"
+```
+
+### Error Handling
+
+Common error scenarios:
+
+```bash
+# Missing required flag
+./dca --add --amount 100 --price 50000
+# Output: Error: --asset is required when using --add
+
+# Invalid amount (not positive)
+./dca --add --asset BTC --amount -10 --price 50000
+# Output: Error: --amount must be a positive number
+
+# Invalid price (not positive)
+./dca --add --asset BTC --amount 100 --price 0
+# Output: Error: --price must be a positive number
+```
+
 ## Usage
 
 The application starts in **Assets View** (asset list). Press `c` to open the form, or select an asset and press `Enter` to view its history.
