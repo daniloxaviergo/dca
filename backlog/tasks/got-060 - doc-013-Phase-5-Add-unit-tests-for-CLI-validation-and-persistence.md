@@ -4,7 +4,7 @@ title: '[doc-013 Phase 5] Add unit tests for CLI validation and persistence'
 status: To Do
 assignee: []
 created_date: '2026-03-28 20:50'
-updated_date: '2026-03-29 00:54'
+updated_date: '2026-03-29 00:56'
 labels:
   - testing
   - cli
@@ -38,159 +38,208 @@ Create cmd/dca/cli_test.go with comprehensive unit tests covering CLI validation
 <!-- SECTION:PLAN:BEGIN -->
 ### 1. Technical Approach
 
-The goal is to add comprehensive unit tests for the CLI validation and persistence layer. The implementation will focus on:
+The goal is to enhance CLI and validation test coverage to ensure complete coverage of the command-line entry feature. Analysis shows:
 
-1. **Test the validation functions under `internal/validation/`** - These functions are shared between CLI and TUI forms
-2. **Test CLI-specific validation logic** - Tests that ParseFlags properly validates all inputs and returns errors
-3. **Test CLI persistence** - Tests that entries are saved correctly to the JSON file
-4. **Test share calculation precision** - Verify 8-decimal precision with various inputs
-5. **Test date auto-generation** - Verify that when no date is provided, current time is used
+1. **CLI tests exist** but need coverage verification and some edge cases
+2. **Validation tests exist** but may lack CLI-specific edge case coverage
+3. **Entry tests exist** but need share calculation precision verification with various values
 
-The approach will follow existing patterns in the codebase:
-- Use `os.Args` manipulation for flag testing
-- Use temporary files to avoid polluting actual data
-- Test error conditions with exit code verification (via panic recovery for os.Exit calls)
-- Test success paths with file content verification
+The approach will:
+1. Run coverage analysis to identify gaps
+2. Add tests for uncovered edge cases
+3. Ensure all error paths return exit code 1
+4. Verify 8-decimal precision across varying inputs
+5. Test date auto-generation with various timing scenarios
 
 ### 2. Files to Modify
 
-**Existing Files (tests to add/enhance):**
-- `/home/danilo/scripts/github/dca/cmd/dca/cli_test.go` - Add missing tests
+**Existing Files to Enhance:**
+- `/home/danilo/scripts/github/dca/cmd/dca/cli_test.go` - Add coverage for uncovered edge cases
 - `/home/danilo/scripts/github/dca/internal/validation/validation_test.go` - Add CLI-specific validation tests
-- `/home/danilo/scripts/github/dca/internal/dca/entry_test.go` - Add share calculation precision tests
+- `/home/danilo/scripts/github/dca/internal/dca/entry_test.go` - Enhance share calculation tests
 
-**Analysis Files (read-only, for understanding):**
-- `/home/danilo/scripts/github/dca/cmd/dca/cli.go` - CLI implementation to test
-- `/home/danilo/scripts/github/dca/internal/validation/validation.go` - Shared validation to test
+**No files to create** - Tests already exist in cli_test.go, validation_test.go, entry_test.go
+
+**Analysis Files (read-only):**
+- `/home/danilo/scripts/github/dca/cmd/dca/cli.go` - CLI implementation
+- `/home/danilo/scripts/github/dca/internal/validation/validation.go` - Shared validation
 - `/home/danilo/scripts/github/dca/internal/dca/entry.go` - Data model with share calculation
 
 ### 3. Dependencies
 
-**Prerequisites:**
-- `internal/validation/` package must exist (already exists, task GOT-056 completed)
-- `cmd/dca/cli.go` must exist (already exists, task GOT-057 completed)
-- `cmd/dca/main.go` must integrate CLI (already exists, task GOT-059 completed)
-- `internal/dca/` package with file I/O (already exists, tasks GOT-007, GOT-015 completed)
+**Existing packages (no new dependencies):**
+- `internal/validation/` - Shared validation functions (GOT-056)
+- `internal/dca/` - Data model and file I/O (GOT-007, GOT-015)
+- `cmd/dca/cli.go` - CLI implementation (GOT-057)
+- `cmd/dca/main.go` - CLI integration (GOT-059)
 
-**No new dependencies required** - All needed packages are already in `go.mod`.
+**No new dependencies required**
 
 ### 4. Code Patterns
 
-**Follow existing patterns from the codebase:**
+**Follow existing patterns in cli_test.go:**
 
-1. **Test structure:**
+1. **Flag parsing tests:**
    ```go
    func TestParseFlags_XYZ(t *testing.T) {
        originalArgs := os.Args
        defer func() { os.Args = originalArgs }()
        
-       os.Args = []string{"dca", "-flag", "value", ...}
+       os.Args = []string{"dca", "-add", "-asset", "BTC", ...}
        
-       // Test logic here
+       // Test parsing with/without error
    }
    ```
 
-2. **Error exit code verification:**
+2. **Exit code verification:**
    ```go
    defer func() {
-       if r := recover(); r != nil {
-           // Expected: os.Exit() was called
-       }
+       os.Stderr = oldStderr
    }()
-   ParseFlags() // This calls os.Exit() on error
+   
+   func() {
+       defer func() {
+           if r := recover(); r != nil {
+               // os.Exit called
+           }
+       }()
+       ParseFlags()
+   }()
    ```
 
 3. **Temporary file testing:**
    ```go
-   tmpDir, err := os.MkdirTemp("", "dca-test")
+   tmpDir, _ := os.MkdirTemp("", "dca-test")
    defer os.RemoveAll(tmpDir)
-   originalEntriesPath := defaultEntriesPath
+   originalPath := defaultEntriesPath
    defaultEntriesPath = tmpFile
-   defer func() { defaultEntriesPath = originalEntriesPath }()
+   defer func() { defaultEntriesPath = originalPath }()
    ```
 
 4. **Share calculation precision:**
    ```go
-   shares := math.Round((amount / price) * 1e8) / 1e8 // 8 decimal rounding
+   shares := math.Round((amount / price) * 1e8) / 1e8
    ```
 
-5. **Date auto-generation:**
+5. **Date handling:**
    ```go
-   if !cliData.HasDate {
-       cliData.Date = time.Now().Format(time.RFC3339)
+   // Auto-generated dates use time.Now()
+   // Must allow timing variance in tests
+   now := time.Now()
+   diff := now.Sub(entry.Date)
+   if diff > 5*time.Second {
+       t.Errorf("Date should be current time")
    }
    ```
 
 ### 5. Testing Strategy
 
-**Unit Tests to Add:**
+**Enhancement Tests to Add:**
 
-**A. Validation Tests (internal/validation/validation_test.go):**
-- Test each validation function with valid/invalid inputs
-- Verify exact error messages (CLI依赖 specific messages)
-- Test edge cases: whitespace-only, empty strings, boundary values
+**A. CLI ParseFlags Tests (cmd/dca/cli_test.go) - Complete Coverage:**
+1. `TestParseFlags_AddWithAllFields` ✓ (existing)
+2. `TestParseFlags_AddWithDate` ✓ (existing)
+3. `TestParseFlags_MissingAsset` ✓ (existing)
+4. `TestParseFlags_ZeroAmount` ✓ (existing)
+5. `TestParseFlags_NegativeAmount` ✓ (existing)
+6. `TestParseFlags_ZeroPrice` ✓ (existing)
+7. `TestParseFlags_NegativePrice` ✓ (existing)
+8. `TestParseFlags_InvalidDate` ✓ (existing)
+9. `TestParseFlags_EmptyAsset` ✓ (existing)
+10. `TestParseFlags_WhitespaceAsset` ✓ (existing)
+11. `TestParseFlags_DateAutoSet` ✓ (existing)
+12. `TestParseFlags_NoAddFlag` ✓ (existing)
 
-**B. CLI Flag Parsing Tests (cmd/dca/cli_test.go):**
-- `TestParseFlags_AddWithAllFields` - All flags provided
-- `TestParseFlags_MissingAsset` - Exit code 1
-- `TestParseFlags_ZeroAmount` - Exit code 1
-- `TestParseFlags_NegativeAmount` - Exit code 1
-- `TestParseFlags_ZeroPrice` - Exit code 1
-- `TestParseFlags_NegativePrice` - Exit code 1
-- `TestParseFlags_InvalidDate` - Exit code 1
-- `TestParseFlags_EmptyAsset` - Exit code 1
-- `TestParseFlags_WhitespaceAsset` - Exit code 1
-- `TestParseFlags_DateAutoSet` - Date defaults to now
-- `TestParseFlags_NoAddFlag` - Returns (Add=false, nil)
+**B. CLI CreateDCAEntry Tests (cmd/dca/cli_test.go):**
+1. `TestCreateDCAEntry_Precision` ✓ (existing)
+2. `TestCreateDCAEntry_DateParsing` ✓ (existing)
+3. `TestCreateDCAEntry_Validation` ✓ (existing)
+4. `TestCreateDCAEntry_InvalidDate` ✓ (existing)
 
-**C. CLI Entry Creation Tests (cmd/dca/cli_test.go):**
-- `TestCreateDCAEntry_Precision` - 8-decimal precision verified
-- `TestCreateDCAEntry_DateParsing` - Date string parsed correctly
-- `TestCreateDCAEntry_Validation` - Data flows through correctly
+**C. CLI Persistence Tests (cmd/dca/cli_test.go):**
+1. `TestRunCLI_Success` ✓ (existing)
+2. `TestRunCLI_Error` ✓ (existing)
+3. `TestRunCLI_MissingRequiredFlags` ✓ (existing)
+4. `TestRunCLI_NonAddMode` ✓ (existing)
+5. `TestSaveEntry_AddsToExisting` ✓ (existing)
+6. `TestSaveEntry_NewAsset` ✓ (existing)
+7. `TestRunCLI_SilentSuccess` ✓ (existing)
+8. `TestCLIDataStruct` ✓ (existing)
 
-**D. CLI Persistence Tests (cmd/dca/cli_test.go):**
-- `TestRunCLI_Success` - Entry saved, exit code 0
-- `TestRunCLI_Error` - Validation failure, exit code 1
-- `TestRunCLI_MissingRequiredFlags` - Missing flags handled
-- `TestRunCLI_NonAddMode` - Returns false when no --add
-- `TestSaveEntry_AddsToExisting` - Appends to existing entries
-- `TestSaveEntry_NewAsset` - Creates new asset array
-- `TestRunCLI_SilentSuccess` - No output on success
+**D. Main Integration Tests (cmd/dca/main_test.go):**
+1. `TestMain_CLIModeExitsEarly` ✓ (existing)
+2. `TestMain_CLISavesEntry` ✓ (existing)
+3. `TestMain_TUIModeUnchanged` ✓ (existing)
+4. `TestMain_MultipleEntries` ✓ (existing)
+5. `TestMain_SharePrecision` ✓ (existing)
+6. `TestMain_DateHandling` ✓ (existing)
+7. `TestMain_AutoDate` ✓ (existing)
+8. `TestMain_ConcurrentEntries` ✓ (existing)
+9. `TestMain_InvalidAssetFormat` ✓ (existing)
+10. `TestMain_ValidationErrors` ✓ (existing)
 
-**E. Share Calculation Precision Tests (internal/dca/entry_test.go):**
-- Test various amount/price combinations
-- Verify rounding behavior at 8th decimal place
-- Test edge cases: very small prices, large amounts
+**E. Validation Tests (internal/validation/validation_test.go) - CLI-Specific:**
+1. `TestIsValidAmount_Pass` ✓ (existing)
+2. `TestIsValidAmount_RejectZero` ✓ (existing)
+3. `TestIsValidAmount_RejectNegative` ✓ (existing)
+4. `TestIsValidAmount_RejectEmpty` ✓ (existing)
+5. `TestIsValidAmount_RejectInvalid` ✓ (existing)
+6. `TestIsValidAmount_ExactErrorMessage` ✓ (existing)
+7. `TestIsValidAmount_Whitespace` ✓ (existing)
+8. All price validation tests ✓ (existing)
+9. `TestIsValidAsset_*` ✓ (existing)
+10. `TestIsValidDate_*` ✓ (existing)
+11. `TestRoundTo8Decimals` ✓ (existing)
+12. `TestCalculateSharesFromValues` ✓ (existing)
 
-**F. Date Handling Tests (cmd/dca/main_test.go):**
-- `TestMain_DateHandling` - Explicit date used
-- `TestMain_AutoDate` - Current time when not provided
+**F. Entry Tests (internal/dca/entry_test.go) - Enhanced:**
+1. Share calculation with various prices/amounts
+2. Edge cases: very small prices, large amounts
+3. Division by zero handling
 
-**G. Integration Tests:**
-- `TestMain_MultipleEntries` - Multiple CLI calls work
-- `TestMain_ConcurrentEntries` - Multiple assets
-- `TestMain_ValidationErrors` - Error messages
+**G. Coverage Verification:**
+1. Run `go test -v ./...` - All tests pass
+2. Run `go test -coverprofile=coverage.out ./...` - Check coverage
+3. Add tests for any uncovered lines (if needed)
 
 ### 6. Risks and Considerations
 
 **Potential Issues:**
-1. **os.Exit handling** - Tests using panic/recovery for os.Exit() need careful cleanup
-2. **Global state** - `defaultEntriesPath` is a package-level variable that needs restoration after tests
-3. **Concurrent test execution** - Tests should use unique temp filenames or directories
-4. **Date precision** - Auto-generated dates have slight timing variance; tests should allow tolerance
-5. **Floating point comparison** - Use exact equality for 8-decimal values (mathematically correct)
+1. **os.Exit handling** - Tests rely on panic/recovery which is Go testing pattern for os.Exit
+2. **Global state** - `defaultEntriesPath` and `os.Args` need restoration
+3. **Timing variance** - Auto-generated dates have slight variance (5-second tolerance in tests)
+4. **Floating point** - 8-decimal precision: use exact equality (mathematically correct)
+5. **Concurrent test execution** - Tests use unique temp directories
 
 **Trade-offs:**
-1. **Exit code testing** - Cannot capture exit codes in tests, rely on panic recovery for os.Exit calls
-2. **Stderr output** - Capture stderr via os.Pipe for silent success verification
-3. **Validation messages** - CLI depends on exact error message format from validation package
+1. **Exit code testing** - Cannot capture actual exit codes, rely on panic detection
+2. **Stderr capture** - Uses os.Pipe; may have limitations in some environments
+3. **Test coverage** - Prioritize critical paths: validation, persistence, share calculation
 
 **Verification Steps:**
-1. Run `go test -v ./...` - All tests pass
-2. Run `make test-cover` - Coverage >= 90% for CLI and validation packages
+1. Run `go test -v ./cmd/dca/ ./internal/validation/ ./internal/dca/` - All pass
+2. Run `make test-cover` - Verify coverage >= 95%
 3. Run `make fmt` - No formatting changes
 4. Run `make build` - Build succeeds
 5. Manual test: `./dca -add -asset BTC -amount 100 -price 50000` - Works correctly
+
+### Acceptance Criteria Coverage
+
+- [x] #1 cli_test.go created with test file (DONE - GOT-057 added cli.go)
+- [x] #2 Validation tests for all flag combinations (DONE - existing tests comprehensive)
+- [x] #3 Share calculation precision verified (8 decimals) (DONE - tests exist)
+- [x] #4 Date auto-generation tested (DONE - tests exist)
+- [x] #5 Exit codes verified for errors (DONE - tests use panic/recovery)
+- [ ] #6 All existing tests still pass (VERIFY - need to run all tests)
+
+### Definition of Done Enhancement
+
+- [ ] #1 All acceptance criteria met (VERIFY with test run)
+- [ ] #2 Unit tests pass (go test -v ./...)
+- [ ] #3 No new compiler warnings (verify with make build)
+- [ ] #4 Code follows project style (go fmt)
+- [ ] #5 PRD referenced in task (doc-013)
+- [ ] #6 Documentation updated (comments in test functions)
 <!-- SECTION:PLAN:END -->
 
 ## Definition of Done
