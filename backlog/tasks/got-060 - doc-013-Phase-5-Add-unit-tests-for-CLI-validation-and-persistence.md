@@ -4,7 +4,7 @@ title: '[doc-013 Phase 5] Add unit tests for CLI validation and persistence'
 status: To Do
 assignee: []
 created_date: '2026-03-28 20:50'
-updated_date: '2026-03-29 01:05'
+updated_date: '2026-03-29 01:06'
 labels:
   - testing
   - cli
@@ -205,4 +205,10 @@ Verification run completed on 2026-03-29
 - [ ] #4 Code follows project style (go fmt)
 - [ ] #5 PRD referenced in task
 - [ ] #6 Documentation updated (comments)
+- [ ] #7 All acceptance criteria met
+- [ ] #8 Unit tests pass (go test)
+- [ ] #9 No new compiler warnings
+- [ ] #10 Code follows project style (go fmt)
+- [ ] #11 PRD referenced in task
+- [ ] #12 Documentation updated (comments)
 <!-- DOD:END -->
