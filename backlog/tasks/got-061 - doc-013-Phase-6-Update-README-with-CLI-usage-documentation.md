@@ -4,7 +4,7 @@ title: '[doc-013 Phase 6] Update README with CLI usage documentation'
 status: To Do
 assignee: []
 created_date: '2026-03-28 20:50'
-updated_date: '2026-03-29 01:20'
+updated_date: '2026-03-29 01:21'
 labels:
   - documentation
   - cli
@@ -132,7 +132,34 @@ echo $?
 Implementation notes: README.md updated with CLI quick entry section. All acceptance criteria verified and checked. Tests pass (183/183). Build succeeds with no warnings. Go fmt applied. No code changes needed as this is pure documentation.
 
 Task completed. README.md updated with comprehensive CLI quick entry documentation. All tests pass (183/183). Build succeeds with no warnings. No code changes needed - this is pure documentation task.
+
+Final verification complete. All acceptance criteria met, tests pass, build succeeds. Ready to finalize task.
 <!-- SECTION:NOTES:END -->
+
+## Final Summary
+
+<!-- SECTION:FINAL_SUMMARY:BEGIN -->
+## Summary
+
+Updated README.md with comprehensive CLI quick entry documentation section.
+
+## Changes
+
+Added new "Command-Line Quick Entry" section between "Development Commands" and "Usage" in README.md documenting:
+- Command syntax: `./dca --add --asset <ticker> --amount <usd> --price <per-share> [--date <rfc3339>]`
+- All flags (required: `--add`, `--asset`, `--amount`, `--price`; optional: `--date`)
+- Behavior notes (silent success on exit 0, exit 1 on error, auto-date to current time)
+- Example usage with and without date flag
+- Error handling examples
+
+## Verification
+
+- **Tests**: 183 tests pass
+- **Build**: Compiles without warnings
+- **Manual testing**: CLI functionality verified (successful entry, error handling)
+- **Formatting**: Go files formatted with `go fmt`
+- **No code changes**: Pure documentation update
+<!-- SECTION:FINAL_SUMMARY:END -->
 
 ## Definition of Done
 <!-- DOD:BEGIN -->
