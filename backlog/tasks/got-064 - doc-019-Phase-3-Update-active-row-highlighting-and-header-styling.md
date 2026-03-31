@@ -2,9 +2,10 @@
 id: GOT-064
 title: '[doc-019 Phase 3] Update active row highlighting and header styling'
 status: To Do
-assignee: []
+assignee:
+  - catarina
 created_date: '2026-03-29 12:32'
-updated_date: '2026-03-31 09:52'
+updated_date: '2026-03-31 13:28'
 labels:
   - task
   - ui
