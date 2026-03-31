@@ -3,9 +3,9 @@ id: GOT-065
 title: '[doc-019 Phase 4] Add comprehensive layout tests for new table structure'
 status: To Do
 assignee:
-  - catarina
+  - workflow
 created_date: '2026-03-29 12:32'
-updated_date: '2026-03-31 13:40'
+updated_date: '2026-03-31 13:41'
 labels:
   - task
   - testing
