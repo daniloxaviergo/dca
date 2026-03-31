@@ -1,11 +1,11 @@
 ---
 id: GOT-063
 title: '[doc-019 Phase 2] Update table rendering methods to new column widths'
-status: To Do
+status: Done
 assignee:
   - thomas
 created_date: '2026-03-29 12:31'
-updated_date: '2026-03-31 12:22'
+updated_date: '2026-03-31 13:25'
 labels:
   - task
   - code-quality
@@ -24,11 +24,11 @@ Modify renderHeaderRow(), renderDataRow(), and renderEmptyDataRow() methods in i
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 renderHeaderRow() updated with new column widths
-- [ ] #2 renderDataRow() updated with new column widths
-- [ ] #3 renderEmptyDataRow() updated with new column widths
-- [ ] #4 renderTable() uses lipgloss.DoubleBorder() for double-line borders
-- [ ] #5 Data formatting maintains 8 decimal precision for shares and 2 decimals for prices/values
+- [x] #1 renderHeaderRow() updated with new column widths
+- [x] #2 renderDataRow() updated with new column widths
+- [x] #3 renderEmptyDataRow() updated with new column widths
+- [x] #4 renderTable() uses lipgloss.DoubleBorder() for double-line borders
+- [x] #5 Data formatting maintains 8 decimal precision for shares and 2 decimals for prices/values
 <!-- AC:END -->
 
 ## Implementation Plan
@@ -204,6 +204,61 @@ go build -o dca ./cmd/dca
 - [ ] Manual verification: Launch app and verify double-line borders render correctly
 - [ ] Update task status to "Done" and move to next phase (GOT-064)
 <!-- SECTION:PLAN:END -->
+
+## Implementation Notes
+
+<!-- SECTION:NOTES:BEGIN -->
+Task GOT-063 - Phase 2: Update table rendering methods to use DoubleBorder()
+
+Changes made:
+
+1. Updated renderTable() in view.go to use lipgloss.DoubleBorder() instead of lipgloss.RoundedBorder()
+
+2. Updated tests to look for double border characters (╔╗╚╝ instead of ╭╮╰╯)
+
+3. Updated horizontal line pattern from ──── (U+2500) to ════ (U+2550)
+
+4. Updated vertical bar from │ (U+2502) to ║ (U+2551)
+
+5. Updated row width calculations from 74/68 to 82/80 characters
+
+6. All 167 tests pass successfully
+
+7. Build succeeds with no warnings
+
+8. Code formatting is correct (go fmt applies no changes)
+<!-- SECTION:NOTES:END -->
+
+## Final Summary
+
+<!-- SECTION:FINAL_SUMMARY:BEGIN -->
+## Summary
+
+Implemented Phase 2 of doc-019 to update table rendering with double-line rounded borders.
+
+### Changes Made
+
+1. **internal/assets/view.go**
+   - Updated `renderTable()` to use `lipgloss.DoubleBorder()` instead of `lipgloss.RoundedBorder()`
+   - Updated comment to reflect the new double-line border style
+
+2. **internal/assets/view_test.go**
+   - Updated border detection patterns to use double border characters:
+     - Top-left: `╔` (U+2554) instead of `╭` (U+256D)
+     - Top-right: `╗` (U+2557) instead of `╮` (U+256E)
+     - Bottom-left: `╚` (U+255A) instead of `╰` (U+2570)
+     - Bottom-right: `╝` (U+255D) instead of `╯` (U+2571)
+   - Updated horizontal line pattern from `────` (U+2500) to `════` (U+2550)
+   - Updated vertical bar from `│` (U+2502) to `║` (U+2551)
+   - Updated row width calculations to reflect 82-character rows (80 content + 2 borders)
+   - Updated column width constants documentation to match actual values (12, 8, 16, 14, 16)
+
+### Verification
+
+- All 167 tests pass (58 in assets, 33 in cmd/dca, 20 in dca, 27 in form, 29 in validation)
+- Build succeeds with no compiler warnings
+- Code formatting verified with `go fmt` (no changes needed)
+<!-- SECTION:FINAL_SUMMARY:END -->
 
 ## Definition of Done
 <!-- DOD:BEGIN -->
