@@ -3,9 +3,9 @@ id: GOT-063
 title: '[doc-019 Phase 2] Update table rendering methods to new column widths'
 status: Done
 assignee:
-  - thomas
+  - workflow
 created_date: '2026-03-29 12:31'
-updated_date: '2026-03-31 13:26'
+updated_date: '2026-03-31 13:28'
 labels:
   - task
   - code-quality
