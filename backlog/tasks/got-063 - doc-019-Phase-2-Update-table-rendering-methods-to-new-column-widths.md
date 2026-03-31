@@ -4,6 +4,7 @@ title: '[doc-019 Phase 2] Update table rendering methods to new column widths'
 status: To Do
 assignee: []
 created_date: '2026-03-29 12:31'
+updated_date: '2026-03-31 09:52'
 labels:
   - task
   - code-quality
@@ -11,6 +12,7 @@ dependencies: []
 documentation:
   - doc-019
 priority: high
+ordinal: 7000
 ---
 
 ## Description

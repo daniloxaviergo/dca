@@ -4,6 +4,7 @@ title: '[doc-019 Phase 4] Add comprehensive layout tests for new table structure
 status: To Do
 assignee: []
 created_date: '2026-03-29 12:32'
+updated_date: '2026-03-31 09:52'
 labels:
   - task
   - testing
@@ -12,6 +13,7 @@ dependencies: []
 documentation:
   - doc-019
 priority: high
+ordinal: 9000
 ---
 
 ## Description

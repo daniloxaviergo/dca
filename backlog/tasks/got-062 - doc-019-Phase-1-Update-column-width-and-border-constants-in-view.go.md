@@ -4,7 +4,7 @@ title: '[doc-019 Phase 1] Update column width and border constants in view.go'
 status: To Do
 assignee: []
 created_date: '2026-03-29 12:31'
-updated_date: '2026-03-29 12:35'
+updated_date: '2026-03-31 09:52'
 labels:
   - task
   - code-quality
@@ -12,6 +12,7 @@ dependencies: []
 documentation:
   - doc-019
 priority: high
+ordinal: 6000
 ---
 
 ## Description

@@ -4,12 +4,14 @@ title: 'Task 5: Integration with Asset View'
 status: To Do
 assignee: []
 created_date: '2026-03-18 18:51'
+updated_date: '2026-03-31 09:52'
 labels:
   - integration
 dependencies: []
 references:
   - backlog/docs/PRD-001-asset-history-modal.md
 priority: high
+ordinal: 5000
 ---
 
 ## Description

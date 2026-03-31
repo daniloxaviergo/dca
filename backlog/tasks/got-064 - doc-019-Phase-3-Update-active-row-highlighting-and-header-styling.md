@@ -4,6 +4,7 @@ title: '[doc-019 Phase 3] Update active row highlighting and header styling'
 status: To Do
 assignee: []
 created_date: '2026-03-29 12:32'
+updated_date: '2026-03-31 09:52'
 labels:
   - task
   - ui
@@ -12,6 +13,7 @@ dependencies: []
 documentation:
   - doc-019
 priority: medium
+ordinal: 8000
 ---
 
 ## Description
