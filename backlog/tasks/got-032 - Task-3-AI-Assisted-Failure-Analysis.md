@@ -3,7 +3,7 @@ id: GOT-032
 title: 'Task 3: AI-Assisted Failure Analysis'
 status: To Do
 assignee:
-  - workflow
+  - next-task
 created_date: '2026-03-18 00:27'
 updated_date: '2026-03-31 09:58'
 labels: []
