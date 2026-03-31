@@ -3,7 +3,7 @@ id: GOT-062
 title: '[doc-019 Phase 1] Update column width and border constants in view.go'
 status: To Do
 assignee:
-  - workflow
+  - catarina
 created_date: '2026-03-29 12:31'
 updated_date: '2026-03-31 11:18'
 labels:
