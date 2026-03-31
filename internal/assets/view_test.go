@@ -379,9 +379,9 @@ func TestAssetsView_RenderWith5Assets(t *testing.T) {
 	}
 
 	// Verify table border is present (indicating padded table)
-	// Table uses lipgloss.RoundedBorder() which produces: ╭╮╰╯
-	if !strings.Contains(output, "╭") && !strings.Contains(output, "╰") &&
-		!strings.Contains(output, "╮") && !strings.Contains(output, "╯") {
+	// Table uses lipgloss.RoundedBorder() which produces: ╔╗╚╝
+	if !strings.Contains(output, "╔") && !strings.Contains(output, "╚") &&
+		!strings.Contains(output, "╗") && !strings.Contains(output, "╝") {
 		t.Errorf("Expected table border characters, got: %s", output)
 	}
 }
@@ -440,8 +440,8 @@ func TestAssetsView_RenderWith25Assets(t *testing.T) {
 	}
 
 	// Verify table border is present (rounded corners)
-	if !strings.Contains(output, "╭") && !strings.Contains(output, "╰") &&
-		!strings.Contains(output, "╮") && !strings.Contains(output, "╯") {
+	if !strings.Contains(output, "╔") && !strings.Contains(output, "╚") &&
+		!strings.Contains(output, "╗") && !strings.Contains(output, "╝") {
 		t.Errorf("Expected table border characters, got: %s", output)
 	}
 }
@@ -516,15 +516,15 @@ func TestTableLayout_WidthIs100Percent(t *testing.T) {
 
 			for _, line := range lines {
 				// Top border starts the table section
-				if strings.Contains(line, "╭") && strings.Contains(line, "────") {
+				if strings.Contains(line, "╔") && strings.Contains(line, "═") {
 					inTable = true
 					continue
 				}
 				// Bottom border ends the table section
-				if strings.Contains(line, "╰") && strings.Contains(line, "────") {
+				if strings.Contains(line, "╚") && strings.Contains(line, "═") {
 					break
 				}
-				if inTable && strings.Contains(line, "│") {
+				if inTable && strings.Contains(line, "║") {
 					tableLines = append(tableLines, line)
 				}
 			}
@@ -535,15 +535,15 @@ func TestTableLayout_WidthIs100Percent(t *testing.T) {
 			}
 
 			// Verify each row (except empty header row) has correct width
-			// Row width = 74 (includes borders)
+			// Row width = 86 (includes borders)
 			for i, line := range tableLines {
 				// Skip the header row (index 0) which has centered text
 				if i == 0 && strings.Contains(line, "Asset") && strings.Contains(line, "Count") {
 					continue
 				}
 				// All other rows should have exactly 74 characters (with borders)
-				if len(line) != 74 {
-					t.Errorf("Row %d has width %d, expected 74: %q", i, len(line), line)
+				if len(line) != 86 {
+					t.Errorf("Row %d has width %d, expected 86: %q", i, len(line), line)
 				}
 			}
 		})
@@ -566,14 +566,14 @@ func TestTableLayout_HeaderAlignment(t *testing.T) {
 	inTable := false
 
 	for _, line := range lines {
-		if strings.Contains(line, "╭") && strings.Contains(line, "────") {
+		if strings.Contains(line, "╔") && strings.Contains(line, "═") {
 			inTable = true
 			continue
 		}
-		if strings.Contains(line, "╰") && strings.Contains(line, "────") {
+		if strings.Contains(line, "╚") && strings.Contains(line, "═") {
 			break
 		}
-		if inTable && strings.Contains(line, "│") {
+		if inTable && strings.Contains(line, "║") {
 			if headerRow == "" && strings.Contains(line, "Asset") && strings.Contains(line, "Count") {
 				headerRow = line
 			} else if headerRow != "" && strings.Contains(line, "BTC") {
@@ -614,23 +614,23 @@ func TestTableLayout_HeaderAlignment(t *testing.T) {
 }
 
 // extractColumnsByPosition extracts column values from a lipgloss row by position
-// Based on known column widths: Asset(10) + "  " + Count(8) + "  " + Shares(14) + "  " + AvgPrice(13) + "  " + TotalValue(13)
+// Based on known column widths: Asset(12) + "   " + Count(8) + "   " + Shares(16) + "   " + AvgPrice(14) + "   " + TotalValue(16)
 func extractColumnsByPosition(row string) []string {
 	// Remove borders
-	clean := strings.Trim(row, "│")
+	clean := strings.Trim(row, "║")
 
 	// Column positions (0-indexed within clean row)
-	// Column 0: Asset, starts at 0, width 10
-	// Column 1: Count, starts at 10 + 2 = 12, width 8
-	// Column 2: Shares, starts at 12 + 8 + 2 = 22, width 14
-	// Column 3: AvgPrice, starts at 22 + 14 + 2 = 38, width 13
-	// Column 4: TotalValue, starts at 38 + 13 + 2 = 53, width 13
+	// Column 0: Asset, starts at 0, width 12
+	// Column 1: Count, starts at 12 + 3 = 15, width 8
+	// Column 2: Shares, starts at 15 + 8 + 3 = 26, width 14
+	// Column 3: AvgPrice, starts at 26 + 16 + 3 = 45, width 13
+	// Column 4: TotalValue, starts at 45 + 14 + 3 = 62, width 13
 
-	col0 := clean[0:10]
-	col1 := clean[12:20]
-	col2 := clean[22:36]
-	col3 := clean[38:51]
-	col4 := clean[53:66]
+	col0 := clean[0:12]
+	col1 := clean[15:23]
+	col2 := clean[26:42]
+	col3 := clean[45:59]
+	col4 := clean[62:78]
 
 	return []string{col0, col1, col2, col3, col4}
 }
@@ -671,14 +671,14 @@ func TestTableLayout_Exactly30Rows(t *testing.T) {
 			inTable := false
 
 			for _, line := range lines {
-				if strings.Contains(line, "╭") && strings.Contains(line, "────") {
+				if strings.Contains(line, "╔") && strings.Contains(line, "═") {
 					inTable = true
 					continue
 				}
-				if strings.Contains(line, "╰") && strings.Contains(line, "────") {
+				if strings.Contains(line, "╚") && strings.Contains(line, "═") {
 					break
 				}
-				if inTable && strings.Contains(line, "│") {
+				if inTable && strings.Contains(line, "║") {
 					rowCount++
 				}
 			}
@@ -728,14 +728,14 @@ func TestTableLayout_EmptyRowPadding(t *testing.T) {
 			inTable := false
 
 			for _, line := range lines {
-				if strings.Contains(line, "╭") && strings.Contains(line, "────") {
+				if strings.Contains(line, "╔") && strings.Contains(line, "═") {
 					inTable = true
 					continue
 				}
-				if strings.Contains(line, "╰") && strings.Contains(line, "────") {
+				if strings.Contains(line, "╚") && strings.Contains(line, "═") {
 					break
 				}
-				if inTable && strings.Contains(line, "│") {
+				if inTable && strings.Contains(line, "║") {
 					// Skip header row (contains "Asset" at start)
 					if strings.Contains(line, "Asset") && strings.Contains(line, "Count") {
 						continue
@@ -775,14 +775,14 @@ func TestTableLayout_ColumnWidthsMatchConstants(t *testing.T) {
 	inTable := false
 
 	for _, line := range lines {
-		if strings.Contains(line, "╭") && strings.Contains(line, "────") {
+		if strings.Contains(line, "╔") && strings.Contains(line, "═") {
 			inTable = true
 			continue
 		}
-		if strings.Contains(line, "╰") && strings.Contains(line, "────") {
+		if strings.Contains(line, "╚") && strings.Contains(line, "═") {
 			break
 		}
-		if inTable && strings.Contains(line, "│") {
+		if inTable && strings.Contains(line, "║") {
 			if strings.Contains(line, "Asset") && strings.Contains(line, "Count") {
 				headerRow = line
 				break
@@ -863,14 +863,14 @@ func TestTableLayout_RowCountCalculation(t *testing.T) {
 			inTable := false
 
 			for _, line := range lines {
-				if strings.Contains(line, "╭") && strings.Contains(line, "────") {
+				if strings.Contains(line, "╔") && strings.Contains(line, "═") {
 					inTable = true
 					continue
 				}
-				if strings.Contains(line, "╰") && strings.Contains(line, "────") {
+				if strings.Contains(line, "╚") && strings.Contains(line, "═") {
 					break
 				}
-				if inTable && strings.Contains(line, "│") {
+				if inTable && strings.Contains(line, "║") {
 					rowCount++
 				}
 			}
@@ -879,6 +879,173 @@ func TestTableLayout_RowCountCalculation(t *testing.T) {
 				t.Errorf("Expected %d rows, got %d", maxVisibleRows, rowCount)
 			}
 		})
+	}
+}
+
+// TestTableLayout_IncreasedWidth verifies table uses 86-character total width (82 data + 4 border)
+func TestTableLayout_IncreasedWidth(t *testing.T) {
+	tests := []struct {
+		name       string
+		numEntries int
+	}{
+		{"0 entries (empty state, no table)", 0},
+		{"1 entry", 1},
+		{"5 entries", 5},
+		{"25 entries", 25},
+		{"29 entries (max data rows)", 29},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			av := NewAssetsView()
+			av.Loaded = true
+			av.Entries = make([]AssetSummary, tt.numEntries)
+			for i := 0; i < tt.numEntries; i++ {
+				av.Entries[i] = AssetSummary{
+					Ticker:      fmt.Sprintf("ASSET%02d", i),
+					EntryCount:  1,
+					TotalShares: 0.01,
+					AvgPrice:    50000,
+					TotalValue:  500,
+				}
+			}
+
+			output := av.View()
+			lines := strings.Split(output, "\n")
+
+			// Empty state has no table
+			if tt.numEntries == 0 {
+				if !strings.Contains(output, "No assets yet") {
+					t.Errorf("Expected 'No assets yet' message for empty list")
+				}
+				return
+			}
+
+			// Find the table rows (between top and bottom borders)
+			var tableLines []string
+			inTable := false
+
+			for _, line := range lines {
+				// Top border starts the table section
+				if strings.Contains(line, "╔") && strings.Contains(line, "═") {
+					inTable = true
+					continue
+				}
+				// Bottom border ends the table section
+				if strings.Contains(line, "╚") && strings.Contains(line, "═") {
+					break
+				}
+				if inTable && strings.Contains(line, "║") {
+					tableLines = append(tableLines, line)
+				}
+			}
+
+			// Total should be exactly 30 rows (1 header + 29 data/empty)
+			if len(tableLines) != 30 {
+				t.Errorf("Expected exactly 30 rows (including header), got %d", len(tableLines))
+			}
+
+			// Verify each row has exactly 86 characters (82 data + 4 border)
+			const expectedWidth = 86
+			for i, line := range tableLines {
+				if len(line) != expectedWidth {
+					t.Errorf("Row %d has width %d, expected %d", i, len(line), expectedWidth)
+				}
+			}
+		})
+	}
+}
+
+// TestTableLayout_BorderStyle verifies table uses double-line rounded borders
+func TestTableLayout_BorderStyle(t *testing.T) {
+	av := NewAssetsView()
+	av.Loaded = true
+	av.Entries = []AssetSummary{
+		{Ticker: "BTC", EntryCount: 1, TotalShares: 0.01, AvgPrice: 50000, TotalValue: 500},
+	}
+
+	output := av.View()
+	lines := strings.Split(output, "\n")
+
+	// Find table border lines
+	var topBorder, bottomBorder string
+
+	for _, line := range lines {
+		if strings.Contains(line, "╔") && strings.Contains(line, "═") {
+			topBorder = line
+			continue
+		}
+		if strings.Contains(line, "╚") && strings.Contains(line, "═") {
+			bottomBorder = line
+			break
+		}
+	}
+
+	if topBorder == "" || bottomBorder == "" {
+		t.Fatal("Could not find table borders")
+	}
+
+	// Verify double-line rounded borders use correct characters
+	// Top border: ╔ (corner) + ═ (horizontal) + ╗ (corner)
+	if !strings.HasPrefix(topBorder, "╔") || !strings.HasSuffix(topBorder, "╗") {
+		t.Errorf("Top border should start with '╔' and end with '╗', got: %q", topBorder)
+	}
+
+	// Bottom border: ╚ (corner) + ═ (horizontal) + ╝ (corner)
+	if !strings.HasPrefix(bottomBorder, "╚") || !strings.HasSuffix(bottomBorder, "╝") {
+		t.Errorf("Bottom border should start with '╚' and end with '╝', got: %q", bottomBorder)
+	}
+
+	// Verify no single-line border characters are present in borders
+	if strings.Contains(topBorder, "┌") || strings.Contains(topBorder, "┐") ||
+		strings.Contains(topBorder, "└") || strings.Contains(topBorder, "┘") {
+		t.Error("Top border contains single-line characters (should use DoubleBorder)")
+	}
+
+	// Verify no single-line bottom characters
+	if strings.Contains(bottomBorder, "┌") || strings.Contains(bottomBorder, "┐") ||
+		strings.Contains(bottomBorder, "└") || strings.Contains(bottomBorder, "┘") {
+		t.Error("Bottom border contains single-line characters (should use DoubleBorder)")
+	}
+
+	// Verify horizontal rule uses ═ (double-line) not ─ (single-line)
+	if strings.Contains(topBorder, "─") || strings.Contains(bottomBorder, "─") {
+		t.Error("Border contains single-line horizontal character '─'")
+	}
+}
+
+// TestTableLayout_RenderPerformance verifies table rendering completes within 50ms
+func TestTableLayout_RenderPerformance(t *testing.T) {
+	av := NewAssetsView()
+	av.Loaded = true
+	// Use maximum entries for performance test
+	av.Entries = make([]AssetSummary, 29)
+	for i := 0; i < 29; i++ {
+		av.Entries[i] = AssetSummary{
+			Ticker:      fmt.Sprintf("ASSET%02d", i),
+			EntryCount:  1,
+			TotalShares: 0.01,
+			AvgPrice:    50000,
+			TotalValue:  500,
+		}
+	}
+
+	// Warm up (discard first render)
+	_ = av.View()
+
+	// Benchmark rendering
+	const numIterations = 100
+	start := time.Now()
+	for i := 0; i < numIterations; i++ {
+		_ = av.View()
+	}
+	elapsed := time.Since(start)
+
+	avgPerRender := elapsed / numIterations
+	maxAllowed := 50 * time.Millisecond
+
+	if avgPerRender > maxAllowed {
+		t.Errorf("Average render time %.2fms exceeds maximum of %.2fms", avgPerRender.Seconds()*1000, maxAllowed.Seconds()*1000)
 	}
 }
 

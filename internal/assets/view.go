@@ -11,12 +11,12 @@ import (
 // Column width constants for the Assets View table
 // Total table width: 10 + 8 + 14 + 13 + 13 + (4 separators × 2) = 74 characters
 const (
-	ColumnAssetWidth      = 10   // Asset: 10 characters, left-aligned
-	ColumnCountWidth      = 8    // Count: 8 characters, right-aligned
-	ColumnSharesWidth     = 14   // Total Shares: 14 characters, right-aligned with 8 decimal places
-	ColumnAvgPriceWidth   = 13   // Avg Price: 13 characters, right-aligned with 2 decimal places
-	ColumnTotalValueWidth = 13   // Total Value: 13 characters, right-aligned with 2 decimal places
-	ColumnSeparator       = "  " // 2 spaces between columns
+	ColumnAssetWidth      = 12    // Asset: 10 characters, left-aligned
+	ColumnCountWidth      = 8     // Count: 8 characters, right-aligned
+	ColumnSharesWidth     = 16    // Total Shares: 14 characters, right-aligned with 8 decimal places
+	ColumnAvgPriceWidth   = 14    // Avg Price: 13 characters, right-aligned with 2 decimal places
+	ColumnTotalValueWidth = 16    // Total Value: 13 characters, right-aligned with 2 decimal places
+	ColumnSeparator       = "   " // 2 spaces between columns
 )
 
 // Modal width constants
@@ -443,9 +443,9 @@ func (a *AssetsView) renderTable() string {
 		}
 	}
 
-	// Create table with border
+	// Create table with double-line rounded border (doc-019 PRD)
 	tableStyle := lipgloss.NewStyle().
-		Border(lipgloss.RoundedBorder()).
+		Border(lipgloss.DoubleBorder()).
 		BorderForeground(lipgloss.Color("240"))
 
 	return tableStyle.Render(lipgloss.JoinVertical(lipgloss.Left, rows...))
@@ -467,6 +467,7 @@ func (a *AssetsView) renderHeaderRow() string {
 		styled = append(styled, lipgloss.NewStyle().
 			Foreground(lipgloss.Color("15")).
 			Bold(true).
+			Underline(true).
 			Render(f))
 	}
 
