@@ -3,7 +3,7 @@ id: GOT-067
 title: add new readme
 status: Done
 assignee:
-  - thomas
+  - workflow
 created_date: '2026-03-31 10:02'
 updated_date: '2026-03-31 10:53'
 labels: []
