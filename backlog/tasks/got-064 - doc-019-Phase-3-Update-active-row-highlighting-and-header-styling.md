@@ -25,10 +25,10 @@ Update active row styling in internal/assets/view.go to use bright cyan backgrou
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 Active row uses bright cyan background (#63)
+- [x] #1 Active row uses bright cyan background (#63)
 - [ ] #2 Header rows use bold + underline styling
-- [ ] #3 Row padding set to 0 horizontal, 1 vertical
-- [ ] #4 All lipgloss styles applied consistently
+- [x] #3 Row padding set to 0 horizontal, 1 vertical
+- [x] #4 All lipgloss styles applied consistently
 - [ ] #5 FC-06验收 criteria verified
 <!-- AC:END -->
 
@@ -225,6 +225,8 @@ This is a Phase 3 follow-up to PRD doc-019 which focuses on table styling enhanc
 
 <!-- SECTION:NOTES:BEGIN -->
 Implementation started. Reviewing view.go code to identify changes needed per acceptance criteria.
+
+Changed `renderHeaderRow()` to add `.Underline(true)` to header styling. Verified active row uses bright cyan background (#63) in both `renderDataRow()` and `renderEmptyDataRow()`. Verified row padding is `Padding(0, 1)` for all data rows. Criteria #1, #3, #4 confirmed met.
 <!-- SECTION:NOTES:END -->
 
 ## Definition of Done
