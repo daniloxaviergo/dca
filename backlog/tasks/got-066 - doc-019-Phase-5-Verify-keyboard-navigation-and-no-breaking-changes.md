@@ -5,7 +5,7 @@ status: To Do
 assignee:
   - catarina
 created_date: '2026-03-29 12:32'
-updated_date: '2026-03-31 14:38'
+updated_date: '2026-03-31 14:39'
 labels:
   - task
   - testing
@@ -42,7 +42,7 @@ This task is a **quality assurance verification task** (not implementation) to e
 
 **Approach**:
 1. **Review existing navigation code** - Verify `handleUp()`, `handleDown()`, and `Update()` methods for keyboard handling
-2. **Test wrap-around behavior** - Confirm header-to-last-row and last-row-to-first-data_row wrapping
+2. **Test wrap-around behavior** - Confirm header-to-last-row and last-row-to-first-data-row wrapping
 3. **Verify modal integration** - Ensure Enter key still opens modal, Esc/Ctrl+C exit correctly
 4. **Test form transition** - Confirm 'c' key still triggers `ViewTransitionMsg{View: "form"}`
 5. **Run existing test suite** - Execute all tests with `make test` to verify no regressions
@@ -51,7 +51,7 @@ This task is a **quality assurance verification task** (not implementation) to e
 **Files to Review**:
 - `internal/assets/view.go` (lines 68-168: Update, handleUp, handleDown)
 - `internal/assets/view_test.go` (existing navigation tests)
-- `cmd/dca/main.go` (view transition handling)
+- `cmd/dca/main.go` (lines 55-67, 90-96: view transition handling)
 
 ### 2. Files to Modify
 
@@ -79,7 +79,7 @@ This task has **no prerequisites** as doc-019 Phases 1-4 are already completed (
 
 **Navigate to verify existing patterns**:
 
-1. **Keyboard Handling** (lines 71-107):
+1. **Keyboard Handling** (`internal/assets/view.go`, lines 71-107):
 ```go
 case tea.KeyUp:
     return a.handleUp()
@@ -91,18 +91,33 @@ case tea.KeyRunes:
             return ViewTransitionMsg{View: "form"}
         }
     }
+case tea.KeyEsc:
+    // Quit if modal not visible
+case tea.KeyCtrlC:
+    return a, tea.Quit
 ```
 
-2. **Wrap-around Logic** (lines 110-135):
+2. **Wrap-around Logic** (`internal/assets/view.go`, lines 110-135):
 ```go
 // Header (index 0) to last row (index 29) on Up
 // Last row (index 29) to first data (index 1) on Down
+const maxRowIndex = 29 // 30 total rows - 1
 ```
 
-3. **Modal Opening** (lines 144-172):
+3. **View Transition** (`cmd/dca/main.go`, lines 90-96):
 ```go
-// Enter key opens modal when selectedIndex > 0
-// Modal visible state controls Enter behavior (LoadMore vs OpenModal)
+// On ViewTransitionMsg with View="form", switch to StateForm
+if transitionMsg, ok := msg.(assets.ViewTransitionMsg); ok && transitionMsg.View == "form" {
+    m.currentState = StateForm
+    m.form = form.NewFormModel(m.entries, defaultEntriesPath)
+    return m, nil
+}
+```
+
+4. **Modal Opening** (`internal/assets/view.go`, lines 144-172):
+```go
+// Enter opens modal when not in modal view (selectedIndex > 0)
+// Enter loads more when in modal view (a.Modal.Visible = true)
 ```
 
 **Verification checklist**:
@@ -110,32 +125,41 @@ case tea.KeyRunes:
 - [ ] Wrap-around uses correct constants (maxRowIndex = 29)
 - [ ] Modal state checks before Enter handling
 - [ ] View transition message contains `View: "form"`
+- [ ] Esc/Ctrl+C return `tea.Quit` cmd
+- [ ] Form cancellation returns to assets view
 
 ### 5. Testing Strategy
 
 **Test Categories**:
 
 1. **Keyboard Navigation Tests** (existing, run with `make test`):
-   - `TestAssetsView_NavigateUp` - Verify up navigation with wrap
-   - `TestAssetsView_NavigateDown` - Verify down navigation with wrap
-   - `TestAssetsView_UpdateArrowUp/Down` - Integration tests
-   - `TestAssetsView_UpdateEscape` - Esc key exits
-   - `TestAssetsView_UpdateCtrlC` - Ctrl+C exits
-   - `TestAssetsView_UpdateKeyC` - 'c' key switches to form
+   - `TestAssetsView_NavigateUp` - Verify up navigation with wrap to index 29
+   - `TestAssetsView_NavigateDown` - Verify down navigation with wrap to index 1
+   - `TestAssetsView_NavigateWrapUp` - Verify header-to-last-row wrap
+   - `TestAssetsView_NavigateWrapDown` - Verify last-row-to-first-data-row wrap
+   - `TestAssetsView_UpdateArrowUp/Down` - Integration tests for key messages
+   - `TestAssetsView_UpdateEscape` - Esc key exits with `tea.Quit`
+   - `TestAssetsView_UpdateCtrlC` - Ctrl+C exits with `tea.Quit`
+   - `TestAssetsView_UpdateKeyC` - 'c' key returns `ViewTransitionMsg{View: "form"}`
+   - `TestAssetsView_UpdateKeyC_NavigatesToForm` - Verify form view switch
 
 2. **Data Volume Tests** (existing):
-   - `TestAssetsView_RenderWith5Assets` - 5 entries
-   - `TestAssetsView_RenderWith25Assets` - 25 entries
-   - `TestTableLayout_Exactly30Rows` - 1, 5, 25, 29, 30 entries
+   - `TestAssetsView_RenderWith5Assets` - 5 entries (5 data + 24 empty rows)
+   - `TestAssetsView_RenderWith25Assets` - 25 entries (25 data + 4 empty rows)
+   - `TestTableLayout_Exactly30Rows` - Tests 1, 5, 25, 29, 30 entries
+   - `TestTableLayout_EmptyRowPadding` - 1, 5, 25, 29 entries with correct padding
 
 3. **Modal Tests** (existing):
-   - `TestAssetsView_UpdateLoadMore` - Modal + LoadMoreMsg
-   - Modal visibility tests
+   - `TestAssetsView_UpdateLoadMore` - Modal + LoadMoreMsg integration
+   - `TestAssetsView_UpdateLoadMore_EmptyModal` - Nil modal handling
+   - `TestAssetsView_UpdateLoadMore_ModalNotVisible` - Not visible handling
+   - Modal visibility state tests
 
-4. **Coverage Requirements**:
-   - Verify all keyboard handlers tested
-   - Verify wrap-around edge cases
-   - Verify modal state transitions
+**Coverage Requirements**:
+- All keyboard handlers tested
+- Wrap-around edge cases covered
+- Modal state transitions verified
+- Form view transition tested
 
 **Verification Steps**:
 ```bash
@@ -150,7 +174,20 @@ go test -v ./internal/assets/... -run "Navigate"
 
 # Run specific table layout tests
 go test -v ./internal/assets/... -run "TableLayout"
+
+# Run form transition tests
+go test -v ./internal/assets/... -run "KeyC"
 ```
+
+**Test Case Mapping**:
+| Acceptance Criteria | Test(s) to Verify |
+|-------------------|-------------------|
+| #1 Keyboard navigation works identically | All existing navigation tests |
+| #2 Wrap-around preserved | `TestAssetsView_NavigateWrapUp/Down` |
+| #3 Modal opens on Enter | `TestAssetsView_UpdateLoadMore` |
+| #4 'c' key switches to form | `TestAssetsView_UpdateKeyC` |
+| #5 Tested with 0, 5, 29, 30 entries | `TestTableLayout_Exactly30Rows` |
+| #6 Full test suite passes | `make test` exit code 0 |
 
 ### 6. Risks and Considerations
 
@@ -166,8 +203,8 @@ go test -v ./internal/assets/... -run "TableLayout"
 
 **Acceptance Criteria Verification**:
 
-| AC | Verification Method |
-|----|---------------------|
+| AC | Verification Method | Status |
+|----|--------|-----|
 | #1 Keyboard navigation works identically | All existing tests pass |
 | #2 Wrap-around preserved | `TestAssetsView_NavigateWrapUp/Down` pass |
 | #3 Modal opens on Enter | `TestAssetsView_UpdateLoadMore` and modal tests pass |
@@ -184,7 +221,7 @@ go test -v ./internal/assets/... -run "TableLayout"
 - [ ] #5 PRD referenced - Task references doc-019
 - [ ] #6 Documentation updated - Comments explain navigation logic
 
-**Final Verification**:
+**Final Verification Steps**:
 
 1. **Run full test suite**:
    ```bash
@@ -196,18 +233,24 @@ go test -v ./internal/assets/... -run "TableLayout"
    make test-cover
    ```
 
-3. **Manual UI verification** (if time permits):
+3. **Review coverage report** (`coverage.out`) for:
+   - All keyboard handlers tested
+   - Wrap-around paths verified
+   - Modal state transitions covered
+
+4. **Manual UI verification** (if time permits):
    ```bash
    make run
    # Test: ↑/↓ navigation, Enter modal, Esc exit, 'c' form
    ```
 
-4. **Verify no regressions**:
+5. **Verify no regressions**:
    - All existing tests pass
    - No new compiler warnings
    - No fmt changes needed
 
 **Output Expected**:
+
 - Task record updated with verification results
 - If all tests pass: Task marked as Done
 - If issues found: Document blockers, create follow-up tasks
