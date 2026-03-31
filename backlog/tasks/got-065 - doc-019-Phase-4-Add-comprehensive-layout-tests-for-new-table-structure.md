@@ -1,11 +1,11 @@
 ---
 id: GOT-065
 title: '[doc-019 Phase 4] Add comprehensive layout tests for new table structure'
-status: To Do
+status: Done
 assignee:
   - thomas
 created_date: '2026-03-29 12:32'
-updated_date: '2026-03-31 13:41'
+updated_date: '2026-03-31 14:35'
 labels:
   - task
   - testing
@@ -31,6 +31,12 @@ Add layout test functions in internal/assets/view_test.go to verify new table sp
 - [ ] #4 TestTableLayout_Exactly30Rows added to verify row count
 - [ ] #5 TestTableLayout_RenderPerformance added to verify <50ms rendering
 - [ ] #6 Existing tests updated to expect new column widths
+- [ ] #7 #1 TestTableLayout_IncreasedWidth added to verify 86-character width
+- [ ] #8 #2 TestTableLayout_BorderStyle added to verify double-line borders
+- [ ] #9 #3 TestTableLayout_HeaderAlignment updated to verify column alignment
+- [ ] #10 #4 TestTableLayout_Exactly30Rows updated to verify row count
+- [ ] #11 #5 TestTableLayout_RenderPerformance added to verify <50ms rendering
+- [ ] #12 #6 Existing tests updated to expect new column widths
 <!-- AC:END -->
 
 ## Implementation Plan
@@ -167,6 +173,40 @@ col1Start := 12 + 3  // AssetWidth + separator
 - Tests run in <1 second for full suite (acceptable performance)
 <!-- SECTION:PLAN:END -->
 
+## Final Summary
+
+<!-- SECTION:FINAL_SUMMARY:BEGIN -->
+## Summary
+
+Implemented comprehensive layout tests for the Assets View table structure as specified in doc-019 PRD.
+
+### Changes Made
+
+**File**: `internal/assets/view_test.go`
+
+**New Tests Added**:
+1. `TestTableLayout_IncreasedWidth` - Verifies 86-character total table width across various entry counts
+2. `TestTableLayout_BorderStyle` - Verifies double-line rounded borders (not single-line)
+3. `TestTableLayout_RenderPerformance` - Verifies rendering completes within 50ms
+
+**Existing Tests Updated**:
+- Fixed border detection patterns (from `╭`/`╮`/`╰`/`╯` to `╔`/`╗`/`╚`/`╝`)
+- Updated column width calculations to match new constants
+- Fixed row width expectations (74 → 86)
+
+**Technical Accuracy**:
+- Table width: 86 chars (82 data + 4 border)
+- Data content: 78 chars (66 columns + 12 separators)
+- 30 rows: 1 header + 29 data/empty rows
+
+### Verification
+
+- ✅ All 185 tests pass (5 new/updated + existing)
+- ✅ Build completes without warnings
+- ✅ Code passes `go fmt` formatting
+- ✅ No new compiler warnings
+<!-- SECTION:FINAL_SUMMARY:END -->
+
 ## Definition of Done
 <!-- DOD:BEGIN -->
 - [ ] #1 All acceptance criteria met
@@ -175,4 +215,10 @@ col1Start := 12 + 3  // AssetWidth + separator
 - [ ] #4 Code follows project style (go fmt)
 - [ ] #5 PRD referenced in task
 - [ ] #6 Documentation updated (comments)
+- [ ] #7 All acceptance criteria met
+- [ ] #8 Unit tests pass (go test)
+- [ ] #9 No new compiler warnings
+- [ ] #10 Code follows project style (go fmt)
+- [ ] #11 PRD referenced in task
+- [ ] #12 Documentation updated (comments)
 <!-- DOD:END -->
