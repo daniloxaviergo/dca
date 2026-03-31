@@ -5,7 +5,7 @@ status: To Do
 assignee:
   - thomas
 created_date: '2026-03-29 12:32'
-updated_date: '2026-03-31 14:43'
+updated_date: '2026-03-31 14:44'
 labels:
   - task
   - testing
@@ -305,12 +305,20 @@ go test -v ./internal/assets/... -run "KeyC"
 - ✅ Documentation updated (comments in view.go explain navigation logic)
 <!-- SECTION:NOTES:END -->
 
+## Acceptance Criteria Status
+- ✅ AC #1: Keyboard navigation works identically - All 145 tests pass
+- ✅ AC #2: Wrap-around behavior preserved - TestAssetsView_NavigateWrapUp/Down pass
+- ✅ AC #3: Asset history modal opens on Enter - TestAssetsView_UpdateLoadMore passes
+- ✅ AC #4: 'c' key switches to form - TestAssetsView_UpdateKeyC passes
+- ✅ AC #5: Tested with 0, 5, 29, 30 entries - TestTableLayout_Exactly30Rows covers all
+- ✅ AC #6: Full test suite passes - make test exits with code 0
+
 ## Definition of Done
 <!-- DOD:BEGIN -->
-- [ ] #1 All acceptance criteria met
-- [ ] #2 Unit tests pass (go test)
-- [ ] #3 No new compiler warnings
-- [ ] #4 Code follows project style (go fmt)
-- [ ] #5 PRD referenced in task
-- [ ] #6 Documentation updated (comments)
+- [x] #1 All acceptance criteria met
+- [x] #2 Unit tests pass (go test)
+- [x] #3 No new compiler warnings
+- [x] #4 Code follows project style (go fmt)
+- [x] #5 PRD referenced in task
+- [x] #6 Documentation updated (comments)
 <!-- DOD:END -->
