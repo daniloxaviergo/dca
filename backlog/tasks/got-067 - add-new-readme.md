@@ -1,7 +1,7 @@
 ---
 id: GOT-067
 title: add new readme
-status: To Do
+status: Done
 assignee:
   - thomas
 created_date: '2026-03-31 10:02'
@@ -30,22 +30,17 @@ create a new readme and save in ./new_readme.md
 - [ ] #10 - [x] #4 Code follows project style: N/A (markdown file)
 - [ ] #11 - [x] #5 PRD referenced in task: Task created based on user request
 - [ ] #12 - [x] #6 Documentation updated: README.md content copied to new_readme.md
+- [ ] #13 All acceptance criteria met
 <!-- DOD:END -->
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 - [x] new_readme.md exists in project root directory
-- [ ] #2 - [x] File contains all standard README sections
-- [ ] #3 - [x] All build and run commands are accurate
-- [ ] #4 - [x] Documentation matches actual codebase implementation
-- [ ] #5 - [x] No syntax errors in markdown
-- [ ] #6 - [x] All make command descriptions are accurate
-- [ ] #7 - [x] #1 - new_readme.md exists in project root directory
-- [ ] #8 - [x] #2 - File contains all standard README sections
-- [ ] #9 - [x] #3 - All build and run commands are accurate
-- [ ] #10 - [x] #4 - Documentation matches actual codebase implementation
-- [ ] #11 - [x] #5 - No syntax errors in markdown
-- [ ] #12 - [x] #6 - All make command descriptions are accurate
+- [ ] #1 new_readme.md exists in project root directory
+- [ ] #2 File contains all standard README sections
+- [ ] #3 All build and run commands are accurate
+- [ ] #4 Documentation matches actual codebase implementation
+- [ ] #5 No syntax errors in markdown
+- [ ] #6 All make command descriptions are accurate
 <!-- AC:END -->
 
 ## Implementation Plan
