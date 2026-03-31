@@ -3,9 +3,9 @@ id: GOT-030
 title: 'Task 1: Intelligent Test Selection'
 status: To Do
 assignee:
-  - catarina
+  - workflow
 created_date: '2026-03-18 00:27'
-updated_date: '2026-03-31 09:40'
+updated_date: '2026-03-31 09:41'
 labels: []
 dependencies: []
 references:
