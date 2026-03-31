@@ -5,7 +5,7 @@ status: To Do
 assignee:
   - catarina
 created_date: '2026-03-29 12:31'
-updated_date: '2026-03-31 11:18'
+updated_date: '2026-03-31 11:20'
 labels:
   - task
   - code-quality
@@ -38,29 +38,33 @@ Update column width constants from current values (10, 8, 14, 13, 13) to new val
 
 Update the table layout constants in `internal/assets/view.go` to implement the new column width specifications from PRD doc-019. The changes involve:
 
-1. Update column width constants from current values to new values
-2. Change column separator from 2 spaces to 3 spaces
-3. Add border style constant using `lipgloss.DoubleBorder()`
-4. Verify total width calculation equals 82 characters (78 data + 4 border)
-5. Update modal column widths to match new asset column widths
+1. **Update column width constants**: Change from (10, 8, 14, 13, 13) to (12, 8, 16, 14, 16)
+2. **Update separator**: Change from 2 spaces ("  ") to 3 spaces ("   ")
+3. **Add border style constant**: Define `TableBorder` using `lipgloss.RoundedBorder()` (not `DoubleBorder()` - PRD requires rounded borders for visual distinction)
+4. **Update modal column widths**: Align modal column widths with new table specifications
+5. **Verify total width**: Calculate new width = 12 + 8 + 16 + 14 + 16 + (4 separators × 3 spaces) = 78 data + 4 border = 82 characters
 
 **Architecture decisions:**
-- Keep existing constant naming convention (`Column*Width` format)
-- Use `const` declarations for all new values in same location as existing constants
-- Maintain `Padding(0, 1)` as specified in requirements (already implemented)
-- Use lipgloss `DoubleBorder()` style which is available in v1.1.0 dependency
+- Keep existing constant naming convention (`Column*Width`, `Modal*Width`)
+- Use `const` declarations for all width and separator values
+- Maintain existing `Padding(0, 1)` which is already implemented in render methods
+- Use `lipgloss.RoundedBorder()` as specified in PRD (not DoubleBorder - rounded provides visual distinction)
+- Update modal separator to 3 spaces for consistency with main table
 
 **Why this approach:**
-- Minimal code changes - only constants and border style
+- Minimal code changes - only constants and one border style change
 - No functional logic changes - table rendering will automatically use new widths
 - Reusable - border style constant can be used throughout component
+- Maintains existing padding style for UI consistency
 
 ### 2. Files to Modify
 
 | File | Changes | Reason |
 |------|---------|--------|
-| `internal/assets/view.go` | Update constants (lines 19-30) | Update column widths and separator per PRD |
-| `internal/assets/view_test.go` | Update test expectations (lines 538, 544-546) | Expect 82 characters instead of 74 |
+| `internal/assets/view.go` | Update `ColumnAssetWidth` from 10 to 12, `ColumnSharesWidth` from 14 to 16, `ColumnAvgPriceWidth` from 13 to 14, `ColumnTotalValueWidth` from 13 to 16, `ColumnSeparator` from "  " to "   " | Update column widths per PRD acceptance criteria |
+| `internal/assets/view.go` | Update `ModalDateWidth` from 12 to 14, `ModalAvgPriceWidth` from 12 to 14, `ModalTotalInvestedWidth` from 14 to 16, `ModalEntryCountWidth` from 10 to 12, `ModalDateSeparator` from "  " to "   " | Align modal with new table column widths |
+| `internal/assets/view_test.go` | Update `TestTableLayout_WidthIs100Percent` to expect 82 instead of 74 | Expect new table width with updated constants |
+| `internal/assets/view_test.go` | Update comment in `TestTableLayout_WidthIs100Percent` | Clarify row width is 82 characters |
 
 **Files to create:** None
 
@@ -81,12 +85,13 @@ Update the table layout constants in `internal/assets/view.go` to implement the 
 
 **Conventions to follow:**
 - Use `const` for all width and separator values
-- Maintain current naming pattern: `Column*Width` and `*Separator`
+- Maintain current naming pattern: `Column*Width` and `Modal*Width`
 - Keep comments explaining each constant's purpose
 - Use lipgloss border styles consistently with existing code
 - Maintain `Padding(0, 1)` which is already implemented in render methods
 
 **Implementation details:**
+
 ```go
 // OLD (current):
 const (
@@ -98,6 +103,16 @@ const (
     ColumnSeparator       = "  " // 2 spaces between columns
 )
 
+// Modal width constants
+const (
+    ModalWidth              = 60
+    ModalDateWidth          = 12 // YYYY-MM-DD
+    ModalAvgPriceWidth      = 12 // Right-aligned with 2 decimals
+    ModalTotalInvestedWidth = 14 // Right-aligned with 2 decimals
+    ModalEntryCountWidth    = 10 // Right-aligned
+    ModalDateSeparator      = "  "
+)
+
 // NEW (required):
 const (
     ColumnAssetWidth      = 12   // Asset: 12 characters, left-aligned
@@ -107,33 +122,43 @@ const (
     ColumnTotalValueWidth = 16   // Total Value: 16 characters, right-aligned with 2 decimal places
     ColumnSeparator       = "   " // 3 spaces between columns
 )
-```
 
-**Modal width updates:**
-The PRD states "Update modal column widths to accommodate longer tickers and decimal places" but doesn't specify exact values. I recommend:
-- `ModalDateWidth`: 12 → 14 (YYYY-MM-DD + buffer)
-- `ModalAvgPriceWidth`: 12 → 14 (2-decimal precision with buffer)
-- `ModalTotalInvestedWidth`: 14 → 16 (accommodate larger values)
-- `ModalEntryCountWidth`: 10 → 12 (accommodate higher counts)
-- `ModalDateSeparator`: Update to 3 spaces for consistency
+// Modal width constants
+const (
+    ModalWidth              = 60
+    ModalDateWidth          = 14 // YYYY-MM-DD + buffer
+    ModalAvgPriceWidth      = 14 // Right-aligned with 2 decimals
+    ModalTotalInvestedWidth = 16 // Right-aligned with 2 decimals
+    ModalEntryCountWidth    = 12 // Right-aligned
+    ModalDateSeparator      = "   " // 3 spaces for consistency
+)
+
+// Comment in view.go:
+// Total table width: 12 + 8 + 16 + 14 + 16 + (4 separators × 3) = 82 characters (78 data + 4 border)
+```
 
 ### 5. Testing Strategy
 
 **Unit tests to update:**
 
 1. **`TestTableLayout_WidthIs100Percent`** - Update expected width from 74 to 82
-   - Line 544-546: Change `if len(line) != 74` to `if len(line) != 82`
+   - Change `if len(line) != 74` to `if len(line) != 82`
    - Update comment: "Row width = 82 (includes borders)"
 
-2. **`TestTableLayout_HeaderAlignment`** - Verify column positions match new widths
-   - Update parsing logic to match new column positions
-   - Verify header and data columns still align vertically
+2. **`TestTableLayout_HeaderAlignment`** - Update column position calculations
+   - Update `extractColumnsByPosition` function to match new column positions:
+     - col0: Asset, starts at 0, width 12
+     - col1: Count, starts at 12 + 3 = 15, width 8
+     - col2: Shares, starts at 15 + 8 + 3 = 26, width 16
+     - col3: AvgPrice, starts at 26 + 16 + 3 = 45, width 14
+     - col4: TotalValue, starts at 45 + 14 + 3 = 62, width 16
+   - Update calculation comment
 
-3. **`TestAssetsView_RenderWithEntries`** - No changes needed (tests content, not layout)
+3. **`TestTableLayout_ColumnWidthsMatchConstants`** - No changes needed (uses constants directly)
 
-4. **Add new test:** `TestTableLayout_NewColumnWidths` - Verify each column width
-   - Test each constant value matches new specifications
-   - Verify total: 12 + 8 + 16 + 14 + 16 + 4*3 = 82
+**New test to add:** `TestTableLayout_TableWidthCalculation` - Verify 82-character width
+   - Test total width calculation: 12 + 8 + 16 + 14 + 16 + 12 (separators) + 4 (border) = 82
+   - Verify with empty data, 1 entry, 29 entries
 
 **Edge cases to cover:**
 - Empty table (still 82 chars with borders)
@@ -147,13 +172,13 @@ The PRD states "Update modal column widths to accommodate longer tickers and dec
 - None identified. All changes are constant updates.
 
 **Potential pitfalls:**
-- **Modal alignment:** Modal uses different column widths and separator. Need to update to maintain visual consistency with main table
-- **Terminal compatibility:** 82-character width should fit standard terminals (80-120 chars), but verify with manual testing
-- **Test expectations:** All tests checking row width must be updated from 74 to 82
+- **Column position calculations:** Tests using `extractColumnsByPosition` must be updated to reflect new column positions
+- **Modal alignment:** Modal uses different column widths but should align visually with main table
+- **Terminal compatibility:** 82-character width should fit standard terminals (80-120 chars), verify with manual testing
 
 **Trade-offs:**
 - No dynamic width detection (fixed 82 chars as specified in PRD)
-- Modal separator could be 2 or 3 spaces - choosing 3 spaces for consistency
+- Modal separator uses 3 spaces for consistency with main table
 - Modal column widths not explicitly specified in PRD - will use incremental increases
 
 **Deployment considerations:**
@@ -163,7 +188,7 @@ The PRD states "Update modal column widths to accommodate longer tickers and dec
 - Full backward compatibility maintained
 
 **Verification steps:**
-1. Run `go test ./internal/assets/...` - all tests should pass
+1. Run `go test ./internal/assets/... -v` - all tests should pass
 2. Run `go build -o dca ./cmd/dca` - no compiler warnings
 3. Run `make fmt` - verify formatting
 4. Manual testing: `./dca` - verify table width and borders look correct
