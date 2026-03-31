@@ -5,7 +5,7 @@ status: To Do
 assignee:
   - thomas
 created_date: '2026-03-29 12:32'
-updated_date: '2026-03-31 13:32'
+updated_date: '2026-03-31 13:33'
 labels:
   - task
   - ui
@@ -220,6 +220,12 @@ make fmt
 
 This is a Phase 3 follow-up to PRD doc-019 which focuses on table styling enhancements. The key change is adding underline styling to headers (already has bold) to match FC-06 acceptance criteria. All other styling is already correctly implemented per Phases 1 and 2.
 <!-- SECTION:PLAN:END -->
+
+## Implementation Notes
+
+<!-- SECTION:NOTES:BEGIN -->
+Implementation started. Reviewing view.go code to identify changes needed per acceptance criteria.
+<!-- SECTION:NOTES:END -->
 
 ## Definition of Done
 <!-- DOD:BEGIN -->
