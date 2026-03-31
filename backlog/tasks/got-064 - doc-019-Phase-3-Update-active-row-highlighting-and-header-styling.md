@@ -242,5 +242,5 @@ Implementation complete. Summary: Added Underline(true) to renderHeaderRow() hea
 - [x] #3 No new compiler warnings
 - [x] #4 Code follows project style (go fmt)
 - [x] #5 PRD referenced in task
-- [ ] #6 Documentation updated (comments)
+- [x] #6 Documentation updated (comments)
 <!-- DOD:END -->
