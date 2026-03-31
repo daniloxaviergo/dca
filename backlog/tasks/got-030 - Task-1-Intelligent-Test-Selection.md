@@ -3,9 +3,9 @@ id: GOT-030
 title: 'Task 1: Intelligent Test Selection'
 status: To Do
 assignee:
-  - next-task
+  - '@'
 created_date: '2026-03-18 00:27'
-updated_date: '2026-03-31 09:42'
+updated_date: '2026-03-31 09:48'
 labels: []
 dependencies: []
 references:
